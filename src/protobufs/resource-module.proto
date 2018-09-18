@@ -1,0 +1,55 @@
+syntax = "proto3";
+
+package sati_module_resource;
+
+message PlaceholderRequest { }
+
+message StringDataResponse {
+    int32 code = 1;
+    string message = 2;
+    string data = 3;
+}
+
+service MindfulnessService {
+    rpc SayHello (SayHelloRequest) returns (SayHelloResponse) { }
+    rpc GetMindfulness (GetMindfulnessRequest) returns (GetMindfulnessResponse) { }
+}
+
+service NatureService {
+    rpc SayHello (SayHelloRequest) returns (SayHelloResponse) { }
+}
+
+service WanderService {
+    rpc SayHello (SayHelloRequest) returns (SayHelloResponse) { }
+}
+
+message SayHelloRequest {
+    string name = 1;
+}
+
+message SayHelloResponse {
+    string msg = 1;
+}
+
+message GetMindfulnessRequest {
+    int32 first = 1;
+    string after = 2;
+}
+
+message GetMindfulnessResponse {
+    repeated Mindfulness data = 1;
+}
+
+message Mindfulness {
+    string id = 1;
+    string background = 2;
+    string name = 3;
+    string description = 4;
+    repeated string scenes = 5;
+    string productId = 6;
+    int32 createTime = 7;
+    int32 updateTime = 8;
+    string author = 9;
+    string audio = 10;
+    string copy = 11;
+}

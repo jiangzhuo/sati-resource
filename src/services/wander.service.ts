@@ -24,7 +24,7 @@ export class WanderService {
     }
 
     async getWanderById(id) {
-        return await this.wanderModel.find({ _id: id }).exec();
+        return await this.wanderModel.findOne({ _id: id }).exec();
     }
 
     async getWanderByIds(ids) {
@@ -44,7 +44,7 @@ export class WanderService {
     }
 
     async getWanderAlbumById(id) {
-        return await this.wanderAlbumModel.find({ _id: id }).exec()
+        return await this.wanderAlbumModel.findOne({ _id: id }).exec()
     }
 
     async getWanderAlbumByIds(ids) {

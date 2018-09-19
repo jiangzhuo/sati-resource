@@ -23,8 +23,7 @@ export class MindfulnessService {
     }
 
     async getMindfulnessById(id) {
-        console.log(id)
-        return await this.mindfulnessModel.find({ _id: id }).exec()
+        return await this.mindfulnessModel.findOne({ _id: id }).exec()
     }
 
     async getMindfulnessByIds(ids) {

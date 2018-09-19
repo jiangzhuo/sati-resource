@@ -17,6 +17,10 @@ import { WanderService } from './services/wander.service';
 
 import { WanderAlbumSchema } from './schemas/wanderAlbum.schema';
 
+import { SceneGrpcController } from './controllers/scene.grpc.controller';
+import { SceneSchema } from './schemas/scene.schema';
+import { SceneService } from './services/scene.service';
+
 @Module({
     imports: [
         MongooseModule.forRoot('mongodb://localhost:27017/module_resource'),
@@ -24,17 +28,20 @@ import { WanderAlbumSchema } from './schemas/wanderAlbum.schema';
             { name: 'Nature', schema: NatureSchema, collection: 'nature' },
             { name: 'Wander', schema: WanderSchema, collection: 'wander' },
             { name: 'WanderAlbum', schema: WanderAlbumSchema, collection: 'wanderAlbum' },
+            { name: 'Scene', schema: SceneSchema, collection: 'scene' },
         ])
     ],
     controllers: [
         MindfulnessGrpcController,
         NatureGrpcController,
-        WanderGrpcController
+        WanderGrpcController,
+        SceneGrpcController
     ],
     providers: [
         MindfulnessService,
         NatureService,
-        WanderService
+        WanderService,
+        SceneService
     ],
     exports: []
 })
@@ -43,6 +50,7 @@ export class ResourceModule implements OnModuleInit {
         @Inject(MindfulnessService) private readonly mindfulnessService: MindfulnessService,
         @Inject(NatureService) private readonly natureService: NatureService,
         @Inject(WanderService) private readonly wanderService: WanderService,
+        @Inject(SceneService) private readonly sceneService: SceneService,
         // @InjectRepository(User) private readonly userRepo: Repository<User>
     ) { }
 

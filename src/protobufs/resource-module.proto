@@ -4,35 +4,39 @@ package sati_module_resource;
 
 message PlaceholderRequest { }
 
-message StringDataResponse {
-    int32 code = 1;
-    string message = 2;
-    string data = 3;
-}
-
 service MindfulnessService {
     rpc SayHello (SayHelloRequest) returns (SayHelloResponse) { }
-    rpc GetMindfulness (GetMindfulnessRequest) returns (GetMindfulnessResponse) { }
-    rpc GetMindfulnessById (GetMindfulnessByIdRequest) returns (GetMindfulnessResponse) { }
-    rpc GetMindfulnessByIds (GetMindfulnessByIdsRequest) returns (GetMindfulnessResponse) { }
+    rpc GetMindfulness (GetMindfulnessRequest) returns (ManyMindfulnessResponse) { }
+    rpc GetMindfulnessById (GetMindfulnessByIdRequest) returns (MindfulnessResponse) { }
+    rpc GetMindfulnessByIds (GetMindfulnessByIdsRequest) returns (ManyMindfulnessResponse) { }
 }
 
 service NatureService {
     rpc SayHello (SayHelloRequest) returns (SayHelloResponse) { }
-    rpc GetNature (GetNatureRequest) returns (GetNatureResponse) { }
-    rpc GetNatureById (GetNatureByIdRequest) returns (GetNatureResponse) { }
-    rpc GetNatureByIds (GetNatureByIdsRequest) returns (GetNatureResponse) { }
+    rpc GetNature (GetNatureRequest) returns (ManyNatureResponse) { }
+    rpc GetNatureById (GetNatureByIdRequest) returns (NatureResponse) { }
+    rpc GetNatureByIds (GetNatureByIdsRequest) returns (ManyNatureResponse) { }
 }
 
 service WanderService {
     rpc SayHello (SayHelloRequest) returns (SayHelloResponse) { }
-    rpc GetWander (GetWanderRequest) returns (GetWanderResponse) { }
-    rpc GetWanderById (GetWanderByIdRequest) returns (GetWanderResponse) { }
-    rpc GetWanderByIds (GetWanderByIdsRequest) returns (GetWanderResponse) { }
-    rpc GetWanderAlbum (GetWanderAlbumRequest) returns (GetWanderAlbumResponse) { }
-    rpc GetWanderAlbumById (GetWanderAlbumByIdRequest) returns (GetWanderAlbumResponse) { }
-    rpc GetWanderAlbumByIds (GetWanderAlbumByIdsRequest) returns (GetWanderAlbumResponse) { }
-    rpc GetWanderByWanderAlbumId (GetWanderByWanderAlbumIdRequest) returns (GetWanderResponse) { }
+    rpc GetWander (GetWanderRequest) returns (ManyWanderResponse) { }
+    rpc GetWanderById (GetWanderByIdRequest) returns (WanderResponse) { }
+    rpc GetWanderByIds (GetWanderByIdsRequest) returns (ManyWanderResponse) { }
+    rpc GetWanderAlbum (GetWanderAlbumRequest) returns (WanderAlbumResponse) { }
+    rpc GetWanderAlbumById (GetWanderAlbumByIdRequest) returns (WanderAlbumResponse) { }
+    rpc GetWanderAlbumByIds (GetWanderAlbumByIdsRequest) returns (ManyWanderAlbumResponse) { }
+    rpc GetWanderByWanderAlbumId (GetWanderByWanderAlbumIdRequest) returns (ManyWanderResponse) { }
+}
+
+service SceneService {
+    rpc SayHello (SayHelloRequest) returns (SayHelloResponse) { }
+    rpc GetScene (GetSceneRequest) returns (ManySceneResponse) { }
+    rpc GetSceneById (GetSceneByIdRequest) returns (SceneResponse) { }
+    rpc GetSceneByIds (GetSceneByIdsRequest) returns (ManySceneResponse) { }
+    rpc CreateScene (CreateSceneRequest) returns (SceneResponse) { }
+    rpc UpdateScene (UpdateSceneRequest) returns (SceneResponse) { }
+    rpc DeleteScene (DeleteSceneRequest) returns (SceneResponse) { }
 }
 
 message SayHelloRequest {
@@ -56,7 +60,11 @@ message GetMindfulnessByIdsRequest {
     repeated string ids = 1;
 }
 
-message GetMindfulnessResponse {
+message MindfulnessResponse {
+    Mindfulness data = 1;
+}
+
+message ManyMindfulnessResponse {
     repeated Mindfulness data = 1;
 }
 
@@ -79,16 +87,20 @@ message GetNatureRequest {
     string after = 2;
 }
 
-message GetNatureResponse {
-    repeated Nature data = 1;
-}
-
 message GetNatureByIdRequest {
     string id = 1;
 }
 
 message GetNatureByIdsRequest {
     repeated string ids = 1;
+}
+
+message NatureResponse {
+    Nature data = 1;
+}
+
+message ManyNatureResponse {
+    repeated Nature data = 1;
 }
 
 message Nature {
@@ -109,10 +121,6 @@ message GetWanderRequest {
     string after = 2;
 }
 
-message GetWanderResponse {
-    repeated Wander data = 1;
-}
-
 message GetWanderByIdRequest {
     string id = 1;
 }
@@ -123,6 +131,14 @@ message GetWanderByWanderAlbumIdRequest {
 
 message GetWanderByIdsRequest {
     repeated string ids = 1;
+}
+
+message WanderResponse {
+    Wander data = 1;
+}
+
+message ManyWanderResponse {
+    repeated Wander data = 1;
 }
 
 message Wander {
@@ -146,10 +162,6 @@ message GetWanderAlbumRequest {
     string after = 2;
 }
 
-message GetWanderAlbumResponse {
-    repeated WanderAlbum data = 1;
-}
-
 message GetWanderAlbumByIdRequest {
     string id = 1;
 }
@@ -158,7 +170,63 @@ message GetWanderAlbumByIdsRequest {
     repeated string ids = 1;
 }
 
+message WanderAlbumResponse {
+    WanderAlbum data = 1;
+}
+
+message ManyWanderAlbumResponse {
+    repeated WanderAlbum data = 1;
+}
+
 message WanderAlbum {
+    string id = 1;
+    string background = 2;
+    string name = 3;
+    string description = 4;
+    repeated string scenes = 5;
+    string productId = 6;
+    int32 createTime = 7;
+    int32 updateTime = 8;
+    string author = 9;
+    string copy = 10;
+    int32 status = 11;
+}
+
+message GetSceneRequest {
+    int32 first = 1;
+    string after = 2;
+}
+
+message GetSceneByIdRequest {
+    string id = 1;
+}
+
+message GetSceneByIdsRequest {
+    repeated string ids = 1;
+}
+
+message CreateSceneRequest {
+    string name = 1;
+}
+
+message UpdateSceneRequest {
+    string id = 1;
+    string name = 2;
+}
+
+message DeleteSceneRequest {
+    string id = 1;
+}
+
+message SceneResponse {
+    Scene data = 1;
+}
+
+message ManySceneResponse {
+    repeated Scene data = 1;
+}
+
+message Scene {
     string id = 1;
     string background = 2;
     string name = 3;

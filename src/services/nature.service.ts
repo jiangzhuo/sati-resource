@@ -22,7 +22,7 @@ export class NatureService {
     }
 
     async getNatureById(id) {
-        return await this.natureModel.find({ _id: id }).exec()
+        return await this.natureModel.findOne({ _id: id }).exec()
     }
 
     async getNatureByIds(ids) {

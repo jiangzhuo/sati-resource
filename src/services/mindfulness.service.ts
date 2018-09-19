@@ -2,6 +2,7 @@ import { Model } from 'mongoose';
 import { Mindfulness } from "../interfaces/mindfulness.interface";
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
+import { ObjectId } from 'mongodb';
 
 @Injectable()
 export class MindfulnessService {
@@ -14,15 +15,19 @@ export class MindfulnessService {
     }
 
     async getMindfulness(first = 20, after?: string) {
-        // if (after) {
-        //     return await this.mindfulnessRepo.find({ where: { id: { $gte: new ObjectID(after) } }, take: first });
-        // } else {
-        //     return await this.mindfulnessRepo.find({ take: first });
-        // }
-        return await this.mindfulnessModel.find().exec();
+        if (after) {
+            return await this.mindfulnessModel.find({ _id: { $gte: after } }).limit(first).exec();
+        } else {
+            return await this.mindfulnessModel.find().limit(first).exec();
+        }
     }
 
-    async getMindfulnessById(id: string) {
-        return await this.mindfulnessModel.findOne().exec();
+    async getMindfulnessById(id) {
+        console.log(id)
+        return await this.mindfulnessModel.find({ _id: id }).exec()
+    }
+
+    async getMindfulnessByIds(ids) {
+        return await this.mindfulnessModel.find({ _id: { $in: ids } }).exec()
     }
 }

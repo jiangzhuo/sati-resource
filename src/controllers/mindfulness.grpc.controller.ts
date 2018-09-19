@@ -22,4 +22,14 @@ export class MindfulnessGrpcController {
     async getMindfulness(data: { first: number, after: string }) {
         return { data: await this.mindfulnessService.getMindfulness(data.first, data.after) };
     }
+
+    @GrpcMethod('MindfulnessService')
+    async getMindfulnessById(data: { id: string }) {
+        return { data: await this.mindfulnessService.getMindfulnessById(data.id) };
+    }
+
+    @GrpcMethod('MindfulnessService')
+    async getMindfulnessByIds(data: { ids: string }) {
+        return { data: await this.mindfulnessService.getMindfulnessByIds(data.ids) };
+    }
 }

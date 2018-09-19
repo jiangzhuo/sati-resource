@@ -175,7 +175,7 @@
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/@types/long/-/long-4.0.0.tgz#719551d2352d301ac8b81db732acb6bdc28dbdef"
 
-"@types/mongodb@*":
+"@types/mongodb@*", "@types/mongodb@^3.1.7":
   version "3.1.7"
   resolved "https://registry.yarnpkg.com/@types/mongodb/-/mongodb-3.1.7.tgz#17e60d6cbca85a0aeaaf028051e99e4d99f26ea1"
   dependencies:

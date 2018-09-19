@@ -13,4 +13,6 @@ export const WanderSchema = new mongoose.Schema({
     author: String,
     audio: String,
     copy: String,
+    wanderAlbumId: ObjectId,
+    status: Number,
 });

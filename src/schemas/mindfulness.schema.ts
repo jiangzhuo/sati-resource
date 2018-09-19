@@ -12,4 +12,5 @@ export const MindfulnessSchema = new mongoose.Schema({
     author: String,
     audio: String,
     copy: String,
+    status: Number,
 });

@@ -2,7 +2,6 @@ import { Document } from 'mongoose';
 import { ObjectId } from 'mongodb';
 
 export interface Mindfulness extends Document {
-
     readonly background: string;
     readonly name: string;
     readonly description: string;
@@ -13,4 +12,5 @@ export interface Mindfulness extends Document {
     readonly author: string;
     readonly audio: string;
     readonly copy: string;
+    readonly status: number;
 }

@@ -17,4 +17,19 @@ export class NatureGrpcController {
     async sayHello(data: { name: string }) {
         return this.natureService.sayHello(data.name);
     }
+
+    @GrpcMethod('NatureService')
+    async getNature(data: { first: number, after: string }) {
+        return { data: await this.natureService.getNature(data.first, data.after) };
+    }
+
+    @GrpcMethod('NatureService')
+    async getNatureById(data: { id: string }) {
+        return { data: await this.natureService.getNatureById(data.id) };
+    }
+
+    @GrpcMethod('NatureService')
+    async getNatureByIds(data: { ids: string }) {
+        return { data: await this.natureService.getNatureByIds(data.ids) };
+    }
 }

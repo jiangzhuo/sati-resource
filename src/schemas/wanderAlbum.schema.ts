@@ -6,11 +6,10 @@ export const WanderAlbumSchema = new mongoose.Schema({
     name: String,
     description: String,
     scenes: [ObjectId],
-    wanders: [ObjectId],
     productId: String,
     createTime: Number,
     updateTime: Number,
     author: String,
-    audio: String,
     copy: String,
+    status: Number,
 });

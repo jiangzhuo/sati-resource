@@ -47,7 +47,7 @@ export class SceneService {
     }
 
     async getSceneById(id) {
-        return await this.sceneModel.find({ _id: id }).exec()
+        return await this.sceneModel.findOne({ _id: id }).exec()
     }
 
     async getSceneByIds(ids) {

@@ -9,6 +9,9 @@ service MindfulnessService {
     rpc GetMindfulness (GetMindfulnessRequest) returns (ManyMindfulnessResponse) { }
     rpc GetMindfulnessById (GetMindfulnessByIdRequest) returns (MindfulnessResponse) { }
     rpc GetMindfulnessByIds (GetMindfulnessByIdsRequest) returns (ManyMindfulnessResponse) { }
+    rpc CreateMindfulness (CreateMindfulnessRequest) returns (MindfulnessResponse) { }
+    rpc UpdateMindfulness (UpdateMindfulnessRequest) returns (MindfulnessResponse) { }
+    rpc DeleteMindfulness (DeleteMindfulnessRequest) returns (MindfulnessResponse) { }
 }
 
 service NatureService {
@@ -58,6 +61,35 @@ message GetMindfulnessByIdRequest {
 
 message GetMindfulnessByIdsRequest {
     repeated string ids = 1;
+}
+
+message CreateMindfulnessRequest {
+    string background = 1;
+    string name = 2;
+    string description = 3;
+    repeated string scenes = 4;
+    repeated string productId = 5;
+    string author = 6;
+    string audio = 7;
+    string copy = 8;
+    int32 status = 9;
+}
+
+message UpdateMindfulnessRequest {
+    string id = 1;
+    string background = 2;
+    string name = 3;
+    string description = 4;
+    repeated string scenes = 5;
+    repeated string productId = 6;
+    string author = 7;
+    string audio = 8;
+    string copy = 9;
+    int32 status = 10;
+}
+
+message DeleteMindfulnessRequest {
+    string id = 1;
 }
 
 message MindfulnessResponse {

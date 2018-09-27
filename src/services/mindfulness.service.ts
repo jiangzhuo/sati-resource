@@ -3,6 +3,8 @@ import { Mindfulness } from "../interfaces/mindfulness.interface";
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { ObjectId } from 'mongodb';
+import * as moment from 'moment';
+import { isEmpty } from 'lodash';
 
 @Injectable()
 export class MindfulnessService {
@@ -28,5 +30,50 @@ export class MindfulnessService {
 
     async getMindfulnessByIds(ids) {
         return await this.mindfulnessModel.find({ _id: { $in: ids } }).exec()
+    }
+
+    async createMindfulness(data) {
+        data.createTime = moment().unix();
+        data.updateTime = moment().unix();
+        return await this.mindfulnessModel.create(data)
+    }
+
+    async updateMindfulness(id, data) {
+        let updateObject = { updateTime: moment().unix() };
+        if (!isEmpty(data.scenes)) {
+            updateObject['scenes'] = data.scenes;
+        }
+        if (!isEmpty(data.id)) {
+            updateObject['id'] = data.id;
+        }
+        if (!isEmpty(data.background)) {
+            updateObject['background'] = data.background;
+        }
+        if (!isEmpty(data.name)) {
+            updateObject['name'] = data.name;
+        }
+        if (!isEmpty(data.description)) {
+            updateObject['description'] = data.description;
+        }
+        if (!isEmpty(data.productId)) {
+            updateObject['productId'] = data.productId;
+        }
+        if (!isEmpty(data.author)) {
+            updateObject['author'] = data.author;
+        }
+        if (!isEmpty(data.audio)) {
+            updateObject['audio'] = data.audio;
+        }
+        if (!isEmpty(data.copy)) {
+            updateObject['copy'] = data.copy;
+        }
+        if (!isEmpty(data.status)) {
+            updateObject['status'] = data.status;
+        }
+        return await this.mindfulnessModel.findOneAndUpdate({ _id: id }, updateObject).exec()
+    }
+
+    async deleteMindfulness(id) {
+        return await this.mindfulnessModel.findOneAndRemove({ _id: id }).exec()
     }
 }

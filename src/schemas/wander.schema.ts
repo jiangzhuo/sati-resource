@@ -10,7 +10,7 @@ export const WanderSchema = new mongoose.Schema({
     price: Number,
     createTime: Number,
     updateTime: Number,
-    author: String,
+    author: ObjectId,
     audio: String,
     copy: String,
     wanderAlbumId: ObjectId,

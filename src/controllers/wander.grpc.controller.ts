@@ -34,6 +34,21 @@ export class WanderGrpcController {
     }
 
     @GrpcMethod('WanderService')
+    async createWander(data) {
+        return { data: await this.wanderService.createWander(data) };
+    }
+
+    @GrpcMethod('WanderService')
+    async updateWander(data) {
+        return { data: await this.wanderService.updateWander(data.id, data) };
+    }
+
+    @GrpcMethod('WanderService')
+    async deleteWander(data) {
+        return { data: await this.wanderService.deleteWander(data.id) };
+    }
+
+    @GrpcMethod('WanderService')
     async getWanderByWanderAlbumId(data: { id: string }) {
         return { data: await this.wanderService.getWanderByWanderAlbumId(data.id) };
     }
@@ -51,5 +66,20 @@ export class WanderGrpcController {
     @GrpcMethod('WanderService')
     async getWanderAlbumByIds(data: { ids: string }) {
         return { data: await this.wanderService.getWanderAlbumByIds(data.ids) };
+    }
+
+    @GrpcMethod('WanderService')
+    async createWanderAlbum(data) {
+        return { data: await this.wanderService.createWanderAlbum(data) };
+    }
+
+    @GrpcMethod('WanderService')
+    async updateWanderAlbum(data) {
+        return { data: await this.wanderService.updateWanderAlbum(data.id, data) };
+    }
+
+    @GrpcMethod('WanderService')
+    async deleteWanderAlbum(data) {
+        return { data: await this.wanderService.deleteWanderAlbum(data.id) };
     }
 }

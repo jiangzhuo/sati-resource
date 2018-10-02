@@ -9,7 +9,7 @@ export const WanderAlbumSchema = new mongoose.Schema({
     price: Number,
     createTime: Number,
     updateTime: Number,
-    author: String,
+    author: ObjectId,
     copy: String,
     status: Number,
 });

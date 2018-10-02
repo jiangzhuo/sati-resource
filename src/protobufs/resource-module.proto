@@ -29,9 +29,15 @@ service WanderService {
     rpc GetWander (GetWanderRequest) returns (ManyWanderResponse) { }
     rpc GetWanderById (GetWanderByIdRequest) returns (WanderResponse) { }
     rpc GetWanderByIds (GetWanderByIdsRequest) returns (ManyWanderResponse) { }
-    rpc GetWanderAlbum (GetWanderAlbumRequest) returns (WanderAlbumResponse) { }
+    rpc CreateWander (CreateWanderRequest) returns (WanderResponse) { }
+    rpc UpdateWander (UpdateWanderRequest) returns (WanderResponse) { }
+    rpc DeleteWander (DeleteWanderRequest) returns (WanderResponse) { }
+    rpc GetWanderAlbum (GetWanderAlbumRequest) returns (ManyWanderAlbumResponse) { }
     rpc GetWanderAlbumById (GetWanderAlbumByIdRequest) returns (WanderAlbumResponse) { }
     rpc GetWanderAlbumByIds (GetWanderAlbumByIdsRequest) returns (ManyWanderAlbumResponse) { }
+    rpc CreateWanderAlbum (CreateWanderAlbumRequest) returns (WanderAlbumResponse) { }
+    rpc UpdateWanderAlbum (UpdateWanderAlbumRequest) returns (WanderAlbumResponse) { }
+    rpc DeleteWanderAlbum (DeleteWanderAlbumRequest) returns (WanderAlbumResponse) { }
     rpc GetWanderByWanderAlbumId (GetWanderByWanderAlbumIdRequest) returns (ManyWanderResponse) { }
 }
 
@@ -198,6 +204,37 @@ message GetWanderByIdsRequest {
     repeated string ids = 1;
 }
 
+message CreateWanderRequest {
+    string background = 1;
+    string name = 2;
+    string description = 3;
+    repeated string scenes = 4;
+    int32 price = 5;
+    string author = 6;
+    string audio = 7;
+    string copy = 8;
+    repeated string wanderAlbumId = 9;
+    int32 status = 10;
+}
+
+message UpdateWanderRequest {
+    string id = 1;
+    string background = 2;
+    string name = 3;
+    string description = 4;
+    repeated string scenes = 5;
+    int32 price = 6;
+    string author = 7;
+    string audio = 8;
+    string copy = 9;
+    string wanderAlbumId = 10;
+    int32 status = 11;
+}
+
+message DeleteWanderRequest {
+    string id = 1;
+}
+
 message WanderResponse {
     Wander data = 1;
 }
@@ -233,6 +270,33 @@ message GetWanderAlbumByIdRequest {
 
 message GetWanderAlbumByIdsRequest {
     repeated string ids = 1;
+}
+
+message CreateWanderAlbumRequest {
+    string background = 1;
+    string name = 2;
+    string description = 3;
+    repeated string scenes = 4;
+    int32 price = 5;
+    string author = 6;
+    string copy = 8;
+    int32 status = 9;
+}
+
+message UpdateWanderAlbumRequest {
+    string id = 1;
+    string background = 2;
+    string name = 3;
+    string description = 4;
+    repeated string scenes = 5;
+    int32 price = 6;
+    string author = 7;
+    string copy = 8;
+    int32 status = 9;
+}
+
+message DeleteWanderAlbumRequest {
+    string id = 1;
 }
 
 message WanderAlbumResponse {

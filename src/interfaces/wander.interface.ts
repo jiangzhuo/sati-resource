@@ -9,7 +9,7 @@ export interface Wander extends Document {
     readonly price: number;
     readonly createTime: number;
     readonly updateTime: number;
-    readonly author: string;
+    readonly author: ObjectId;
     readonly audio: string;
     readonly copy: string;
     readonly wanderAlbumId: ObjectId;

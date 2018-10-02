@@ -9,7 +9,7 @@ export const NatureSchema = new mongoose.Schema({
     price: Number,
     createTime: Number,
     updateTime: Number,
-    author: String,
+    author: ObjectId,
     audio: String,
     status: Number,
 });

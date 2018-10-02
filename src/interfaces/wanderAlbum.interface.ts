@@ -9,7 +9,7 @@ export interface WanderAlbum extends Document {
     readonly price: number;
     readonly createTime: number;
     readonly updateTime: number;
-    readonly author: string;
+    readonly author: ObjectId;
     readonly copy: string;
     readonly status: number;
 }

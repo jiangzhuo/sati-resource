@@ -40,6 +40,7 @@ export class MindfulnessGrpcController {
 
     @GrpcMethod('MindfulnessService')
     async updateMindfulness(data) {
+        console.log(data)
         return { data: await this.mindfulnessService.updateMindfulness(data.id, data) };
     }
 

@@ -6,7 +6,7 @@ export const MindfulnessSchema = new mongoose.Schema({
     name: String,
     description: String,
     scenes: [ObjectId],
-    productId: [String],
+    price: Number,
     createTime: Number,
     updateTime: Number,
     author: ObjectId,

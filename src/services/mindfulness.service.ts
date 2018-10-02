@@ -4,7 +4,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { ObjectId } from 'mongodb';
 import * as moment from 'moment';
-import { isEmpty } from 'lodash';
+import { isEmpty, isNumber } from 'lodash';
 
 @Injectable()
 export class MindfulnessService {
@@ -17,6 +17,7 @@ export class MindfulnessService {
     }
 
     async getMindfulness(first = 20, after?: string) {
+        console.log(111111)
         if (after) {
             return await this.mindfulnessModel.find({ _id: { $gte: after } }).limit(first).exec();
         } else {
@@ -43,9 +44,6 @@ export class MindfulnessService {
         if (!isEmpty(data.scenes)) {
             updateObject['scenes'] = data.scenes;
         }
-        if (!isEmpty(data.id)) {
-            updateObject['id'] = data.id;
-        }
         if (!isEmpty(data.background)) {
             updateObject['background'] = data.background;
         }
@@ -55,8 +53,8 @@ export class MindfulnessService {
         if (!isEmpty(data.description)) {
             updateObject['description'] = data.description;
         }
-        if (!isEmpty(data.productId)) {
-            updateObject['productId'] = data.productId;
+        if (isNumber(data.price)) {
+            updateObject['price'] = data.price;
         }
         if (!isEmpty(data.author)) {
             updateObject['author'] = data.author;
@@ -70,6 +68,7 @@ export class MindfulnessService {
         if (!isEmpty(data.status)) {
             updateObject['status'] = data.status;
         }
+        console.log(updateObject)
         return await this.mindfulnessModel.findOneAndUpdate({ _id: id }, updateObject).exec()
     }
 

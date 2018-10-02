@@ -32,4 +32,19 @@ export class NatureGrpcController {
     async getNatureByIds(data: { ids: string }) {
         return { data: await this.natureService.getNatureByIds(data.ids) };
     }
+
+    @GrpcMethod('NatureService')
+    async createNature(data) {
+        return { data: await this.natureService.createNature(data) };
+    }
+
+    @GrpcMethod('NatureService')
+    async updateNature(data) {
+        return { data: await this.natureService.updateNature(data.id, data) };
+    }
+
+    @GrpcMethod('NatureService')
+    async deleteNature(data) {
+        return { data: await this.natureService.deleteNature(data.id) };
+    }
 }

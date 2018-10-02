@@ -6,7 +6,7 @@ export interface Nature extends Document {
     readonly name: string;
     readonly description: string;
     readonly scenes: ObjectId[];
-    readonly productId: string;
+    readonly price: number;
     readonly createTime: number;
     readonly updateTime: number;
     readonly author: string;

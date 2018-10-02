@@ -19,6 +19,9 @@ service NatureService {
     rpc GetNature (GetNatureRequest) returns (ManyNatureResponse) { }
     rpc GetNatureById (GetNatureByIdRequest) returns (NatureResponse) { }
     rpc GetNatureByIds (GetNatureByIdsRequest) returns (ManyNatureResponse) { }
+    rpc CreateNature (CreateNatureRequest) returns (NatureResponse) { }
+    rpc UpdateNature (UpdateNatureRequest) returns (NatureResponse) { }
+    rpc DeleteNature (DeleteNatureRequest) returns (NatureResponse) { }
 }
 
 service WanderService {
@@ -68,7 +71,7 @@ message CreateMindfulnessRequest {
     string name = 2;
     string description = 3;
     repeated string scenes = 4;
-    repeated string productId = 5;
+    int32 price = 5;
     string author = 6;
     string audio = 7;
     string copy = 8;
@@ -81,7 +84,7 @@ message UpdateMindfulnessRequest {
     string name = 3;
     string description = 4;
     repeated string scenes = 5;
-    repeated string productId = 6;
+    int32 price = 6;
     string author = 7;
     string audio = 8;
     string copy = 9;
@@ -106,12 +109,13 @@ message Mindfulness {
     string name = 3;
     string description = 4;
     repeated string scenes = 5;
-    string productId = 6;
+    int32 price = 6;
     int32 createTime = 7;
     int32 updateTime = 8;
     string author = 9;
     string audio = 10;
     string copy = 11;
+    int32 status = 12;
 }
 
 message GetNatureRequest {
@@ -125,6 +129,34 @@ message GetNatureByIdRequest {
 
 message GetNatureByIdsRequest {
     repeated string ids = 1;
+}
+
+message CreateNatureRequest {
+    string background = 1;
+    string name = 2;
+    string description = 3;
+    repeated string scenes = 4;
+    int32 price = 5;
+    string author = 6;
+    string audio = 7;
+    string copy = 8;
+    int32 status = 9;
+}
+
+message UpdateNatureRequest {
+    string id = 1;
+    string background = 2;
+    string name = 3;
+    string description = 4;
+    repeated string scenes = 5;
+    int32 price = 6;
+    string author = 7;
+    string audio = 8;
+    int32 status = 9;
+}
+
+message DeleteNatureRequest {
+    string id = 1;
 }
 
 message NatureResponse {
@@ -141,11 +173,12 @@ message Nature {
     string name = 3;
     string description = 4;
     repeated string scenes = 5;
-    string productId = 6;
+    int32 price = 6;
     int32 createTime = 7;
     int32 updateTime = 8;
     string author = 9;
     string audio = 10;
+    int32 status = 11;
 }
 
 message GetWanderRequest {
@@ -179,7 +212,7 @@ message Wander {
     string name = 3;
     string description = 4;
     repeated string scenes = 5;
-    string productId = 6;
+    int32 price = 6;
     int32 createTime = 7;
     int32 updateTime = 8;
     string author = 9;
@@ -216,7 +249,7 @@ message WanderAlbum {
     string name = 3;
     string description = 4;
     repeated string scenes = 5;
-    string productId = 6;
+    int32 price = 6;
     int32 createTime = 7;
     int32 updateTime = 8;
     string author = 9;
@@ -264,7 +297,7 @@ message Scene {
     string name = 3;
     string description = 4;
     repeated string scenes = 5;
-    string productId = 6;
+    int32 price = 6;
     int32 createTime = 7;
     int32 updateTime = 8;
     string author = 9;

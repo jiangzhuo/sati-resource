@@ -4,7 +4,7 @@ import { WanderAlbum } from "../interfaces/wanderAlbum.interface";
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import * as moment from "moment";
-import { isEmpty, isNumber } from 'lodash';
+import { isEmpty, isNumber, isArray } from 'lodash';
 
 @Injectable()
 export class WanderService {
@@ -41,7 +41,7 @@ export class WanderService {
 
     async updateWander(id, data) {
         let updateObject = { updateTime: moment().unix() };
-        if (!isEmpty(data.scenes)) {
+        if (isArray(data.scenes)) {
             updateObject['scenes'] = data.scenes;
         }
         if (!isEmpty(data.background)) {
@@ -65,8 +65,8 @@ export class WanderService {
         if (!isEmpty(data.status)) {
             updateObject['status'] = data.status;
         }
-        if (!isEmpty(data.wanderAlbumId)) {
-            updateObject['wanderAlbumId'] = data.wanderAlbumId;
+        if (isArray(data.wanderAlbums)) {
+            updateObject['wanderAlbums'] = data.wanderAlbums;
         }
         return await this.wanderModel.findOneAndUpdate({ _id: id }, updateObject).exec()
     }
@@ -76,7 +76,7 @@ export class WanderService {
     }
 
     async getWanderByWanderAlbumId(id) {
-        return await this.wanderModel.find({ wanderAlbumId: id }).exec();
+        return await this.wanderModel.find({ wanderAlbums: id }).exec();
     }
 
     async getWanderAlbum(first = 20, after?: string) {
@@ -131,6 +131,7 @@ export class WanderService {
     }
 
     async deleteWanderAlbum(id) {
+        await this.wanderModel.updateMany({ wanderAlbums: id }, {  $pull: { wanderAlbums: id }  }).exec();
         return await this.wanderAlbumModel.findOneAndRemove({ _id: id }).exec()
     }
 }

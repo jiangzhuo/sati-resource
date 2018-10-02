@@ -12,6 +12,6 @@ export interface Wander extends Document {
     readonly author: ObjectId;
     readonly audio: string;
     readonly copy: string;
-    readonly wanderAlbumId: ObjectId;
+    readonly wanderAlbums: ObjectId[];
     readonly status: number;
 }

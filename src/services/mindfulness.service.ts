@@ -4,7 +4,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { ObjectId } from 'mongodb';
 import * as moment from 'moment';
-import { isEmpty, isNumber } from 'lodash';
+import { isEmpty, isNumber, isArray } from 'lodash';
 
 @Injectable()
 export class MindfulnessService {
@@ -41,7 +41,7 @@ export class MindfulnessService {
 
     async updateMindfulness(id, data) {
         let updateObject = { updateTime: moment().unix() };
-        if (!isEmpty(data.scenes)) {
+        if (isArray(data.scenes)) {
             updateObject['scenes'] = data.scenes;
         }
         if (!isEmpty(data.background)) {

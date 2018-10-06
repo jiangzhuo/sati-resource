@@ -1,5 +1,6 @@
 import { Model } from 'mongoose';
 import { Nature } from "../interfaces/nature.interface";
+import { NatureRecord } from "../interfaces/natureRecord.interface";
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import * as moment from "moment";
@@ -8,7 +9,8 @@ import { isEmpty, isNumber, isArray } from 'lodash';
 @Injectable()
 export class NatureService {
     constructor(
-        @InjectModel('Nature') private readonly natureModel: Model<Nature>
+        @InjectModel('Nature') private readonly natureModel: Model<Nature>,
+        @InjectModel('NatureRecord') private readonly natureRecordModel: Model<NatureRecord>
     ) { }
 
     async sayHello(name: string) {
@@ -29,6 +31,19 @@ export class NatureService {
 
     async getNatureByIds(ids) {
         return await this.natureModel.find({ _id: { $in: ids } }).exec()
+    }
+
+    async getNatureRecord(userId: string, natureId: string);
+    async getNatureRecord(userId: string, natureId: string[]);
+    async getNatureRecord(userId, natureId) {
+        if (isArray(natureId)) {
+            return await this.natureRecordModel.find({
+                userId: userId,
+                natureId: { $in: natureId }
+            }).exec()
+        } else if (typeof natureId === 'string') {
+            return await this.natureRecordModel.findOne({ userId: userId, natureId: natureId }).exec()
+        }
     }
 
     async createNature(data) {
@@ -68,5 +83,13 @@ export class NatureService {
 
     async deleteNature(id) {
         return await this.natureModel.findOneAndRemove({ _id: id }).exec()
+    }
+
+    async favoriteNature(userId, natureId) {
+        return await this.natureRecordModel.findOneAndUpdate({
+            userId: userId,
+            natureId: natureId
+        }, { $inc: { favorite: 1 } }, { upsert: true, new: true, setDefaultsOnInsert: true }).exec()
+
     }
 }

@@ -12,6 +12,9 @@ service MindfulnessService {
     rpc CreateMindfulness (CreateMindfulnessRequest) returns (MindfulnessResponse) { }
     rpc UpdateMindfulness (UpdateMindfulnessRequest) returns (MindfulnessResponse) { }
     rpc DeleteMindfulness (DeleteMindfulnessRequest) returns (MindfulnessResponse) { }
+    rpc FavoriteMindfulness (FavoriteMindfulnessRequest) returns (MindfulnessRecordResponse) { }
+    rpc GetMindfulnessRecordByMindfulnessId (GetMindfulnessRecordByIdRequest) returns (MindfulnessRecordResponse) { }
+    rpc GetMindfulnessRecordByMindfulnessIds (GetMindfulnessRecordByIdsRequest) returns (ManyMindfulnessRecordResponse) { }
 }
 
 service NatureService {
@@ -22,6 +25,9 @@ service NatureService {
     rpc CreateNature (CreateNatureRequest) returns (NatureResponse) { }
     rpc UpdateNature (UpdateNatureRequest) returns (NatureResponse) { }
     rpc DeleteNature (DeleteNatureRequest) returns (NatureResponse) { }
+    rpc FavoriteNature (FavoriteNatureRequest) returns (NatureRecordResponse) { }
+    rpc GetNatureRecordByNatureId (GetNatureRecordByIdRequest) returns (NatureRecordResponse) { }
+    rpc GetNatureRecordByNatureIds (GetNatureRecordByIdsRequest) returns (ManyNatureRecordResponse) { }
 }
 
 service WanderService {
@@ -39,6 +45,12 @@ service WanderService {
     rpc UpdateWanderAlbum (UpdateWanderAlbumRequest) returns (WanderAlbumResponse) { }
     rpc DeleteWanderAlbum (DeleteWanderAlbumRequest) returns (WanderAlbumResponse) { }
     rpc GetWanderByWanderAlbumId (GetWanderByWanderAlbumIdRequest) returns (ManyWanderResponse) { }
+    rpc FavoriteWander (FavoriteWanderRequest) returns (WanderRecordResponse) { }
+    rpc FavoriteWanderAlbum (FavoriteWanderAlbumRequest) returns (WanderAlbumRecordResponse) { }
+    rpc GetWanderRecordByWanderId (GetWanderRecordByIdRequest) returns (WanderRecordResponse) { }
+    rpc GetWanderRecordByWanderIds (GetWanderRecordByIdsRequest) returns (ManyWanderRecordResponse) { }
+    rpc GetWanderAlbumRecordByWanderAlbumId (GetWanderAlbumRecordByIdRequest) returns (WanderAlbumRecordResponse) { }
+    rpc GetWanderAlbumRecordByWanderAlbumIds (GetWanderAlbumRecordByIdsRequest) returns (ManyWanderAlbumRecordResponse) { }
 }
 
 service SceneService {
@@ -72,6 +84,16 @@ message GetMindfulnessByIdsRequest {
     repeated string ids = 1;
 }
 
+message GetMindfulnessRecordByIdRequest {
+    string userId = 1;
+    string mindfulnessId = 2;
+}
+
+message GetMindfulnessRecordByIdsRequest {
+    string userId = 1;
+    repeated string mindfulnessIds = 2;
+}
+
 message CreateMindfulnessRequest {
     string background = 1;
     string name = 2;
@@ -101,12 +123,25 @@ message DeleteMindfulnessRequest {
     string id = 1;
 }
 
+message FavoriteMindfulnessRequest {
+    string userId = 1;
+    string mindfulnessId = 2;
+}
+
 message MindfulnessResponse {
     Mindfulness data = 1;
 }
 
 message ManyMindfulnessResponse {
     repeated Mindfulness data = 1;
+}
+
+message MindfulnessRecordResponse {
+    MindfulnessRecord data = 1;
+}
+
+message ManyMindfulnessRecordResponse {
+    repeated MindfulnessRecord data = 1;
 }
 
 message Mindfulness {
@@ -124,6 +159,19 @@ message Mindfulness {
     int32 status = 12;
 }
 
+message MindfulnessRecord {
+    string id = 1;
+    string userId = 2;
+    string mindfulnessId = 3;
+    int32 favorite = 4;
+    int32 totalDuration = 5;
+    int32 longestDuration = 6;
+    int32 startCount = 7;
+    int32 finishCount = 8;
+    int32 lastStartTime = 9;
+    int32 lastFinishTime = 10;
+}
+
 message GetNatureRequest {
     int32 first = 1;
     string after = 2;
@@ -135,6 +183,16 @@ message GetNatureByIdRequest {
 
 message GetNatureByIdsRequest {
     repeated string ids = 1;
+}
+
+message GetNatureRecordByIdRequest {
+    string userId = 1;
+    string natureId = 2;
+}
+
+message GetNatureRecordByIdsRequest {
+    string userId = 1;
+    repeated string natureIds = 2;
 }
 
 message CreateNatureRequest {
@@ -165,12 +223,25 @@ message DeleteNatureRequest {
     string id = 1;
 }
 
+message FavoriteNatureRequest {
+    string userId = 1;
+    string natureId = 2;
+}
+
 message NatureResponse {
     Nature data = 1;
 }
 
 message ManyNatureResponse {
     repeated Nature data = 1;
+}
+
+message NatureRecordResponse {
+    NatureRecord data = 1;
+}
+
+message ManyNatureRecordResponse {
+    repeated NatureRecord data = 1;
 }
 
 message Nature {
@@ -187,6 +258,19 @@ message Nature {
     int32 status = 11;
 }
 
+message NatureRecord {
+    string id = 1;
+    string userId = 2;
+    string natureId = 3;
+    int32 favorite = 4;
+    int32 totalDuration = 5;
+    int32 longestDuration = 6;
+    int32 startCount = 7;
+    int32 finishCount = 8;
+    int32 lastStartTime = 9;
+    int32 lastFinishTime = 10;
+}
+
 message GetWanderRequest {
     int32 first = 1;
     string after = 2;
@@ -196,12 +280,22 @@ message GetWanderByIdRequest {
     string id = 1;
 }
 
-message GetWanderByWanderAlbumIdRequest {
-    string id = 1;
-}
-
 message GetWanderByIdsRequest {
     repeated string ids = 1;
+}
+
+message GetWanderRecordByIdRequest {
+    string userId = 1;
+    string wanderId = 2;
+}
+
+message GetWanderRecordByIdsRequest {
+    string userId = 1;
+    repeated string wanderIds = 2;
+}
+
+message GetWanderByWanderAlbumIdRequest {
+    string id = 1;
 }
 
 message CreateWanderRequest {
@@ -235,12 +329,25 @@ message DeleteWanderRequest {
     string id = 1;
 }
 
+message FavoriteWanderRequest {
+    string userId = 1;
+    string wanderId = 2;
+}
+
 message WanderResponse {
     Wander data = 1;
 }
 
 message ManyWanderResponse {
     repeated Wander data = 1;
+}
+
+message WanderRecordResponse {
+    WanderRecord data = 1;
+}
+
+message ManyWanderRecordResponse {
+    repeated WanderRecord data = 1;
 }
 
 message Wander {
@@ -259,6 +366,19 @@ message Wander {
     int32 status = 13;
 }
 
+message WanderRecord {
+    string id = 1;
+    string userId = 2;
+    string wanderId = 3;
+    int32 favorite = 4;
+    int32 totalDuration = 5;
+    int32 longestDuration = 6;
+    int32 startCount = 7;
+    int32 finishCount = 8;
+    int32 lastStartTime = 9;
+    int32 lastFinishTime = 10;
+}
+
 message GetWanderAlbumRequest {
     int32 first = 1;
     string after = 2;
@@ -270,6 +390,16 @@ message GetWanderAlbumByIdRequest {
 
 message GetWanderAlbumByIdsRequest {
     repeated string ids = 1;
+}
+
+message GetWanderAlbumRecordByIdRequest {
+    string userId = 1;
+    string wanderAlbumId = 2;
+}
+
+message GetWanderAlbumRecordByIdsRequest {
+    string userId = 1;
+    repeated string wanderAlbumIds = 2;
 }
 
 message CreateWanderAlbumRequest {
@@ -299,12 +429,25 @@ message DeleteWanderAlbumRequest {
     string id = 1;
 }
 
+message FavoriteWanderAlbumRequest {
+    string userId = 1;
+    string wanderAlbumId = 2;
+}
+
 message WanderAlbumResponse {
     WanderAlbum data = 1;
 }
 
 message ManyWanderAlbumResponse {
     repeated WanderAlbum data = 1;
+}
+
+message WanderAlbumRecordResponse {
+    WanderAlbumRecord data = 1;
+}
+
+message ManyWanderAlbumRecordResponse {
+    repeated WanderAlbumRecord data = 1;
 }
 
 message WanderAlbum {
@@ -319,6 +462,19 @@ message WanderAlbum {
     string author = 9;
     string copy = 10;
     int32 status = 11;
+}
+
+message WanderAlbumRecord {
+    string id = 1;
+    string userId = 2;
+    string wanderAlbumId = 3;
+    int32 favorite = 4;
+    int32 totalDuration = 5;
+    int32 longestDuration = 6;
+    int32 startCount = 7;
+    int32 finishCount = 8;
+    int32 lastStartTime = 9;
+    int32 lastFinishTime = 10;
 }
 
 message GetSceneRequest {

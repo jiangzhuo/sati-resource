@@ -1,6 +1,8 @@
 import { Model } from 'mongoose';
 import { Wander } from "../interfaces/wander.interface";
 import { WanderAlbum } from "../interfaces/wanderAlbum.interface";
+import { WanderRecord } from "../interfaces/wanderRecord.interface";
+import { WanderAlbumRecord } from "../interfaces/wanderAlbumRecord.interface";
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import * as moment from "moment";
@@ -10,7 +12,9 @@ import { isEmpty, isNumber, isArray } from 'lodash';
 export class WanderService {
     constructor(
         @InjectModel('Wander') private readonly wanderModel: Model<Wander>,
-        @InjectModel('WanderAlbum') private readonly wanderAlbumModel: Model<WanderAlbum>
+        @InjectModel('WanderAlbum') private readonly wanderAlbumModel: Model<WanderAlbum>,
+        @InjectModel('WanderRecord') private readonly wanderRecordModel: Model<WanderRecord>,
+        @InjectModel('WanderAlbumRecord') private readonly wanderAlbumRecordModel: Model<WanderAlbumRecord>
     ) { }
 
     async sayHello(name: string) {
@@ -31,6 +35,19 @@ export class WanderService {
 
     async getWanderByIds(ids) {
         return await this.wanderModel.find({ _id: { $in: ids } }).exec();
+    }
+
+    async getWanderRecord(userId: string, wanderId: string);
+    async getWanderRecord(userId: string, wanderId: string[]);
+    async getWanderRecord(userId, wanderId) {
+        if (isArray(wanderId)) {
+            return await this.wanderRecordModel.find({
+                userId: userId,
+                wanderId: { $in: wanderId }
+            }).exec()
+        } else if (typeof wanderId === 'string') {
+            return await this.wanderRecordModel.findOne({ userId: userId, wanderId: wanderId }).exec()
+        }
     }
 
     async createWander(data) {
@@ -75,6 +92,13 @@ export class WanderService {
         return await this.wanderModel.findOneAndRemove({ _id: id }).exec()
     }
 
+    async favoriteWander(userId, wanderId) {
+        return await this.wanderRecordModel.findOneAndUpdate({
+            userId: userId,
+            wanderId: wanderId
+        }, { $inc: { favorite: 1 } }, { upsert: true, new: true, setDefaultsOnInsert: true }).exec()
+    }
+
     async getWanderByWanderAlbumId(id) {
         return await this.wanderModel.find({ wanderAlbums: id }).exec();
     }
@@ -93,6 +117,19 @@ export class WanderService {
 
     async getWanderAlbumByIds(ids) {
         return await this.wanderAlbumModel.find({ _id: { $in: ids } }).exec()
+    }
+
+    async getWanderAlbumRecord(userId: string, wanderAlbumId: string);
+    async getWanderAlbumRecord(userId: string, wanderAlbumId: string[]);
+    async getWanderAlbumRecord(userId, wanderAlbumId) {
+        if (isArray(wanderAlbumId)) {
+            return await this.wanderAlbumRecordModel.find({
+                userId: userId,
+                wanderAlbumId: { $in: wanderAlbumId }
+            }).exec()
+        } else if (typeof wanderAlbumId === 'string') {
+            return await this.wanderAlbumRecordModel.findOne({ userId: userId, wanderAlbumId: wanderAlbumId }).exec()
+        }
     }
 
     async createWanderAlbum(data) {
@@ -133,5 +170,12 @@ export class WanderService {
     async deleteWanderAlbum(id) {
         await this.wanderModel.updateMany({ wanderAlbums: id }, {  $pull: { wanderAlbums: id }  }).exec();
         return await this.wanderAlbumModel.findOneAndRemove({ _id: id }).exec()
+    }
+
+    async favoriteWanderAlbum(userId, wanderAlbumId) {
+        return await this.wanderAlbumRecordModel.findOneAndUpdate({
+            userId: userId,
+            wanderAlbumId: wanderAlbumId
+        }, { $inc: { favorite: 1 } }, { upsert: true, new: true, setDefaultsOnInsert: true }).exec()
     }
 }

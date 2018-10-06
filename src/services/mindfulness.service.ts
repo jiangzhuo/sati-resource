@@ -1,5 +1,6 @@
 import { Model } from 'mongoose';
 import { Mindfulness } from "../interfaces/mindfulness.interface";
+import { MindfulnessRecord } from "../interfaces/mindfulnessRecord.interface";
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { ObjectId } from 'mongodb';
@@ -9,7 +10,8 @@ import { isEmpty, isNumber, isArray } from 'lodash';
 @Injectable()
 export class MindfulnessService {
     constructor(
-        @InjectModel('Mindfulness') private readonly mindfulnessModel: Model<Mindfulness>
+        @InjectModel('Mindfulness') private readonly mindfulnessModel: Model<Mindfulness>,
+        @InjectModel('MindfulnessRecord') private readonly mindfulnessRecordModel: Model<MindfulnessRecord>
     ) { }
 
     async sayHello(name: string) {
@@ -17,7 +19,6 @@ export class MindfulnessService {
     }
 
     async getMindfulness(first = 20, after?: string) {
-        console.log(111111)
         if (after) {
             return await this.mindfulnessModel.find({ _id: { $gte: after } }).limit(first).exec();
         } else {
@@ -31,6 +32,19 @@ export class MindfulnessService {
 
     async getMindfulnessByIds(ids) {
         return await this.mindfulnessModel.find({ _id: { $in: ids } }).exec()
+    }
+
+    async getMindfulnessRecord(userId: string, mindfulnessId: string);
+    async getMindfulnessRecord(userId: string, mindfulnessId: string[]);
+    async getMindfulnessRecord(userId, mindfulnessId) {
+        if (isArray(mindfulnessId)) {
+            return await this.mindfulnessRecordModel.find({
+                userId: userId,
+                mindfulnessId: { $in: mindfulnessId }
+            }).exec()
+        } else if (typeof mindfulnessId === 'string') {
+            return await this.mindfulnessRecordModel.findOne({ userId: userId, mindfulnessId: mindfulnessId }).exec()
+        }
     }
 
     async createMindfulness(data) {
@@ -74,5 +88,12 @@ export class MindfulnessService {
 
     async deleteMindfulness(id) {
         return await this.mindfulnessModel.findOneAndRemove({ _id: id }).exec()
+    }
+
+    async favoriteMindfulness(userId, mindfulnessId) {
+        return await this.mindfulnessRecordModel.findOneAndUpdate({
+            userId: userId,
+            mindfulnessId: mindfulnessId
+        }, { $inc: { favorite: 1 } }, { upsert: true, new: true, setDefaultsOnInsert: true }).exec()
     }
 }

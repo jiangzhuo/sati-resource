@@ -116,12 +116,12 @@ export class WanderGrpcController {
 
     @GrpcMethod('WanderService')
     async startWanderAlbum(data) {
-        return { data: await this.wanderService.startWanderAlbum(data.userId, data.wanderId) };
+        return { data: await this.wanderService.startWanderAlbum(data.userId, data.wanderAlbumId) };
     }
 
     @GrpcMethod('WanderService')
     async finishWanderAlbum(data) {
-        return { data: await this.wanderService.finishWanderAlbum(data.userId, data.wanderId, data.duration) };
+        return { data: await this.wanderService.finishWanderAlbum(data.userId, data.wanderAlbumId, data.duration) };
     }
 
     @GrpcMethod('WanderService')

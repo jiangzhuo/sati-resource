@@ -12,6 +12,7 @@ service MindfulnessService {
     rpc CreateMindfulness (CreateMindfulnessRequest) returns (MindfulnessResponse);
     rpc UpdateMindfulness (UpdateMindfulnessRequest) returns (MindfulnessResponse);
     rpc DeleteMindfulness (DeleteMindfulnessRequest) returns (MindfulnessResponse);
+    rpc RevertDeletedMindfulness (DeleteMindfulnessRequest) returns (MindfulnessResponse);
     rpc FavoriteMindfulness (FavoriteMindfulnessRequest) returns (MindfulnessRecordResponse);
     rpc GetMindfulnessRecordByMindfulnessId (GetMindfulnessRecordByIdRequest) returns (MindfulnessRecordResponse);
     rpc GetMindfulnessRecordByMindfulnessIds (GetMindfulnessRecordByIdsRequest) returns (ManyMindfulnessRecordResponse);
@@ -27,6 +28,7 @@ service NatureService {
     rpc CreateNature (CreateNatureRequest) returns (NatureResponse);
     rpc UpdateNature (UpdateNatureRequest) returns (NatureResponse);
     rpc DeleteNature (DeleteNatureRequest) returns (NatureResponse);
+    rpc RevertDeletedNature (DeleteNatureRequest) returns (NatureResponse);
     rpc FavoriteNature (FavoriteNatureRequest) returns (NatureRecordResponse);
     rpc GetNatureRecordByNatureId (GetNatureRecordByIdRequest) returns (NatureRecordResponse);
     rpc GetNatureRecordByNatureIds (GetNatureRecordByIdsRequest) returns (ManyNatureRecordResponse);
@@ -42,12 +44,14 @@ service WanderService {
     rpc CreateWander (CreateWanderRequest) returns (WanderResponse);
     rpc UpdateWander (UpdateWanderRequest) returns (WanderResponse);
     rpc DeleteWander (DeleteWanderRequest) returns (WanderResponse);
+    rpc RevertDeletedWander (DeleteWanderRequest) returns (WanderResponse);
     rpc GetWanderAlbum (GetWanderAlbumRequest) returns (ManyWanderAlbumResponse);
     rpc GetWanderAlbumById (GetWanderAlbumByIdRequest) returns (WanderAlbumResponse);
     rpc GetWanderAlbumByIds (GetWanderAlbumByIdsRequest) returns (ManyWanderAlbumResponse);
     rpc CreateWanderAlbum (CreateWanderAlbumRequest) returns (WanderAlbumResponse);
     rpc UpdateWanderAlbum (UpdateWanderAlbumRequest) returns (WanderAlbumResponse);
     rpc DeleteWanderAlbum (DeleteWanderAlbumRequest) returns (WanderAlbumResponse);
+    rpc RevertDeletedWanderAlbum (DeleteWanderAlbumRequest) returns (WanderAlbumResponse);
     rpc GetWanderByWanderAlbumId (GetWanderByWanderAlbumIdRequest) returns (ManyWanderResponse);
     rpc FavoriteWander (FavoriteWanderRequest) returns (WanderRecordResponse);
     rpc FavoriteWanderAlbum (FavoriteWanderAlbumRequest) returns (WanderAlbumRecordResponse);

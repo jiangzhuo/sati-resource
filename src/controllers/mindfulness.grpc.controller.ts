@@ -49,6 +49,11 @@ export class MindfulnessGrpcController {
     }
 
     @GrpcMethod('MindfulnessService')
+    async revertDeletedMindfulness(data) {
+        return { data: await this.mindfulnessService.revertDeletedMindfulness(data.id) };
+    }
+
+    @GrpcMethod('MindfulnessService')
     async favoriteMindfulness(data) {
         return { data: await this.mindfulnessService.favoriteMindfulness(data.userId, data.mindfulnessId) };
     }

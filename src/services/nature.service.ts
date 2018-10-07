@@ -82,7 +82,11 @@ export class NatureService {
     }
 
     async deleteNature(id) {
-        return await this.natureModel.findOneAndUpdate({ _id: id },{ $bit: { status: { or : 0b000000000000000000000000000000001 } } }).exec()
+        return await this.natureModel.findOneAndUpdate({ _id: id }, { $bit: { status: { or: 0b000000000000000000000000000000001 } } }).exec()
+    }
+
+    async revertDeletedNature(id) {
+        return await this.natureModel.findOneAndUpdate({ _id: id }, { $bit: { status: { and: 0b001111111111111111111111111111110 } } }).exec()
     }
 
     async favoriteNature(userId, natureId) {

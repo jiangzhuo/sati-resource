@@ -49,6 +49,11 @@ export class WanderGrpcController {
     }
 
     @GrpcMethod('WanderService')
+    async revertDeletedWander(data) {
+        return { data: await this.wanderService.revertDeletedWander(data.id) };
+    }
+
+    @GrpcMethod('WanderService')
     async favoriteWander(data) {
         return { data: await this.wanderService.favoriteWander(data.userId, data.wanderId) };
     }
@@ -106,6 +111,11 @@ export class WanderGrpcController {
     @GrpcMethod('WanderService')
     async deleteWanderAlbum(data) {
         return { data: await this.wanderService.deleteWanderAlbum(data.id) };
+    }
+
+    @GrpcMethod('WanderService')
+    async revertDeletedWanderAlbum(data) {
+        return { data: await this.wanderService.revertDeletedWanderAlbum(data.id) };
     }
 
     @GrpcMethod('WanderService')

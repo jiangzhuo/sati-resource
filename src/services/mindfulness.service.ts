@@ -87,7 +87,11 @@ export class MindfulnessService {
     }
 
     async deleteMindfulness(id) {
-        return await this.mindfulnessModel.findOneAndUpdate({ _id: id }, { $bit: { status: { or : 0b000000000000000000000000000000001 } } }).exec()
+        return await this.mindfulnessModel.findOneAndUpdate({ _id: id }, { $bit: { status: { or: 0b000000000000000000000000000000001 } } }).exec()
+    }
+
+    async revertDeletedMindfulness(id) {
+        return await this.mindfulnessModel.findOneAndUpdate({ _id: id }, { $bit: { status: { and: 0b001111111111111111111111111111110 } } }).exec()
     }
 
     async favoriteMindfulness(userId, mindfulnessId) {

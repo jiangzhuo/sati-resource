@@ -49,6 +49,11 @@ export class NatureGrpcController {
     }
 
     @GrpcMethod('NatureService')
+    async revertDeletedNature(data) {
+        return { data: await this.natureService.revertDeletedNature(data.id) };
+    }
+
+    @GrpcMethod('NatureService')
     async favoriteNature(data) {
         return { data: await this.natureService.favoriteNature(data.userId, data.natureId) };
     }

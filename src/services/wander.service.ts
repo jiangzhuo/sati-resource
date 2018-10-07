@@ -89,7 +89,7 @@ export class WanderService {
     }
 
     async deleteWander(id) {
-        return await this.wanderModel.findOneAndRemove({ _id: id }).exec()
+        return await this.wanderModel.findOneAndUpdate({ _id: id }, { $bit: { status: { or : 0b000000000000000000000000000000001 } } }).exec()
     }
 
     async favoriteWander(userId, wanderId) {
@@ -186,7 +186,7 @@ export class WanderService {
 
     async deleteWanderAlbum(id) {
         await this.wanderModel.updateMany({ wanderAlbums: id }, {  $pull: { wanderAlbums: id }  }).exec();
-        return await this.wanderAlbumModel.findOneAndRemove({ _id: id }).exec()
+        return await this.wanderAlbumModel.findOneAndUpdate({ _id: id }, { $bit: { status: { or : 0b000000000000000000000000000000001 } } }).exec()
     }
 
     async favoriteWanderAlbum(userId, wanderAlbumId) {

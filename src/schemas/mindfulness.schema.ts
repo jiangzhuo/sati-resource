@@ -1,4 +1,5 @@
 import * as mongoose from 'mongoose';
+import * as Int32 from "mongoose-int32";
 
 const ObjectId = mongoose.Schema.Types.ObjectId;
 export const MindfulnessSchema = new mongoose.Schema({
@@ -12,5 +13,5 @@ export const MindfulnessSchema = new mongoose.Schema({
     author: ObjectId,
     audio: String,
     copy: String,
-    status: Number,
+    status: { type: Int32, default: 0 },
 });

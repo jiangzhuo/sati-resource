@@ -92,4 +92,21 @@ export class NatureService {
         }, { $inc: { favorite: 1 } }, { upsert: true, new: true, setDefaultsOnInsert: true }).exec()
 
     }
+
+    async startNature(userId, natureId) {
+        return await this.natureRecordModel.findOneAndUpdate({ userId: userId, natureId: natureId },
+            { $inc: { startCount: 1 }, $set: { lastStartTime: moment().unix() } },
+            { upsert: true, new: true, setDefaultsOnInsert: true }).exec()
+    }
+
+    async finishNature(userId, natureId, duration) {
+        let currentRecord = await this.natureRecordModel.findOne({ userId: userId, natureId: natureId });
+        let updateObj = { $inc: { finishCount: 1, totalDuration: duration }, $set: { lastFinishTime: moment().unix() } }
+        if (duration > currentRecord.longestDuration) {
+            updateObj.$set['longestDuration'] = duration
+        }
+        return await this.natureRecordModel.findOneAndUpdate({ userId: userId, natureId: natureId },
+            updateObj,
+            { upsert: true, new: true, setDefaultsOnInsert: true }).exec()
+    }
 }

@@ -99,6 +99,23 @@ export class WanderService {
         }, { $inc: { favorite: 1 } }, { upsert: true, new: true, setDefaultsOnInsert: true }).exec()
     }
 
+    async startWander(userId, wanderId) {
+        return await this.wanderRecordModel.findOneAndUpdate({ userId: userId, wanderId: wanderId },
+            { $inc: { startCount: 1 }, $set: { lastStartTime: moment().unix() } },
+            { upsert: true, new: true, setDefaultsOnInsert: true }).exec()
+    }
+
+    async finishWander(userId, wanderId, duration) {
+        let currentRecord = await this.wanderRecordModel.findOne({ userId: userId, wanderId: wanderId });
+        let updateObj = { $inc: { finishCount: 1, totalDuration: duration }, $set: { lastFinishTime: moment().unix() } }
+        if (duration > currentRecord.longestDuration) {
+            updateObj.$set['longestDuration'] = duration
+        }
+        return await this.wanderRecordModel.findOneAndUpdate({ userId: userId, wanderId: wanderId },
+            updateObj,
+            { upsert: true, new: true, setDefaultsOnInsert: true }).exec()
+    }
+
     async getWanderByWanderAlbumId(id) {
         return await this.wanderModel.find({ wanderAlbums: id }).exec();
     }
@@ -177,5 +194,22 @@ export class WanderService {
             userId: userId,
             wanderAlbumId: wanderAlbumId
         }, { $inc: { favorite: 1 } }, { upsert: true, new: true, setDefaultsOnInsert: true }).exec()
+    }
+
+    async startWanderAlbum(userId, wanderAlbumId) {
+        return await this.wanderAlbumRecordModel.findOneAndUpdate({ userId: userId, wanderAlbumId: wanderAlbumId },
+            { $inc: { startCount: 1 }, $set: { lastStartTime: moment().unix() } },
+            { upsert: true, new: true, setDefaultsOnInsert: true }).exec()
+    }
+
+    async finishWanderAlbum(userId, wanderAlbumId, duration) {
+        let currentRecord = await this.wanderAlbumRecordModel.findOne({ userId: userId, wanderAlbumId: wanderAlbumId });
+        let updateObj = { $inc: { finishCount: 1, totalDuration: duration }, $set: { lastFinishTime: moment().unix() } }
+        if (duration > currentRecord.longestDuration) {
+            updateObj.$set['longestDuration'] = duration
+        }
+        return await this.wanderAlbumRecordModel.findOneAndUpdate({ userId: userId, wanderAlbumId: wanderAlbumId },
+            updateObj,
+            { upsert: true, new: true, setDefaultsOnInsert: true }).exec()
     }
 }

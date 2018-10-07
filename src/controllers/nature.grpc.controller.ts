@@ -54,6 +54,16 @@ export class NatureGrpcController {
     }
 
     @GrpcMethod('NatureService')
+    async startNature(data) {
+        return { data: await this.natureService.startNature(data.userId, data.natureId) };
+    }
+
+    @GrpcMethod('NatureService')
+    async finishNature(data) {
+        return { data: await this.natureService.finishNature(data.userId, data.natureId, data.duration) };
+    }
+
+    @GrpcMethod('NatureService')
     async GetNatureRecordByNatureId(data) {
         return { data: await this.natureService.getNatureRecord(data.userId, data.natureId) };
     }

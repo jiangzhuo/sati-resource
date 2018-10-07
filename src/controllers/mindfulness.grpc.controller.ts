@@ -54,6 +54,16 @@ export class MindfulnessGrpcController {
     }
 
     @GrpcMethod('MindfulnessService')
+    async startMindfulness(data) {
+        return { data: await this.mindfulnessService.startMindfulness(data.userId, data.mindfulnessId) };
+    }
+
+    @GrpcMethod('MindfulnessService')
+    async finishMindfulness(data) {
+        return { data: await this.mindfulnessService.finishMindfulness(data.userId, data.mindfulnessId, data.duration) };
+    }
+
+    @GrpcMethod('MindfulnessService')
     async GetMindfulnessRecordByMindfulnessId(data) {
         return { data: await this.mindfulnessService.getMindfulnessRecord(data.userId, data.mindfulnessId) };
     }

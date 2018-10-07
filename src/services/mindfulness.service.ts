@@ -96,4 +96,21 @@ export class MindfulnessService {
             mindfulnessId: mindfulnessId
         }, { $inc: { favorite: 1 } }, { upsert: true, new: true, setDefaultsOnInsert: true }).exec()
     }
+
+    async startMindfulness(userId, mindfulnessId) {
+        return await this.mindfulnessRecordModel.findOneAndUpdate({ userId: userId, mindfulnessId: mindfulnessId },
+            { $inc: { startCount: 1 }, $set: { lastStartTime: moment().unix() } },
+            { upsert: true, new: true, setDefaultsOnInsert: true }).exec()
+    }
+
+    async finishMindfulness(userId, mindfulnessId, duration) {
+        let currentRecord = await this.mindfulnessRecordModel.findOne({ userId: userId, mindfulnessId: mindfulnessId });
+        let updateObj = { $inc: { finishCount: 1, totalDuration: duration }, $set: { lastFinishTime: moment().unix() } }
+        if (duration > currentRecord.longestDuration) {
+            updateObj.$set['longestDuration'] = duration
+        }
+        return await this.mindfulnessRecordModel.findOneAndUpdate({ userId: userId, mindfulnessId: mindfulnessId },
+            updateObj,
+            { upsert: true, new: true, setDefaultsOnInsert: true }).exec()
+    }
 }

@@ -28,8 +28,8 @@ import { WanderAlbumRecordSchema } from './schemas/wanderAlbumRecord.schema';
 
 @Module({
     imports: [
-        // MongooseModule.forRoot('mongodb://sati:kjhguiyIUYkjh32kh@dds-2zee21d7f4fff2f41890-pub.mongodb.rds.aliyuncs.com:3717,dds-2zee21d7f4fff2f42351-pub.mongodb.rds.aliyuncs.com:3717/sati_resource?replicaSet=mgset-9200157'),
-        MongooseModule.forRoot('mongodb://localhost:27017/module_resource'),
+        MongooseModule.forRoot('mongodb://sati:kjhguiyIUYkjh32kh@dds-2zee21d7f4fff2f41890-pub.mongodb.rds.aliyuncs.com:3717,dds-2zee21d7f4fff2f42351-pub.mongodb.rds.aliyuncs.com:3717/sati_resource?replicaSet=mgset-9200157'),
+        // MongooseModule.forRoot('mongodb://localhost:27017/module_resource'),
         MongooseModule.forFeature([{ name: 'Mindfulness', schema: MindfulnessSchema, collection: 'mindfulness' },
             { name: 'Nature', schema: NatureSchema, collection: 'nature' },
             { name: 'Wander', schema: WanderSchema, collection: 'wander' },

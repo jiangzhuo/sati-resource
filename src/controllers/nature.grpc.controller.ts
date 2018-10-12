@@ -77,4 +77,9 @@ export class NatureGrpcController {
     async GetNatureRecordByNatureIds(data) {
         return { data: await this.natureService.getNatureRecord(data.userId, data.natureIds) };
     }
+
+    @GrpcMethod('NatureService')
+    async buyNature(data) {
+        return { data: await this.natureService.buyNature(data.userId, data.natureId) };
+    }
 }

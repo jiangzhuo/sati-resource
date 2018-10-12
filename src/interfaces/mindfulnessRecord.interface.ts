@@ -10,5 +10,7 @@ export interface MindfulnessRecord extends Document {
     readonly startCount: number; // 总共开始次数
     readonly finishCount: number; // 总完成次数
     readonly lastStartTime: number; // 上次开始时间
-    readonly lastCompleteTime: number; // 上次结束时间
+    readonly lastFinishTime: number; // 上次结束时间
+    readonly boughtTime: number; // 购买的时间
+    // readonly pendingTransactions: ObjectId[];
 }

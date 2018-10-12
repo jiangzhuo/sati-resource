@@ -11,4 +11,5 @@ export interface WanderAlbumRecord extends Document {
     readonly finishCount: number; // 总完成次数
     readonly lastStartTime: number; // 上次开始时间
     readonly lastFinishTime: number; // 上次结束时间
+    readonly boughtTime: number; // 购买的时间
 }

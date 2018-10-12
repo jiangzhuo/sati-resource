@@ -1,6 +1,5 @@
-import { Controller, Inject, UseInterceptors } from '@nestjs/common';
+import { Controller, Inject, OnModuleInit, UseInterceptors } from '@nestjs/common';
 import { GrpcMethod, RpcException } from '@nestjs/microservices';
-import { __ as t } from 'i18n';
 
 import { MindfulnessService } from '../services/mindfulness.service';
 // import { LoggingInterceptor } from "../interceptors/logging.interceptor";
@@ -76,5 +75,10 @@ export class MindfulnessGrpcController {
     @GrpcMethod('MindfulnessService')
     async GetMindfulnessRecordByMindfulnessIds(data) {
         return { data: await this.mindfulnessService.getMindfulnessRecord(data.userId, data.mindfulnessIds) };
+    }
+
+    @GrpcMethod('MindfulnessService')
+    async buyMindfulness(data) {
+        return { data: await this.mindfulnessService.buyMindfulness(data.userId, data.mindfulnessId) };
     }
 }

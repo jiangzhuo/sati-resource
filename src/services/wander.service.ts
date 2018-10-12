@@ -7,6 +7,8 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import * as moment from "moment";
 import { isEmpty, isNumber, isArray } from 'lodash';
+import { RpcException } from "@nestjs/microservices";
+import { __ as t } from "i18n";
 
 @Injectable()
 export class WanderService {
@@ -120,6 +122,16 @@ export class WanderService {
             { upsert: true, new: true, setDefaultsOnInsert: true }).exec()
     }
 
+    async buyWander(userId, wanderId) {
+        const oldWander = await this.wanderRecordModel.findOne({ userId: userId, wanderId: wanderId }).exec();
+        if (oldWander && oldWander.boughtTime !== 0)
+            throw new RpcException({ code: 400, message: t('already bought') });
+        return await this.wanderRecordModel.findOneAndUpdate(
+            { userId: userId, wanderId: wanderId },
+            { $set: { boughtTime: moment().unix() } },
+            { upsert: true, new: true, setDefaultsOnInsert: true }).exec()
+    }
+
     async getWanderByWanderAlbumId(id) {
         return await this.wanderModel.find({ wanderAlbums: id }).exec();
     }
@@ -219,6 +231,16 @@ export class WanderService {
         }
         return await this.wanderAlbumRecordModel.findOneAndUpdate({ userId: userId, wanderAlbumId: wanderAlbumId },
             updateObj,
+            { upsert: true, new: true, setDefaultsOnInsert: true }).exec()
+    }
+
+    async buyWanderAlbum(userId, wanderAlbumId) {
+        const oldWanderAlbum = await this.wanderAlbumRecordModel.findOne({ userId: userId, wanderAlbumId: wanderAlbumId }).exec();
+        if (oldWanderAlbum && oldWanderAlbum.boughtTime !== 0)
+            throw new RpcException({ code: 400, message: t('already bought') });
+        return await this.wanderAlbumRecordModel.findOneAndUpdate(
+            { userId: userId, wanderAlbumId: wanderAlbumId },
+            { $set: { boughtTime: moment().unix() } },
             { upsert: true, new: true, setDefaultsOnInsert: true }).exec()
     }
 }

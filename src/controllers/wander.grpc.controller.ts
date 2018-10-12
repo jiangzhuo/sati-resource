@@ -64,6 +64,11 @@ export class WanderGrpcController {
     }
 
     @GrpcMethod('WanderService')
+    async buyWander(data) {
+        return { data: await this.wanderService.buyWander(data.userId, data.wanderId) };
+    }
+
+    @GrpcMethod('WanderService')
     async finishWander(data) {
         return { data: await this.wanderService.finishWander(data.userId, data.wanderId, data.duration) };
     }
@@ -127,6 +132,11 @@ export class WanderGrpcController {
     @GrpcMethod('WanderService')
     async startWanderAlbum(data) {
         return { data: await this.wanderService.startWanderAlbum(data.userId, data.wanderAlbumId) };
+    }
+
+    @GrpcMethod('WanderService')
+    async buyWanderAlbum(data) {
+        return { data: await this.wanderService.buyWanderAlbum(data.userId, data.wanderAlbumId) };
     }
 
     @GrpcMethod('WanderService')

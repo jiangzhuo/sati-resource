@@ -3,6 +3,8 @@ import { APP_INTERCEPTOR } from '@nestjs/core';
 import { MongooseModule } from '@nestjs/mongoose';
 import { configure as i18nConfigure } from 'i18n';
 
+import { NotaddGrpcClientFactory } from './grpc/grpc.client-factory';
+
 import { MindfulnessGrpcController } from './controllers/mindfulness.grpc.controller';
 import { MindfulnessSchema } from './schemas/mindfulness.schema';
 import { MindfulnessService } from './services/mindfulness.service';
@@ -26,20 +28,28 @@ import { NatureRecordSchema } from './schemas/natureRecord.schema';
 import { WanderRecordSchema } from './schemas/wanderRecord.schema';
 import { WanderAlbumRecordSchema } from './schemas/wanderAlbumRecord.schema';
 
+import { UserSchema } from './schemas/user.schema';
+import { MindfulnessTransactionSchema } from "./schemas/mindfulnessTransaction.schema";
+
 @Module({
     imports: [
-        MongooseModule.forRoot('mongodb://sati:kjhguiyIUYkjh32kh@dds-2zee21d7f4fff2f41890-pub.mongodb.rds.aliyuncs.com:3717,dds-2zee21d7f4fff2f42351-pub.mongodb.rds.aliyuncs.com:3717/sati_resource?replicaSet=mgset-9200157'),
-        // MongooseModule.forRoot('mongodb://localhost:27017/module_resource'),
+        // MongooseModule.forRoot('mongodb://sati:kjhguiyIUYkjh32kh@dds-2zee21d7f4fff2f41890-pub.mongodb.rds.aliyuncs.com:3717,dds-2zee21d7f4fff2f42351-pub.mongodb.rds.aliyuncs.com:3717/sati_resource?replicaSet=mgset-9200157'),
+        MongooseModule.forRoot('mongodb://localhost:27017/module_resource',
+            { connectionName: 'resource', useNewUrlParser: true, useFindAndModify: false, useCreateIndex: true }),
         MongooseModule.forFeature([{ name: 'Mindfulness', schema: MindfulnessSchema, collection: 'mindfulness' },
             { name: 'Nature', schema: NatureSchema, collection: 'nature' },
             { name: 'Wander', schema: WanderSchema, collection: 'wander' },
             { name: 'WanderAlbum', schema: WanderAlbumSchema, collection: 'wanderAlbum' },
             { name: 'Scene', schema: SceneSchema, collection: 'scene' },
             { name: 'MindfulnessRecord', schema: MindfulnessRecordSchema, collection: 'mindfulnessRecord' },
+            { name: 'MindfulnessTransaction', schema: MindfulnessTransactionSchema, collection: 'mindfulnessTransaction' },
             { name: 'NatureRecord', schema: NatureRecordSchema, collection: 'natureRecord' },
             { name: 'WanderRecord', schema: WanderRecordSchema, collection: 'wanderRecord' },
             { name: 'WanderAlbumRecord', schema: WanderAlbumRecordSchema, collection: 'wanderAlbumRecord' },
-        ])
+        ],'resource'),
+        MongooseModule.forRoot('mongodb://localhost:27017/module_user',
+            { connectionName: 'user', useNewUrlParser: true, useFindAndModify: false, useCreateIndex: true }),
+        MongooseModule.forFeature([{ name: 'User', schema: UserSchema, collection: 'user' }], 'user')
     ],
     controllers: [
         MindfulnessGrpcController,
@@ -51,7 +61,8 @@ import { WanderAlbumRecordSchema } from './schemas/wanderAlbumRecord.schema';
         MindfulnessService,
         NatureService,
         WanderService,
-        SceneService
+        SceneService,
+        NotaddGrpcClientFactory
     ],
     exports: []
 })

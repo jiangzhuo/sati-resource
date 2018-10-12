@@ -11,4 +11,5 @@ export const WanderAlbumRecordSchema = new mongoose.Schema({
     finishCount: { type: Number, default: 0 }, // 总完成次数
     lastStartTime: { type: Number, default: 0 }, // 上次开始时间
     lastFinishTime: { type: Number, default: 0 }, // 上次结束时间
+    boughtTime: { type: Number, default: 0 }, // 购买时间，没有购买的话为0
 });

@@ -5,6 +5,8 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import * as moment from "moment";
 import { isEmpty, isNumber, isArray } from 'lodash';
+import { RpcException } from "@nestjs/microservices";
+import { __ as t } from "i18n";
 
 @Injectable()
 export class NatureService {
@@ -14,7 +16,7 @@ export class NatureService {
     ) { }
 
     async sayHello(name: string) {
-        return { msg: `Mindfulness Hello ${name}!` };
+        return { msg: `Nature Hello ${name}!` };
     }
 
     async getNature(first = 20, after?: string) {
@@ -111,6 +113,16 @@ export class NatureService {
         }
         return await this.natureRecordModel.findOneAndUpdate({ userId: userId, natureId: natureId },
             updateObj,
+            { upsert: true, new: true, setDefaultsOnInsert: true }).exec()
+    }
+
+    async buyNature(userId, natureId) {
+        const oldNature = await this.natureRecordModel.findOne({ userId: userId, natureId: natureId }).exec();
+        if (oldNature && oldNature.boughtTime !== 0)
+            throw new RpcException({ code: 400, message: t('already bought') });
+        return await this.natureRecordModel.findOneAndUpdate(
+            { userId: userId, natureId: natureId },
+            { $set: { boughtTime: moment().unix() } },
             { upsert: true, new: true, setDefaultsOnInsert: true }).exec()
     }
 }

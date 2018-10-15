@@ -31,6 +31,10 @@ import { WanderAlbumRecordSchema } from './schemas/wanderAlbumRecord.schema';
 import { UserSchema } from './schemas/user.schema';
 import { MindfulnessTransactionSchema } from "./schemas/mindfulnessTransaction.schema";
 
+import { HomeGrpcController } from "./controllers/home.grpc.controller";
+import { HomeSchema } from "./schemas/home.schema";
+import { HomeService } from "./services/home.service";
+
 @Module({
     imports: [
         // MongooseModule.forRoot('mongodb://sati:kjhguiyIUYkjh32kh@dds-2zee21d7f4fff2f41890-pub.mongodb.rds.aliyuncs.com:3717,dds-2zee21d7f4fff2f42351-pub.mongodb.rds.aliyuncs.com:3717/sati_resource?replicaSet=mgset-9200157'),
@@ -46,6 +50,7 @@ import { MindfulnessTransactionSchema } from "./schemas/mindfulnessTransaction.s
             { name: 'NatureRecord', schema: NatureRecordSchema, collection: 'natureRecord' },
             { name: 'WanderRecord', schema: WanderRecordSchema, collection: 'wanderRecord' },
             { name: 'WanderAlbumRecord', schema: WanderAlbumRecordSchema, collection: 'wanderAlbumRecord' },
+            { name: 'Home', schema: HomeSchema, collection: 'home' }
         ],'resource'),
         MongooseModule.forRoot('mongodb://localhost:27017/module_user',
             { connectionName: 'user', useNewUrlParser: true, useFindAndModify: false, useCreateIndex: true }),
@@ -55,13 +60,15 @@ import { MindfulnessTransactionSchema } from "./schemas/mindfulnessTransaction.s
         MindfulnessGrpcController,
         NatureGrpcController,
         WanderGrpcController,
-        SceneGrpcController
+        SceneGrpcController,
+        HomeGrpcController
     ],
     providers: [
         MindfulnessService,
         NatureService,
         WanderService,
         SceneService,
+        HomeService,
         NotaddGrpcClientFactory
     ],
     exports: []

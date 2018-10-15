@@ -4,6 +4,71 @@ package sati_module_resource;
 
 message PlaceholderRequest { }
 
+message SayHelloRequest {
+    string name = 1;
+}
+
+message SayHelloResponse {
+    string msg = 1;
+}
+
+service HomeService {
+    rpc SayHello (SayHelloRequest) returns (SayHelloResponse);
+    rpc GetHome (GetHomeRequest) returns (ManyHomeResponse);
+    rpc CreateHome (CreateHomeRequest) returns (HomeResponse);
+    rpc UpdateHome (UpdateHomeRequest) returns (HomeResponse);
+    rpc DeleteHome (DeleteHomeRequest) returns (HomeResponse);
+}
+
+message GetHomeRequest {
+}
+
+message Home {
+    string id = 1;
+    string type = 2;
+    string resourceId = 3;
+    string background = 4;
+    string name = 5;
+    string description = 6;
+    string author = 7;
+    int32 position = 8;
+    int32 createTime = 9;
+    int32 updateTime = 10;
+}
+
+message HomeResponse {
+    Home data = 1;
+}
+
+message ManyHomeResponse {
+    repeated Home data = 2;
+}
+
+message CreateHomeRequest {
+    string type = 1;
+    string resourceId = 2;
+    string background = 3;
+    string name = 4;
+    string description = 5;
+    string author = 6;
+    int32 position = 7;
+}
+
+message UpdateHomeRequest {
+    string id = 1;
+    string type = 2;
+    string resourceId = 3;
+    string background = 4;
+    string name = 5;
+    string description = 6;
+    string author = 7;
+    int32 position = 8;
+}
+
+message DeleteHomeRequest {
+    string id = 1;
+}
+
 service MindfulnessService {
     rpc SayHello (SayHelloRequest) returns (SayHelloResponse);
     rpc GetMindfulness (GetMindfulnessRequest) returns (ManyMindfulnessResponse);
@@ -19,72 +84,6 @@ service MindfulnessService {
     rpc StartMindfulness (StartMindfulnessRequest) returns (MindfulnessRecordResponse);
     rpc FinishMindfulness (FinishMindfulnessRequest) returns (MindfulnessRecordResponse);
     rpc BuyMindfulness (buyMindfulnessRequest) returns (MindfulnessRecordResponse);
-}
-
-service NatureService {
-    rpc SayHello (SayHelloRequest) returns (SayHelloResponse);
-    rpc GetNature (GetNatureRequest) returns (ManyNatureResponse);
-    rpc GetNatureById (GetNatureByIdRequest) returns (NatureResponse);
-    rpc GetNatureByIds (GetNatureByIdsRequest) returns (ManyNatureResponse);
-    rpc CreateNature (CreateNatureRequest) returns (NatureResponse);
-    rpc UpdateNature (UpdateNatureRequest) returns (NatureResponse);
-    rpc DeleteNature (DeleteNatureRequest) returns (NatureResponse);
-    rpc RevertDeletedNature (DeleteNatureRequest) returns (NatureResponse);
-    rpc FavoriteNature (FavoriteNatureRequest) returns (NatureRecordResponse);
-    rpc GetNatureRecordByNatureId (GetNatureRecordByIdRequest) returns (NatureRecordResponse);
-    rpc GetNatureRecordByNatureIds (GetNatureRecordByIdsRequest) returns (ManyNatureRecordResponse);
-    rpc StartNature (StartNatureRequest) returns (NatureRecordResponse);
-    rpc FinishNature (FinishNatureRequest) returns (NatureRecordResponse);
-    rpc BuyNature (BuyNatureRequest) returns (NatureRecordResponse);
-}
-
-service WanderService {
-    rpc SayHello (SayHelloRequest) returns (SayHelloResponse);
-    rpc GetWander (GetWanderRequest) returns (ManyWanderResponse);
-    rpc GetWanderById (GetWanderByIdRequest) returns (WanderResponse);
-    rpc GetWanderByIds (GetWanderByIdsRequest) returns (ManyWanderResponse);
-    rpc CreateWander (CreateWanderRequest) returns (WanderResponse);
-    rpc UpdateWander (UpdateWanderRequest) returns (WanderResponse);
-    rpc DeleteWander (DeleteWanderRequest) returns (WanderResponse);
-    rpc RevertDeletedWander (DeleteWanderRequest) returns (WanderResponse);
-    rpc GetWanderAlbum (GetWanderAlbumRequest) returns (ManyWanderAlbumResponse);
-    rpc GetWanderAlbumById (GetWanderAlbumByIdRequest) returns (WanderAlbumResponse);
-    rpc GetWanderAlbumByIds (GetWanderAlbumByIdsRequest) returns (ManyWanderAlbumResponse);
-    rpc CreateWanderAlbum (CreateWanderAlbumRequest) returns (WanderAlbumResponse);
-    rpc UpdateWanderAlbum (UpdateWanderAlbumRequest) returns (WanderAlbumResponse);
-    rpc DeleteWanderAlbum (DeleteWanderAlbumRequest) returns (WanderAlbumResponse);
-    rpc RevertDeletedWanderAlbum (DeleteWanderAlbumRequest) returns (WanderAlbumResponse);
-    rpc GetWanderByWanderAlbumId (GetWanderByWanderAlbumIdRequest) returns (ManyWanderResponse);
-    rpc FavoriteWander (FavoriteWanderRequest) returns (WanderRecordResponse);
-    rpc FavoriteWanderAlbum (FavoriteWanderAlbumRequest) returns (WanderAlbumRecordResponse);
-    rpc GetWanderRecordByWanderId (GetWanderRecordByIdRequest) returns (WanderRecordResponse);
-    rpc GetWanderRecordByWanderIds (GetWanderRecordByIdsRequest) returns (ManyWanderRecordResponse);
-    rpc GetWanderAlbumRecordByWanderAlbumId (GetWanderAlbumRecordByIdRequest) returns (WanderAlbumRecordResponse);
-    rpc GetWanderAlbumRecordByWanderAlbumIds (GetWanderAlbumRecordByIdsRequest) returns (ManyWanderAlbumRecordResponse);
-    rpc StartWander (StartWanderRequest) returns (WanderRecordResponse);
-    rpc FinishWander (FinishWanderRequest) returns (WanderRecordResponse);
-    rpc StartWanderAlbum (StartWanderAlbumRequest) returns (WanderAlbumRecordResponse);
-    rpc FinishWanderAlbum (FinishWanderAlbumRequest) returns (WanderAlbumRecordResponse);
-    rpc BuyWander (BuyWanderRequest) returns (WanderRecordResponse);
-    rpc BuyWanderAlbum (BuyWanderAlbumRequest) returns (WanderAlbumRecordResponse);
-}
-
-service SceneService {
-    rpc SayHello (SayHelloRequest) returns (SayHelloResponse);
-    rpc GetScene (GetSceneRequest) returns (ManySceneResponse);
-    rpc GetSceneById (GetSceneByIdRequest) returns (SceneResponse);
-    rpc GetSceneByIds (GetSceneByIdsRequest) returns (ManySceneResponse);
-    rpc CreateScene (CreateSceneRequest) returns (SceneResponse);
-    rpc UpdateScene (UpdateSceneRequest) returns (SceneResponse);
-    rpc DeleteScene (DeleteSceneRequest) returns (SceneResponse);
-}
-
-message SayHelloRequest {
-    string name = 1;
-}
-
-message SayHelloResponse {
-    string msg = 1;
 }
 
 message GetMindfulnessRequest {
@@ -205,6 +204,23 @@ message MindfulnessRecord {
     int32 boughtTime = 11;
 }
 
+service NatureService {
+    rpc SayHello (SayHelloRequest) returns (SayHelloResponse);
+    rpc GetNature (GetNatureRequest) returns (ManyNatureResponse);
+    rpc GetNatureById (GetNatureByIdRequest) returns (NatureResponse);
+    rpc GetNatureByIds (GetNatureByIdsRequest) returns (ManyNatureResponse);
+    rpc CreateNature (CreateNatureRequest) returns (NatureResponse);
+    rpc UpdateNature (UpdateNatureRequest) returns (NatureResponse);
+    rpc DeleteNature (DeleteNatureRequest) returns (NatureResponse);
+    rpc RevertDeletedNature (DeleteNatureRequest) returns (NatureResponse);
+    rpc FavoriteNature (FavoriteNatureRequest) returns (NatureRecordResponse);
+    rpc GetNatureRecordByNatureId (GetNatureRecordByIdRequest) returns (NatureRecordResponse);
+    rpc GetNatureRecordByNatureIds (GetNatureRecordByIdsRequest) returns (ManyNatureRecordResponse);
+    rpc StartNature (StartNatureRequest) returns (NatureRecordResponse);
+    rpc FinishNature (FinishNatureRequest) returns (NatureRecordResponse);
+    rpc BuyNature (BuyNatureRequest) returns (NatureRecordResponse);
+}
+
 message GetNatureRequest {
     int32 first = 1;
     string after = 2;
@@ -319,6 +335,37 @@ message NatureRecord {
     int32 lastStartTime = 9;
     int32 lastFinishTime = 10;
     int32 boughtTime = 11;
+}
+
+service WanderService {
+    rpc SayHello (SayHelloRequest) returns (SayHelloResponse);
+    rpc GetWander (GetWanderRequest) returns (ManyWanderResponse);
+    rpc GetWanderById (GetWanderByIdRequest) returns (WanderResponse);
+    rpc GetWanderByIds (GetWanderByIdsRequest) returns (ManyWanderResponse);
+    rpc CreateWander (CreateWanderRequest) returns (WanderResponse);
+    rpc UpdateWander (UpdateWanderRequest) returns (WanderResponse);
+    rpc DeleteWander (DeleteWanderRequest) returns (WanderResponse);
+    rpc RevertDeletedWander (DeleteWanderRequest) returns (WanderResponse);
+    rpc GetWanderAlbum (GetWanderAlbumRequest) returns (ManyWanderAlbumResponse);
+    rpc GetWanderAlbumById (GetWanderAlbumByIdRequest) returns (WanderAlbumResponse);
+    rpc GetWanderAlbumByIds (GetWanderAlbumByIdsRequest) returns (ManyWanderAlbumResponse);
+    rpc CreateWanderAlbum (CreateWanderAlbumRequest) returns (WanderAlbumResponse);
+    rpc UpdateWanderAlbum (UpdateWanderAlbumRequest) returns (WanderAlbumResponse);
+    rpc DeleteWanderAlbum (DeleteWanderAlbumRequest) returns (WanderAlbumResponse);
+    rpc RevertDeletedWanderAlbum (DeleteWanderAlbumRequest) returns (WanderAlbumResponse);
+    rpc GetWanderByWanderAlbumId (GetWanderByWanderAlbumIdRequest) returns (ManyWanderResponse);
+    rpc FavoriteWander (FavoriteWanderRequest) returns (WanderRecordResponse);
+    rpc FavoriteWanderAlbum (FavoriteWanderAlbumRequest) returns (WanderAlbumRecordResponse);
+    rpc GetWanderRecordByWanderId (GetWanderRecordByIdRequest) returns (WanderRecordResponse);
+    rpc GetWanderRecordByWanderIds (GetWanderRecordByIdsRequest) returns (ManyWanderRecordResponse);
+    rpc GetWanderAlbumRecordByWanderAlbumId (GetWanderAlbumRecordByIdRequest) returns (WanderAlbumRecordResponse);
+    rpc GetWanderAlbumRecordByWanderAlbumIds (GetWanderAlbumRecordByIdsRequest) returns (ManyWanderAlbumRecordResponse);
+    rpc StartWander (StartWanderRequest) returns (WanderRecordResponse);
+    rpc FinishWander (FinishWanderRequest) returns (WanderRecordResponse);
+    rpc StartWanderAlbum (StartWanderAlbumRequest) returns (WanderAlbumRecordResponse);
+    rpc FinishWanderAlbum (FinishWanderAlbumRequest) returns (WanderAlbumRecordResponse);
+    rpc BuyWander (BuyWanderRequest) returns (WanderRecordResponse);
+    rpc BuyWanderAlbum (BuyWanderAlbumRequest) returns (WanderAlbumRecordResponse);
 }
 
 message GetWanderRequest {
@@ -559,6 +606,16 @@ message WanderAlbumRecord {
     int32 lastStartTime = 9;
     int32 lastFinishTime = 10;
     int32 boughtTime = 11;
+}
+
+service SceneService {
+    rpc SayHello (SayHelloRequest) returns (SayHelloResponse);
+    rpc GetScene (GetSceneRequest) returns (ManySceneResponse);
+    rpc GetSceneById (GetSceneByIdRequest) returns (SceneResponse);
+    rpc GetSceneByIds (GetSceneByIdsRequest) returns (ManySceneResponse);
+    rpc CreateScene (CreateSceneRequest) returns (SceneResponse);
+    rpc UpdateScene (UpdateSceneRequest) returns (SceneResponse);
+    rpc DeleteScene (DeleteSceneRequest) returns (SceneResponse);
 }
 
 message GetSceneRequest {

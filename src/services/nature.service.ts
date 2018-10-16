@@ -125,4 +125,8 @@ export class NatureService {
             { $set: { boughtTime: moment().unix() } },
             { upsert: true, new: true, setDefaultsOnInsert: true }).exec()
     }
+
+    async searchNature(keyword) {
+        return await this.natureModel.find({ $or: [{ name: new RegExp(keyword, 'i') }, { description: new RegExp(keyword, 'i') }] }).exec();
+    }
 }

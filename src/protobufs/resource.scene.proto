@@ -1,0 +1,63 @@
+syntax = "proto3";
+
+package sati_module_resource;
+
+import "resource.hello.proto";
+
+service SceneService {
+    rpc SayHello (SayHelloRequest) returns (SayHelloResponse);
+    rpc GetScene (GetSceneRequest) returns (ManySceneResponse);
+    rpc GetSceneById (GetSceneByIdRequest) returns (SceneResponse);
+    rpc GetSceneByIds (GetSceneByIdsRequest) returns (ManySceneResponse);
+    rpc CreateScene (CreateSceneRequest) returns (SceneResponse);
+    rpc UpdateScene (UpdateSceneRequest) returns (SceneResponse);
+    rpc DeleteScene (DeleteSceneRequest) returns (SceneResponse);
+}
+
+message GetSceneRequest {
+    int32 first = 1;
+    string after = 2;
+}
+
+message GetSceneByIdRequest {
+    string id = 1;
+}
+
+message GetSceneByIdsRequest {
+    repeated string ids = 1;
+}
+
+message CreateSceneRequest {
+    string name = 1;
+}
+
+message UpdateSceneRequest {
+    string id = 1;
+    string name = 2;
+}
+
+message DeleteSceneRequest {
+    string id = 1;
+}
+
+message SceneResponse {
+    Scene data = 1;
+}
+
+message ManySceneResponse {
+    repeated Scene data = 1;
+}
+
+message Scene {
+    string id = 1;
+    string background = 2;
+    string name = 3;
+    string description = 4;
+    repeated string scenes = 5;
+    int32 price = 6;
+    int32 createTime = 7;
+    int32 updateTime = 8;
+    string author = 9;
+    string copy = 10;
+    int32 status = 11;
+}

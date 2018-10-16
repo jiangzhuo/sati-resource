@@ -215,4 +215,8 @@ export class MindfulnessService {
             { upsert: true, new: true, setDefaultsOnInsert: true }).exec();
         return mindfulness;
     }
+
+    async searchMindfulness(keyword) {
+        return await this.mindfulnessModel.find({ $or: [{ name: new RegExp(keyword, 'i') }, { description: new RegExp(keyword, 'i') }] }).exec();
+    }
 }

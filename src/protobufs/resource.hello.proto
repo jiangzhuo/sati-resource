@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package sati_module_resource;
+
+message SayHelloRequest {
+    string name = 1;
+}
+
+message SayHelloResponse {
+    string msg = 1;
+}

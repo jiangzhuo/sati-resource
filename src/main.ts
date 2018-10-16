@@ -10,8 +10,9 @@ async function bootstrap() {
         options: {
             url: '0.0.0.0' + ':50052',
             package: 'sati_module_resource',
-            protoPath: join(__dirname, 'protobufs/resource-module.proto'),
+            protoPath: 'resource.module.proto',
             loader: {
+                includeDirs: [join(__dirname, 'protobufs')],
                 arrays: true,
                 keepCase: true,
                 longs: String,

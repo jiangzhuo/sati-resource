@@ -1,0 +1,145 @@
+syntax = "proto3";
+
+package sati_module_resource;
+
+import "resource.hello.proto";
+
+service MindfulnessService {
+    rpc SayHello (SayHelloRequest) returns (SayHelloResponse);
+    rpc GetMindfulness (GetMindfulnessRequest) returns (ManyMindfulnessResponse);
+    rpc GetMindfulnessById (GetMindfulnessByIdRequest) returns (MindfulnessResponse);
+    rpc GetMindfulnessByIds (GetMindfulnessByIdsRequest) returns (ManyMindfulnessResponse);
+    rpc CreateMindfulness (CreateMindfulnessRequest) returns (MindfulnessResponse);
+    rpc UpdateMindfulness (UpdateMindfulnessRequest) returns (MindfulnessResponse);
+    rpc DeleteMindfulness (DeleteMindfulnessRequest) returns (MindfulnessResponse);
+    rpc RevertDeletedMindfulness (DeleteMindfulnessRequest) returns (MindfulnessResponse);
+    rpc FavoriteMindfulness (FavoriteMindfulnessRequest) returns (MindfulnessRecordResponse);
+    rpc GetMindfulnessRecordByMindfulnessId (GetMindfulnessRecordByIdRequest) returns (MindfulnessRecordResponse);
+    rpc GetMindfulnessRecordByMindfulnessIds (GetMindfulnessRecordByIdsRequest) returns (ManyMindfulnessRecordResponse);
+    rpc StartMindfulness (StartMindfulnessRequest) returns (MindfulnessRecordResponse);
+    rpc FinishMindfulness (FinishMindfulnessRequest) returns (MindfulnessRecordResponse);
+    rpc BuyMindfulness (BuyMindfulnessRequest) returns (MindfulnessRecordResponse);
+    rpc SearchMindfulness (SearchMindfulnessRequest) returns (ManyMindfulnessResponse);
+}
+
+message GetMindfulnessRequest {
+    int32 first = 1;
+    string after = 2;
+}
+
+message GetMindfulnessByIdRequest {
+    string id = 1;
+}
+
+message GetMindfulnessByIdsRequest {
+    repeated string ids = 1;
+}
+
+message GetMindfulnessRecordByIdRequest {
+    string userId = 1;
+    string mindfulnessId = 2;
+}
+
+message GetMindfulnessRecordByIdsRequest {
+    string userId = 1;
+    repeated string mindfulnessIds = 2;
+}
+
+message CreateMindfulnessRequest {
+    string background = 1;
+    string name = 2;
+    string description = 3;
+    repeated string scenes = 4;
+    int32 price = 5;
+    string author = 6;
+    string audio = 7;
+    string copy = 8;
+    int32 status = 9;
+}
+
+message UpdateMindfulnessRequest {
+    string id = 1;
+    string background = 2;
+    string name = 3;
+    string description = 4;
+    repeated string scenes = 5;
+    int32 price = 6;
+    string author = 7;
+    string audio = 8;
+    string copy = 9;
+    int32 status = 10;
+}
+
+message DeleteMindfulnessRequest {
+    string id = 1;
+}
+
+message FavoriteMindfulnessRequest {
+    string userId = 1;
+    string mindfulnessId = 2;
+}
+
+message StartMindfulnessRequest {
+    string userId = 1;
+    string mindfulnessId = 2;
+}
+
+message BuyMindfulnessRequest {
+    string userId = 1;
+    string mindfulnessId = 2;
+}
+
+message SearchMindfulnessRequest {
+    string keyword = 1;
+}
+
+message FinishMindfulnessRequest {
+    string userId = 1;
+    string mindfulnessId = 2;
+    int32 duration = 3;
+}
+
+message MindfulnessResponse {
+    Mindfulness data = 1;
+}
+
+message ManyMindfulnessResponse {
+    repeated Mindfulness data = 1;
+}
+
+message MindfulnessRecordResponse {
+    MindfulnessRecord data = 1;
+}
+
+message ManyMindfulnessRecordResponse {
+    repeated MindfulnessRecord data = 1;
+}
+
+message Mindfulness {
+    string id = 1;
+    string background = 2;
+    string name = 3;
+    string description = 4;
+    repeated string scenes = 5;
+    int32 price = 6;
+    int32 createTime = 7;
+    int32 updateTime = 8;
+    string author = 9;
+    string audio = 10;
+    string copy = 11;
+    int32 status = 12;
+}
+
+message MindfulnessRecord {
+    string id = 1;
+    string userId = 2;
+    string mindfulnessId = 3;
+    int32 favorite = 4;
+    int32 totalDuration = 5;
+    int32 longestDuration = 6;
+    int32 startCount = 7;
+    int32 finishCount = 8;
+    int32 lastStartTime = 9;
+    int32 lastFinishTime = 10;
+    int32 boughtTime = 11;
+}

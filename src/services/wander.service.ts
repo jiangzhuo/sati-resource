@@ -243,4 +243,12 @@ export class WanderService {
             { $set: { boughtTime: moment().unix() } },
             { upsert: true, new: true, setDefaultsOnInsert: true }).exec()
     }
+
+    async searchWander(keyword) {
+        return await this.wanderModel.find({ $or: [{ name: new RegExp(keyword, 'i') }, { description: new RegExp(keyword, 'i') }] }).exec();
+    }
+
+    async searchWanderAlbum(keyword) {
+        return await this.wanderAlbumModel.find({ $or: [{ name: new RegExp(keyword, 'i') }, { description: new RegExp(keyword, 'i') }] }).exec();
+    }
 }

@@ -1,0 +1,143 @@
+syntax = "proto3";
+
+package sati_module_resource;
+
+import "resource.hello.proto";
+
+service NatureService {
+    rpc SayHello (SayHelloRequest) returns (SayHelloResponse);
+    rpc GetNature (GetNatureRequest) returns (ManyNatureResponse);
+    rpc GetNatureById (GetNatureByIdRequest) returns (NatureResponse);
+    rpc GetNatureByIds (GetNatureByIdsRequest) returns (ManyNatureResponse);
+    rpc CreateNature (CreateNatureRequest) returns (NatureResponse);
+    rpc UpdateNature (UpdateNatureRequest) returns (NatureResponse);
+    rpc DeleteNature (DeleteNatureRequest) returns (NatureResponse);
+    rpc RevertDeletedNature (DeleteNatureRequest) returns (NatureResponse);
+    rpc FavoriteNature (FavoriteNatureRequest) returns (NatureRecordResponse);
+    rpc GetNatureRecordByNatureId (GetNatureRecordByIdRequest) returns (NatureRecordResponse);
+    rpc GetNatureRecordByNatureIds (GetNatureRecordByIdsRequest) returns (ManyNatureRecordResponse);
+    rpc StartNature (StartNatureRequest) returns (NatureRecordResponse);
+    rpc FinishNature (FinishNatureRequest) returns (NatureRecordResponse);
+    rpc BuyNature (BuyNatureRequest) returns (NatureRecordResponse);
+    rpc SearchNature (SearchNatureRequest) returns (ManyNatureResponse);
+}
+
+message GetNatureRequest {
+    int32 first = 1;
+    string after = 2;
+}
+
+message GetNatureByIdRequest {
+    string id = 1;
+}
+
+message GetNatureByIdsRequest {
+    repeated string ids = 1;
+}
+
+message GetNatureRecordByIdRequest {
+    string userId = 1;
+    string natureId = 2;
+}
+
+message GetNatureRecordByIdsRequest {
+    string userId = 1;
+    repeated string natureIds = 2;
+}
+
+message CreateNatureRequest {
+    string background = 1;
+    string name = 2;
+    string description = 3;
+    repeated string scenes = 4;
+    int32 price = 5;
+    string author = 6;
+    string audio = 7;
+    string copy = 8;
+    int32 status = 9;
+}
+
+message UpdateNatureRequest {
+    string id = 1;
+    string background = 2;
+    string name = 3;
+    string description = 4;
+    repeated string scenes = 5;
+    int32 price = 6;
+    string author = 7;
+    string audio = 8;
+    int32 status = 9;
+}
+
+message DeleteNatureRequest {
+    string id = 1;
+}
+
+message FavoriteNatureRequest {
+    string userId = 1;
+    string natureId = 2;
+}
+
+message StartNatureRequest {
+    string userId = 1;
+    string natureId = 2;
+}
+
+message BuyNatureRequest {
+    string userId = 1;
+    string natureId = 2;
+}
+
+message SearchNatureRequest {
+    string keyword = 1;
+}
+
+message FinishNatureRequest {
+    string userId = 1;
+    string natureId = 2;
+    int32 duration = 3;
+}
+
+message NatureResponse {
+    Nature data = 1;
+}
+
+message ManyNatureResponse {
+    repeated Nature data = 1;
+}
+
+message NatureRecordResponse {
+    NatureRecord data = 1;
+}
+
+message ManyNatureRecordResponse {
+    repeated NatureRecord data = 1;
+}
+
+message Nature {
+    string id = 1;
+    string background = 2;
+    string name = 3;
+    string description = 4;
+    repeated string scenes = 5;
+    int32 price = 6;
+    int32 createTime = 7;
+    int32 updateTime = 8;
+    string author = 9;
+    string audio = 10;
+    int32 status = 11;
+}
+
+message NatureRecord {
+    string id = 1;
+    string userId = 2;
+    string natureId = 3;
+    int32 favorite = 4;
+    int32 totalDuration = 5;
+    int32 longestDuration = 6;
+    int32 startCount = 7;
+    int32 finishCount = 8;
+    int32 lastStartTime = 9;
+    int32 lastFinishTime = 10;
+    int32 boughtTime = 11;
+}

@@ -69,17 +69,22 @@ export class WanderGrpcController {
     }
 
     @GrpcMethod('WanderService')
+    async searchWander(data) {
+        return { data: await this.wanderService.searchWander(data.keyword) };
+    }
+
+    @GrpcMethod('WanderService')
     async finishWander(data) {
         return { data: await this.wanderService.finishWander(data.userId, data.wanderId, data.duration) };
     }
 
     @GrpcMethod('WanderService')
-    async GetWanderRecordByWanderId(data) {
+    async getWanderRecordByWanderId(data) {
         return { data: await this.wanderService.getWanderRecord(data.userId, data.wanderId) };
     }
 
     @GrpcMethod('WanderService')
-    async GetWanderRecordByWanderIds(data) {
+    async getWanderRecordByWanderIds(data) {
         return { data: await this.wanderService.getWanderRecord(data.userId, data.wanderIds) };
     }
 
@@ -140,17 +145,22 @@ export class WanderGrpcController {
     }
 
     @GrpcMethod('WanderService')
+    async searchWanderAlbum(data) {
+        return { data: await this.wanderService.searchWanderAlbum(data.keyword) };
+    }
+
+    @GrpcMethod('WanderService')
     async finishWanderAlbum(data) {
         return { data: await this.wanderService.finishWanderAlbum(data.userId, data.wanderAlbumId, data.duration) };
     }
 
     @GrpcMethod('WanderService')
-    async GetWanderAlbumRecordByWanderAlbumId(data) {
+    async getWanderAlbumRecordByWanderAlbumId(data) {
         return { data: await this.wanderService.getWanderAlbumRecord(data.userId, data.wanderAlbumId) };
     }
 
     @GrpcMethod('WanderService')
-    async GetWanderAlbumRecordByWanderAlbumIds(data) {
+    async getWanderAlbumRecordByWanderAlbumIds(data) {
         return { data: await this.wanderService.getWanderAlbumRecord(data.userId, data.wanderAlbumIds) };
     }
 }

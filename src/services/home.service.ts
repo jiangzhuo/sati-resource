@@ -58,7 +58,7 @@ export class HomeService {
         if (!isEmpty(data.author)) {
             updateObject['author'] = data.author;
         }
-        if (!isEmpty(data.position)) {
+        if (isNumber(data.position)) {
             updateObject['position'] = data.position;
         }
         return await this.homeModel.findOneAndUpdate({ _id: id }, updateObject).exec()

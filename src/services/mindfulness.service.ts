@@ -10,7 +10,7 @@ import { NotaddGrpcClientFactory } from '../grpc/grpc.client-factory';
 
 import { ObjectId } from 'mongodb';
 import * as moment from 'moment';
-import { isEmpty, isNumber, isArray } from 'lodash';
+import { isEmpty, isNumber, isArray, isBoolean } from 'lodash';
 import { RpcException } from "@nestjs/microservices";
 import { __ as t } from "i18n";
 
@@ -61,6 +61,26 @@ export class MindfulnessService {
         } else if (typeof mindfulnessId === 'string') {
             return await this.mindfulnessRecordModel.findOne({ userId: userId, mindfulnessId: mindfulnessId }).exec()
         }
+    }
+
+    async searchMindfulnessRecord(userId: string, page: number, limit: number, sort: string, favorite?: boolean, boughtTime?: number[]) {
+        let conditions = {}
+        if (isBoolean(favorite)) {
+            // 偶数是没有收藏 奇数是收藏，所以true搜索奇数，false搜索偶数
+            if (favorite) {
+                conditions['favorite'] = { $mod: [2, 1] }
+            } else {
+                conditions['favorite'] = { $mod: [2, 0] }
+            }
+        }
+        if (isArray(boughtTime) && boughtTime.length === 2) {
+            // 第一个元素是开始时间 第二个元素是结束时间
+            conditions['boughtTime'] = { $gte: boughtTime[0], $lte: boughtTime[1] }
+        }
+        return await this.mindfulnessRecordModel.find(
+            conditions,
+            null,
+            { sort: sort, limit: limit, skip: (page - 1) * limit }).exec()
     }
 
     async createMindfulness(data) {

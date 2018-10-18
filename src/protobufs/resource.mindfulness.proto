@@ -16,6 +16,7 @@ service MindfulnessService {
     rpc FavoriteMindfulness (FavoriteMindfulnessRequest) returns (MindfulnessRecordResponse);
     rpc GetMindfulnessRecordByMindfulnessId (GetMindfulnessRecordByIdRequest) returns (MindfulnessRecordResponse);
     rpc GetMindfulnessRecordByMindfulnessIds (GetMindfulnessRecordByIdsRequest) returns (ManyMindfulnessRecordResponse);
+    rpc SearchMindfulnessRecord (SearchMindfulnessRecordRequest) returns (ManyMindfulnessRecordResponse);
     rpc StartMindfulness (StartMindfulnessRequest) returns (MindfulnessRecordResponse);
     rpc FinishMindfulness (FinishMindfulnessRequest) returns (MindfulnessRecordResponse);
     rpc BuyMindfulness (BuyMindfulnessRequest) returns (MindfulnessRecordResponse);
@@ -43,6 +44,15 @@ message GetMindfulnessRecordByIdRequest {
 message GetMindfulnessRecordByIdsRequest {
     string userId = 1;
     repeated string mindfulnessIds = 2;
+}
+
+message SearchMindfulnessRecordRequest {
+    string userId = 1;
+    int32 page = 2;
+    int32 limit = 3;
+    string sort = 4;
+    bool favorite = 5;
+    repeated int32 boughtTime = 6;
 }
 
 message CreateMindfulnessRequest {

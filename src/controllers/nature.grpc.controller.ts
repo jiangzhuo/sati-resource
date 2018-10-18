@@ -79,6 +79,11 @@ export class NatureGrpcController {
     }
 
     @GrpcMethod('NatureService')
+    async searchNatureRecord(data) {
+        return { data: await this.natureService.searchNatureRecord(data.userId, data.page, data.limit, data.sort, data.favorite, data.boughtTime) };
+    }
+
+    @GrpcMethod('NatureService')
     async buyNature(data) {
         return { data: await this.natureService.buyNature(data.userId, data.natureId) };
     }

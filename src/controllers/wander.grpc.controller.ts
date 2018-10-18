@@ -89,6 +89,11 @@ export class WanderGrpcController {
     }
 
     @GrpcMethod('WanderService')
+    async searchWanderRecord(data) {
+        return { data: await this.wanderService.searchWanderRecord(data.userId, data.page, data.limit, data.sort, data.favorite, data.boughtTime) };
+    }
+
+    @GrpcMethod('WanderService')
     async getWanderByWanderAlbumId(data: { id: string }) {
         return { data: await this.wanderService.getWanderByWanderAlbumId(data.id) };
     }
@@ -162,5 +167,10 @@ export class WanderGrpcController {
     @GrpcMethod('WanderService')
     async getWanderAlbumRecordByWanderAlbumIds(data) {
         return { data: await this.wanderService.getWanderAlbumRecord(data.userId, data.wanderAlbumIds) };
+    }
+
+    @GrpcMethod('WanderService')
+    async searchWanderAlbumRecord(data) {
+        return { data: await this.wanderService.searchWanderAlbumRecord(data.userId, data.page, data.limit, data.sort, data.favorite, data.boughtTime) };
     }
 }

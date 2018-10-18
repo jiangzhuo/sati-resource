@@ -25,8 +25,10 @@ service WanderService {
     rpc FavoriteWanderAlbum (FavoriteWanderAlbumRequest) returns (WanderAlbumRecordResponse);
     rpc GetWanderRecordByWanderId (GetWanderRecordByIdRequest) returns (WanderRecordResponse);
     rpc GetWanderRecordByWanderIds (GetWanderRecordByIdsRequest) returns (ManyWanderRecordResponse);
+    rpc SearchWanderRecord (SearchWanderRecordRequest) returns (ManyWanderRecordResponse);
     rpc GetWanderAlbumRecordByWanderAlbumId (GetWanderAlbumRecordByIdRequest) returns (WanderAlbumRecordResponse);
     rpc GetWanderAlbumRecordByWanderAlbumIds (GetWanderAlbumRecordByIdsRequest) returns (ManyWanderAlbumRecordResponse);
+    rpc SearchWanderAlbumRecord (SearchWanderAlbumRecordRequest) returns (ManyWanderAlbumRecordResponse);
     rpc StartWander (StartWanderRequest) returns (WanderRecordResponse);
     rpc FinishWander (FinishWanderRequest) returns (WanderRecordResponse);
     rpc StartWanderAlbum (StartWanderAlbumRequest) returns (WanderAlbumRecordResponse);
@@ -134,6 +136,24 @@ message WanderRecordResponse {
 
 message ManyWanderRecordResponse {
     repeated WanderRecord data = 1;
+}
+
+message SearchWanderRecordRequest {
+    string userId = 1;
+    int32 page = 2;
+    int32 limit = 3;
+    string sort = 4;
+    bool favorite = 5;
+    repeated int32 boughtTime = 6;
+}
+
+message SearchWanderAlbumRecordRequest {
+    string userId = 1;
+    int32 page = 2;
+    int32 limit = 3;
+    string sort = 4;
+    bool favorite = 5;
+    repeated int32 boughtTime = 6;
 }
 
 message Wander {

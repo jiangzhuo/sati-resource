@@ -16,6 +16,7 @@ service NatureService {
     rpc FavoriteNature (FavoriteNatureRequest) returns (NatureRecordResponse);
     rpc GetNatureRecordByNatureId (GetNatureRecordByIdRequest) returns (NatureRecordResponse);
     rpc GetNatureRecordByNatureIds (GetNatureRecordByIdsRequest) returns (ManyNatureRecordResponse);
+    rpc SearchNatureRecord (SearchNatureRecordRequest) returns (ManyNatureRecordResponse);
     rpc StartNature (StartNatureRequest) returns (NatureRecordResponse);
     rpc FinishNature (FinishNatureRequest) returns (NatureRecordResponse);
     rpc BuyNature (BuyNatureRequest) returns (NatureRecordResponse);
@@ -43,6 +44,15 @@ message GetNatureRecordByIdRequest {
 message GetNatureRecordByIdsRequest {
     string userId = 1;
     repeated string natureIds = 2;
+}
+
+message SearchNatureRecordRequest {
+    string userId = 1;
+    int32 page = 2;
+    int32 limit = 3;
+    string sort = 4;
+    bool favorite = 5;
+    repeated int32 boughtTime = 6;
 }
 
 message CreateNatureRequest {

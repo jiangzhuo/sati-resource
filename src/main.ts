@@ -14,11 +14,11 @@ async function bootstrap() {
             loader: {
                 includeDirs: [join(__dirname, 'protobufs')],
                 arrays: true,
-                keepCase: true,
-                longs: String,
-                enums: String,
-                defaults: true,
-                oneofs: true
+                keepCase: true
+                // longs: String,
+                // enums: String,
+                // defaults: true,
+                // oneofs: true
             }
         }
     });

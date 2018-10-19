@@ -31,7 +31,6 @@
         "mongoose": "^5.3.2",
         "mongoose-int32": "^0.3.0",
         "otplib": "^10.0.1",
-        "pg": "^7.4.3",
         "reflect-metadata": "^0.1.12",
         "rxjs": "^6.3.1",
         "typescript": "^3.0.3"

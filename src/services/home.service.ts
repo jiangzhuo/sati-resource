@@ -31,7 +31,6 @@ export class HomeService {
     async createHome(data) {
         data.createTime = moment().unix();
         data.updateTime = moment().unix();
-        console.log(data)
         return await this.homeModel.create(data)
     }
 

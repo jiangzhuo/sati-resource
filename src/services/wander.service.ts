@@ -25,9 +25,12 @@ export class WanderService {
 
     async getWander(first = 20, after?: string) {
         if (after) {
-            return await this.wanderModel.find({ _id: { $gte: after } }).limit(first).exec();
+            return await this.wanderModel.find(
+                { _id: { $lte: after } },
+                null,
+                { sort: '-_id' }).limit(first).exec();
         } else {
-            return await this.wanderModel.find().limit(first).exec();
+            return await this.wanderModel.find({}, null, { sort: '-_id' }).limit(first).exec();
         }
     }
 
@@ -158,9 +161,12 @@ export class WanderService {
 
     async getWanderAlbum(first = 20, after?: string) {
         if (after) {
-            return await this.wanderAlbumModel.find({ _id: { $gte: after } }).limit(first).exec();
+            return await this.wanderAlbumModel.find(
+                { _id: { $lte: after } },
+                null,
+                { sort: '-_id' }).limit(first).exec();
         } else {
-            return await this.wanderAlbumModel.find().limit(first).exec();
+            return await this.wanderAlbumModel.find({}, null, { sort: '-_id' }).limit(first).exec();
         }
     }
 

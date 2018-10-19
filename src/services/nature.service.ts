@@ -21,9 +21,12 @@ export class NatureService {
 
     async getNature(first = 20, after?: string) {
         if (after) {
-            return await this.natureModel.find({ _id: { $gte: after } }).limit(first).exec();
+            return await this.natureModel.find(
+                { _id: { $lte: after } },
+                null,
+                { sort: '-_id' }).limit(first).exec();
         } else {
-            return await this.natureModel.find().limit(first).exec();
+            return await this.natureModel.find({}, null, { sort: '-_id' }).limit(first).exec();
         }
     }
 

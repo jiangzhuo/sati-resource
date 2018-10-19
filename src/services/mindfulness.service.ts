@@ -36,9 +36,13 @@ export class MindfulnessService {
 
     async getMindfulness(first = 20, after?: string) {
         if (after) {
-            return await this.mindfulnessModel.find({ _id: { $gte: after } }).limit(first).exec();
+            return await this.mindfulnessModel.find(
+                { _id: { $lte: after } },
+                null,
+                { sort: '-_id' }
+            ).limit(first).exec();
         } else {
-            return await this.mindfulnessModel.find().limit(first).exec();
+            return await this.mindfulnessModel.find({}, null, { sort: '-_id' }).limit(first).exec();
         }
     }
 

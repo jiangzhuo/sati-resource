@@ -26,7 +26,7 @@ export class WanderService {
     async getWander(first = 20, after?: string) {
         if (after) {
             return await this.wanderModel.find(
-                { _id: { $lte: after } },
+                { _id: { $lt: after } },
                 null,
                 { sort: '-_id' }).limit(first).exec();
         } else {
@@ -162,7 +162,7 @@ export class WanderService {
     async getWanderAlbum(first = 20, after?: string) {
         if (after) {
             return await this.wanderAlbumModel.find(
-                { _id: { $lte: after } },
+                { _id: { $lt: after } },
                 null,
                 { sort: '-_id' }).limit(first).exec();
         } else {

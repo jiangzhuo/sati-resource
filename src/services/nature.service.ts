@@ -22,7 +22,7 @@ export class NatureService {
     async getNature(first = 20, after?: string) {
         if (after) {
             return await this.natureModel.find(
-                { _id: { $lte: after } },
+                { _id: { $lt: after } },
                 null,
                 { sort: '-_id' }).limit(first).exec();
         } else {

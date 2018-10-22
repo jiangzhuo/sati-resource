@@ -11,5 +11,6 @@ export interface Nature extends Document {
     readonly updateTime: number;
     readonly author: ObjectId;
     readonly audio: string;
+    readonly nature: string;
     readonly status: number;
 }

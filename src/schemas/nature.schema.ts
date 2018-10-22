@@ -12,5 +12,6 @@ export const NatureSchema = new mongoose.Schema({
     updateTime: Number,
     author: ObjectId,
     audio: String,
+    copy: String,
     status: { type: Int32, default: 0 },
 });

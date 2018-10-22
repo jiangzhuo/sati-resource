@@ -100,6 +100,9 @@ export class NatureService {
         if (!isEmpty(data.audio)) {
             updateObject['audio'] = data.audio;
         }
+        if (!isEmpty(data.copy)) {
+            updateObject['copy'] = data.copy;
+        }
         if (!isEmpty(data.status)) {
             updateObject['status'] = data.status;
         }

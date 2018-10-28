@@ -13,6 +13,7 @@ import * as moment from 'moment';
 import { isEmpty, isNumber, isArray, isBoolean } from 'lodash';
 import { RpcException } from "@nestjs/microservices";
 import { __ as t } from "i18n";
+import { ElasticsearchService } from '@nestjs/elasticsearch';
 
 @Injectable()
 export class MindfulnessService {
@@ -21,10 +22,10 @@ export class MindfulnessService {
     }
 
     constructor(
+        @Inject(ElasticsearchService) private readonly elasticsearchService: ElasticsearchService,
         @InjectModel('Mindfulness') private readonly mindfulnessModel: Model<Mindfulness>,
         @InjectModel('MindfulnessRecord') private readonly mindfulnessRecordModel: Model<MindfulnessRecord>,
         @InjectModel('MindfulnessTransaction') private readonly mindfulnessTransactionModel: Model<MindfulnessTransaction>,
-        @InjectModel('User') private readonly userModel: Model<User>,
         @Inject(NotaddGrpcClientFactory) private readonly notaddGrpcClientFactory: NotaddGrpcClientFactory
     ) { }
 
@@ -240,7 +241,29 @@ export class MindfulnessService {
         return mindfulness;
     }
 
-    async searchMindfulness(keyword) {
-        return await this.mindfulnessModel.find({ $or: [{ name: new RegExp(keyword, 'i') }, { description: new RegExp(keyword, 'i') }] }).exec();
+    async searchMindfulness(keyword, from, size) {
+        let res = await this.elasticsearchService.search({
+            index: 'mindfulness',
+            type: 'mindfulness',
+            body: {
+                from: from,
+                size: size,
+                query: {
+                    bool: {
+                        should: [
+                            { match: { name: keyword } },
+                            { match: { description: keyword } },
+                            { match: { copy: keyword } },]
+                    }
+                },
+                // sort: {
+                //     createTime: { order: "desc" }
+                // }
+            }
+        }).toPromise()
+
+        const ids = res[0].hits.hits.map(hit=>hit._id)
+        console.log(ids)
+        return await this.getMindfulnessByIds(ids)
     }
 }

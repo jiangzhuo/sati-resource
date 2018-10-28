@@ -89,6 +89,6 @@ export class MindfulnessGrpcController {
 
     @GrpcMethod('MindfulnessService')
     async searchMindfulness(data) {
-        return { data: await this.mindfulnessService.searchMindfulness(data.keyword) };
+        return { data: await this.mindfulnessService.searchMindfulness(data.keyword, data.from, data.size) };
     }
 }

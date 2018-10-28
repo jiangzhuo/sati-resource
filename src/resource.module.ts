@@ -35,8 +35,15 @@ import { HomeGrpcController } from "./controllers/home.grpc.controller";
 import { HomeSchema } from "./schemas/home.schema";
 import { HomeService } from "./services/home.service";
 
+import { ElasticsearchModule } from '@nestjs/elasticsearch';
+
 @Module({
     imports: [
+        ElasticsearchModule.register({
+            host: 'http://es-cn-mp90uekur0001c8sa.public.elasticsearch.aliyuncs.com:9200',
+            httpAuth: 'elastic:Its%queOress2',
+            log: 'trace',
+        }),
         MongooseModule.forRoot('mongodb://sati:kjhguiyIUYkjh32kh@dds-2zee21d7f4fff2f41890-pub.mongodb.rds.aliyuncs.com:3717,dds-2zee21d7f4fff2f42351-pub.mongodb.rds.aliyuncs.com:3717/sati_resource?replicaSet=mgset-9200157',
         // MongooseModule.forRoot('mongodb://localhost:27017/module_resource',
             { connectionName: 'resource', useNewUrlParser: true, useFindAndModify: false, useCreateIndex: true }),
@@ -52,10 +59,10 @@ import { HomeService } from "./services/home.service";
             { name: 'WanderAlbumRecord', schema: WanderAlbumRecordSchema, collection: 'wanderAlbumRecord' },
             { name: 'Home', schema: HomeSchema, collection: 'home' }
         ],'resource'),
-        MongooseModule.forRoot('mongodb://sati:kjhguiyIUYkjh32kh@dds-2zee21d7f4fff2f41890-pub.mongodb.rds.aliyuncs.com:3717,dds-2zee21d7f4fff2f42351-pub.mongodb.rds.aliyuncs.com:3717/sati_user?replicaSet=mgset-9200157',
+        // MongooseModule.forRoot('mongodb://sati:kjhguiyIUYkjh32kh@dds-2zee21d7f4fff2f41890-pub.mongodb.rds.aliyuncs.com:3717,dds-2zee21d7f4fff2f42351-pub.mongodb.rds.aliyuncs.com:3717/sati_user?replicaSet=mgset-9200157',
         // MongooseModule.forRoot('mongodb://localhost:27017/module_user',
-            { connectionName: 'user', useNewUrlParser: true, useFindAndModify: false, useCreateIndex: true }),
-        MongooseModule.forFeature([{ name: 'User', schema: UserSchema, collection: 'user' }], 'user')
+        //     { connectionName: 'user', useNewUrlParser: true, useFindAndModify: false, useCreateIndex: true }),
+        // MongooseModule.forFeature([{ name: 'User', schema: UserSchema, collection: 'user' }], 'user')
     ],
     controllers: [
         MindfulnessGrpcController,

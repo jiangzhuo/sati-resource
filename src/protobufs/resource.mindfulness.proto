@@ -20,7 +20,7 @@ service MindfulnessService {
     rpc StartMindfulness (StartMindfulnessRequest) returns (MindfulnessRecordResponse);
     rpc FinishMindfulness (FinishMindfulnessRequest) returns (MindfulnessRecordResponse);
     rpc BuyMindfulness (BuyMindfulnessRequest) returns (MindfulnessRecordResponse);
-    rpc SearchMindfulness (SearchMindfulnessRequest) returns (ManyMindfulnessResponse);
+    rpc SearchMindfulness (SearchMindfulnessRequest) returns (SearchMindfulnessResponse);
 }
 
 message GetMindfulnessRequest {

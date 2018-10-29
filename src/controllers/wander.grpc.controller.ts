@@ -70,7 +70,7 @@ export class WanderGrpcController {
 
     @GrpcMethod('WanderService')
     async searchWander(data) {
-        return { data: await this.wanderService.searchWander(data.keyword) };
+        return await this.wanderService.searchWander(data.keyword, data.from, data.size);
     }
 
     @GrpcMethod('WanderService')
@@ -151,7 +151,7 @@ export class WanderGrpcController {
 
     @GrpcMethod('WanderService')
     async searchWanderAlbum(data) {
-        return { data: await this.wanderService.searchWanderAlbum(data.keyword) };
+        return await this.wanderService.searchWanderAlbum(data.keyword, data.from, data.size);
     }
 
     @GrpcMethod('WanderService')

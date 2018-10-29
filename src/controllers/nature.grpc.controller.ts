@@ -90,6 +90,6 @@ export class NatureGrpcController {
 
     @GrpcMethod('NatureService')
     async searchNature(data) {
-        return { data: await this.natureService.searchNature(data.keyword) };
+        return await this.natureService.searchNature(data.keyword, data.from, data.size);
     }
 }

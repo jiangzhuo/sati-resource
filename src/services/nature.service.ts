@@ -1,16 +1,18 @@
 import { Model } from 'mongoose';
 import { Nature } from "../interfaces/nature.interface";
 import { NatureRecord } from "../interfaces/natureRecord.interface";
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import * as moment from "moment";
 import { isEmpty, isNumber, isArray, isBoolean } from 'lodash';
 import { RpcException } from "@nestjs/microservices";
 import { __ as t } from "i18n";
+import { ElasticsearchService } from '@nestjs/elasticsearch';
 
 @Injectable()
 export class NatureService {
     constructor(
+        @Inject(ElasticsearchService) private readonly elasticsearchService: ElasticsearchService,
         @InjectModel('Nature') private readonly natureModel: Model<Nature>,
         @InjectModel('NatureRecord') private readonly natureRecordModel: Model<NatureRecord>
     ) { }
@@ -152,7 +154,28 @@ export class NatureService {
             { upsert: true, new: true, setDefaultsOnInsert: true }).exec()
     }
 
-    async searchNature(keyword) {
-        return await this.natureModel.find({ $or: [{ name: new RegExp(keyword, 'i') }, { description: new RegExp(keyword, 'i') }] }).exec();
+    async searchNature(keyword, from, size) {
+        let res = await this.elasticsearchService.search({
+            index: 'nature',
+            type: 'nature',
+            body: {
+                from: from,
+                size: size,
+                query: {
+                    bool: {
+                        should: [
+                            { match: { name: keyword } },
+                            { match: { description: keyword } },
+                            { match: { copy: keyword } },]
+                    }
+                },
+                // sort: {
+                //     createTime: { order: "desc" }
+                // }
+            }
+        }).toPromise();
+
+        const ids = res[0].hits.hits.map(hit=>hit._id);
+        return { total: res[0].hits.total, data: await this.getNatureByIds(ids) }
     }
 }

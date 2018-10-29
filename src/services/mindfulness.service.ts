@@ -263,7 +263,6 @@ export class MindfulnessService {
         }).toPromise()
 
         const ids = res[0].hits.hits.map(hit=>hit._id)
-        console.log(ids)
-        return await this.getMindfulnessByIds(ids)
+        return { total: res[0].hits.total, data: await this.getMindfulnessByIds(ids) }
     }
 }

@@ -35,8 +35,8 @@ service WanderService {
     rpc FinishWanderAlbum (FinishWanderAlbumRequest) returns (WanderAlbumRecordResponse);
     rpc BuyWander (BuyWanderRequest) returns (WanderRecordResponse);
     rpc BuyWanderAlbum (BuyWanderAlbumRequest) returns (WanderAlbumRecordResponse);
-    rpc SearchWander (SearchWanderRequest) returns (ManyWanderResponse);
-    rpc SearchWanderAlbum (SearchWanderAlbumRequest) returns (ManyWanderAlbumResponse);
+    rpc SearchWander (SearchWanderRequest) returns (SearchWanderResponse);
+    rpc SearchWanderAlbum (SearchWanderAlbumRequest) returns (SearchWanderAlbumResponse);
 }
 
 message GetWanderRequest {
@@ -114,6 +114,8 @@ message BuyWanderRequest {
 
 message SearchWanderRequest {
     string keyword = 1;
+    int32 from = 2;
+    int32 size = 3;
 }
 
 message FinishWanderRequest {
@@ -128,6 +130,11 @@ message WanderResponse {
 
 message ManyWanderResponse {
     repeated Wander data = 1;
+}
+
+message SearchWanderResponse {
+    int32 total = 1;
+    repeated Wander data = 2;
 }
 
 message WanderRecordResponse {
@@ -253,6 +260,8 @@ message BuyWanderAlbumRequest {
 
 message SearchWanderAlbumRequest {
     string keyword = 1;
+    int32 from = 2;
+    int32 size = 3;
 }
 
 message FinishWanderAlbumRequest {
@@ -267,6 +276,11 @@ message WanderAlbumResponse {
 
 message ManyWanderAlbumResponse {
     repeated WanderAlbum data = 1;
+}
+
+message SearchWanderAlbumResponse {
+    int32 total = 1;
+    repeated WanderAlbum data = 2;
 }
 
 message WanderAlbumRecordResponse {

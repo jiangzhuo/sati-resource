@@ -3,16 +3,18 @@ import { Wander } from "../interfaces/wander.interface";
 import { WanderAlbum } from "../interfaces/wanderAlbum.interface";
 import { WanderRecord } from "../interfaces/wanderRecord.interface";
 import { WanderAlbumRecord } from "../interfaces/wanderAlbumRecord.interface";
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import * as moment from "moment";
 import { isEmpty, isNumber, isArray, isBoolean } from 'lodash';
 import { RpcException } from "@nestjs/microservices";
 import { __ as t } from "i18n";
+import { ElasticsearchService } from '@nestjs/elasticsearch';
 
 @Injectable()
 export class WanderService {
     constructor(
+        @Inject(ElasticsearchService) private readonly elasticsearchService: ElasticsearchService,
         @InjectModel('Wander') private readonly wanderModel: Model<Wander>,
         @InjectModel('WanderAlbum') private readonly wanderAlbumModel: Model<WanderAlbum>,
         @InjectModel('WanderRecord') private readonly wanderRecordModel: Model<WanderRecord>,
@@ -290,11 +292,53 @@ export class WanderService {
             { upsert: true, new: true, setDefaultsOnInsert: true }).exec()
     }
 
-    async searchWander(keyword) {
-        return await this.wanderModel.find({ $or: [{ name: new RegExp(keyword, 'i') }, { description: new RegExp(keyword, 'i') }] }).exec();
+    async searchWander(keyword, from, size) {
+        let res = await this.elasticsearchService.search({
+            index: 'wander',
+            type: 'wander',
+            body: {
+                from: from,
+                size: size,
+                query: {
+                    bool: {
+                        should: [
+                            { match: { name: keyword } },
+                            { match: { description: keyword } },
+                            { match: { copy: keyword } },]
+                    }
+                },
+                // sort: {
+                //     createTime: { order: "desc" }
+                // }
+            }
+        }).toPromise();
+
+        const ids = res[0].hits.hits.map(hit=>hit._id);
+        return { total: res[0].hits.total, data: await this.getWanderByIds(ids) };
     }
 
-    async searchWanderAlbum(keyword) {
-        return await this.wanderAlbumModel.find({ $or: [{ name: new RegExp(keyword, 'i') }, { description: new RegExp(keyword, 'i') }] }).exec();
+    async searchWanderAlbum(keyword, from, size) {
+        let res = await this.elasticsearchService.search({
+            index: 'wander_album',
+            type: 'wander_album',
+            body: {
+                from: from,
+                size: size,
+                query: {
+                    bool: {
+                        should: [
+                            { match: { name: keyword } },
+                            { match: { description: keyword } },
+                            { match: { copy: keyword } },]
+                    }
+                },
+                // sort: {
+                //     createTime: { order: "desc" }
+                // }
+            }
+        }).toPromise();
+
+        const ids = res[0].hits.hits.map(hit=>hit._id);
+        return { total: res[0].hits.total, data: await this.getWanderAlbumByIds(ids) };
     }
 }

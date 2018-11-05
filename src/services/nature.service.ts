@@ -8,10 +8,13 @@ import { isEmpty, isNumber, isArray, isBoolean } from 'lodash';
 import { RpcException } from "@nestjs/microservices";
 import { __ as t } from "i18n";
 import { ElasticsearchService } from '@nestjs/elasticsearch';
+import { Producer } from 'ali-ons';
+import { InjectProducer } from 'nestjs-ali-ons';
 
 @Injectable()
 export class NatureService {
     constructor(
+        @InjectProducer('sati_debug', 'nature') private readonly producer: Producer,
         @Inject(ElasticsearchService) private readonly elasticsearchService: ElasticsearchService,
         @InjectModel('Nature') private readonly natureModel: Model<Nature>,
         @InjectModel('NatureRecord') private readonly natureRecordModel: Model<NatureRecord>

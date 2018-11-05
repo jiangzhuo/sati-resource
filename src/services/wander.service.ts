@@ -10,10 +10,14 @@ import { isEmpty, isNumber, isArray, isBoolean } from 'lodash';
 import { RpcException } from "@nestjs/microservices";
 import { __ as t } from "i18n";
 import { ElasticsearchService } from '@nestjs/elasticsearch';
+import { Producer } from 'ali-ons';
+import { InjectProducer } from 'nestjs-ali-ons';
 
 @Injectable()
 export class WanderService {
     constructor(
+        @InjectProducer('sati_debug', 'wander') private readonly wanderProducer: Producer,
+        @InjectProducer('sati_debug', 'wander_album') private readonly wanderAlbumProducer: Producer,
         @Inject(ElasticsearchService) private readonly elasticsearchService: ElasticsearchService,
         @InjectModel('Wander') private readonly wanderModel: Model<Wander>,
         @InjectModel('WanderAlbum') private readonly wanderAlbumModel: Model<WanderAlbum>,

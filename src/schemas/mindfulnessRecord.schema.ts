@@ -4,7 +4,7 @@ const ObjectId = mongoose.Schema.Types.ObjectId;
 export const MindfulnessRecordSchema = new mongoose.Schema({
     userId: ObjectId,
     mindfulnessId: ObjectId,
-    favorite: { type: Number, default: 0 }, // 是否收藏 偶数代表已经收藏 奇数代表没有收藏
+    favorite: { type: Number, default: 0 }, // 是否收藏 偶数代表没有收藏 奇数代表已经收藏
     totalDuration: { type: Number, default: 0 }, // 累计时长
     longestDuration: { type: Number, default: 0 }, // 最长单词时长
     startCount: { type: Number, default: 0 }, // 总共开始次数

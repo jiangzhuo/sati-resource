@@ -128,16 +128,38 @@ export class WanderService {
     }
 
     async favoriteWander(userId, wanderId) {
-        return await this.wanderRecordModel.findOneAndUpdate({
+        let result = await this.wanderRecordModel.findOneAndUpdate({
             userId: userId,
             wanderId: wanderId
         }, { $inc: { favorite: 1 } }, { upsert: true, new: true, setDefaultsOnInsert: true }).exec()
+        try {
+            await this.wanderProducer.send(JSON.stringify({
+                type: 'wander',
+                userId: userId,
+                wanderId: wanderId
+            }), ['favorite'])
+        } catch (e) {
+            // todo sentry
+            console.error(e)
+        }
+        return result
     }
 
     async startWander(userId, wanderId) {
-        return await this.wanderRecordModel.findOneAndUpdate({ userId: userId, wanderId: wanderId },
+        let result = await this.wanderRecordModel.findOneAndUpdate({ userId: userId, wanderId: wanderId },
             { $inc: { startCount: 1 }, $set: { lastStartTime: moment().unix() } },
             { upsert: true, new: true, setDefaultsOnInsert: true }).exec()
+        try {
+            await this.wanderProducer.send(JSON.stringify({
+                type: 'wander',
+                userId: userId,
+                wanderId: wanderId
+            }), ['start'])
+        } catch (e) {
+            // todo sentry
+            console.error(e)
+        }
+        return result
     }
 
     async finishWander(userId, wanderId, duration) {
@@ -146,19 +168,42 @@ export class WanderService {
         if (duration > currentRecord.longestDuration) {
             updateObj.$set['longestDuration'] = duration
         }
-        return await this.wanderRecordModel.findOneAndUpdate({ userId: userId, wanderId: wanderId },
+        let result = await this.wanderRecordModel.findOneAndUpdate({ userId: userId, wanderId: wanderId },
             updateObj,
             { upsert: true, new: true, setDefaultsOnInsert: true }).exec()
+        try {
+            await this.wanderProducer.send(JSON.stringify({
+                type: 'wander',
+                userId: userId,
+                wanderId: wanderId,
+                duration: duration
+            }), ['finish'])
+        } catch (e) {
+            // todo sentry
+            console.error(e)
+        }
+        return result
     }
 
     async buyWander(userId, wanderId) {
         const oldWander = await this.wanderRecordModel.findOne({ userId: userId, wanderId: wanderId }).exec();
         if (oldWander && oldWander.boughtTime !== 0)
             throw new RpcException({ code: 400, message: t('already bought') });
-        return await this.wanderRecordModel.findOneAndUpdate(
+        let result = await this.wanderRecordModel.findOneAndUpdate(
             { userId: userId, wanderId: wanderId },
             { $set: { boughtTime: moment().unix() } },
             { upsert: true, new: true, setDefaultsOnInsert: true }).exec()
+        try {
+            await this.wanderProducer.send(JSON.stringify({
+                type: 'wander',
+                userId: userId,
+                wanderId: wanderId
+            }), ['buy'])
+        } catch (e) {
+            // todo sentry
+            console.error(e)
+        }
+        return result
     }
 
     async getWanderByWanderAlbumId(id) {
@@ -263,16 +308,38 @@ export class WanderService {
     }
 
     async favoriteWanderAlbum(userId, wanderAlbumId) {
-        return await this.wanderAlbumRecordModel.findOneAndUpdate({
+        let result =await this.wanderAlbumRecordModel.findOneAndUpdate({
             userId: userId,
             wanderAlbumId: wanderAlbumId
         }, { $inc: { favorite: 1 } }, { upsert: true, new: true, setDefaultsOnInsert: true }).exec()
+        try {
+            await this.wanderAlbumProducer.send(JSON.stringify({
+                type: 'wanderAlbum',
+                userId: userId,
+                wanderAlbumId: wanderAlbumId
+            }), ['favorite'])
+        } catch (e) {
+            // todo sentry
+            console.error(e)
+        }
+        return result
     }
 
     async startWanderAlbum(userId, wanderAlbumId) {
-        return await this.wanderAlbumRecordModel.findOneAndUpdate({ userId: userId, wanderAlbumId: wanderAlbumId },
+        let result = await this.wanderAlbumRecordModel.findOneAndUpdate({ userId: userId, wanderAlbumId: wanderAlbumId },
             { $inc: { startCount: 1 }, $set: { lastStartTime: moment().unix() } },
             { upsert: true, new: true, setDefaultsOnInsert: true }).exec()
+        try {
+            await this.wanderAlbumProducer.send(JSON.stringify({
+                type: 'wanderAlbum',
+                userId: userId,
+                wanderAlbumId: wanderAlbumId
+            }), ['start'])
+        } catch (e) {
+            // todo sentry
+            console.error(e)
+        }
+        return result
     }
 
     async finishWanderAlbum(userId, wanderAlbumId, duration) {
@@ -281,19 +348,42 @@ export class WanderService {
         if (duration > currentRecord.longestDuration) {
             updateObj.$set['longestDuration'] = duration
         }
-        return await this.wanderAlbumRecordModel.findOneAndUpdate({ userId: userId, wanderAlbumId: wanderAlbumId },
+        let result = await this.wanderAlbumRecordModel.findOneAndUpdate({ userId: userId, wanderAlbumId: wanderAlbumId },
             updateObj,
             { upsert: true, new: true, setDefaultsOnInsert: true }).exec()
+        try {
+            await this.wanderAlbumProducer.send(JSON.stringify({
+                type: 'wanderAlbum',
+                userId: userId,
+                wanderAlbumId: wanderAlbumId,
+                duration: duration
+            }), ['finish'])
+        } catch (e) {
+            // todo sentry
+            console.error(e)
+        }
+        return result
     }
 
     async buyWanderAlbum(userId, wanderAlbumId) {
         const oldWanderAlbum = await this.wanderAlbumRecordModel.findOne({ userId: userId, wanderAlbumId: wanderAlbumId }).exec();
         if (oldWanderAlbum && oldWanderAlbum.boughtTime !== 0)
             throw new RpcException({ code: 400, message: t('already bought') });
-        return await this.wanderAlbumRecordModel.findOneAndUpdate(
+        let result = await this.wanderAlbumRecordModel.findOneAndUpdate(
             { userId: userId, wanderAlbumId: wanderAlbumId },
             { $set: { boughtTime: moment().unix() } },
             { upsert: true, new: true, setDefaultsOnInsert: true }).exec()
+        try {
+            await this.wanderAlbumProducer.send(JSON.stringify({
+                type: 'wanderAlbum',
+                userId: userId,
+                wanderAlbumId: wanderAlbumId
+            }), ['buy'])
+        } catch (e) {
+            // todo sentry
+            console.error(e)
+        }
+        return result
     }
 
     async searchWander(keyword, from, size) {

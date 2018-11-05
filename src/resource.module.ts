@@ -54,6 +54,7 @@ const logger = {
     },
 };
 
+
 @Module({
     imports: [
         OnsModule.register({
@@ -61,29 +62,11 @@ const logger = {
             accessKeyId: 'LTAIhIOInA2pDmga',
             accessKeySecret: '9FNpKB1WZpEwxWJbiWSMiCfuy3E3TL',
             producerGroup: 'PID_jiangzhuo_home',
-            logger: logger
-        }, [{topic: 'sati_debug', tags: 'mindfulness', type: 'producer'}]),
-        OnsModule.register({
-            httpclient,
-            accessKeyId: 'LTAIhIOInA2pDmga',
-            accessKeySecret: '9FNpKB1WZpEwxWJbiWSMiCfuy3E3TL',
-            producerGroup: 'PID_jiangzhuo_home',
-            logger: logger
-        }, [{topic: 'sati_debug', tags: 'wander', type: 'producer'}]),
-        OnsModule.register({
-            httpclient,
-            accessKeyId: 'LTAIhIOInA2pDmga',
-            accessKeySecret: '9FNpKB1WZpEwxWJbiWSMiCfuy3E3TL',
-            producerGroup: 'PID_jiangzhuo_home',
-            logger: logger
-        }, [{topic: 'sati_debug', tags: 'nature', type: 'producer'}]),
-        OnsModule.register({
-            httpclient,
-            accessKeyId: 'LTAIhIOInA2pDmga',
-            accessKeySecret: '9FNpKB1WZpEwxWJbiWSMiCfuy3E3TL',
-            producerGroup: 'PID_jiangzhuo_home',
-            logger: logger
-        }, [{topic: 'sati_debug', tags: 'wander_album', type: 'producer'}]),
+            // logger: logger
+        }, [{ topic: 'sati_debug', tags: 'mindfulness', type: 'producer' },
+            { topic: 'sati_debug', tags: 'nature', type: 'producer' },
+            { topic: 'sati_debug', tags: 'wander', type: 'producer' },
+            { topic: 'sati_debug', tags: 'wander_album', type: 'producer' }]),
         ElasticsearchModule.register({
             host: 'http://es-cn-mp90uekur0001c8sa.public.elasticsearch.aliyuncs.com:9200',
             httpAuth: 'elastic:Its%queOress2',

@@ -123,17 +123,39 @@ export class NatureService {
     }
 
     async favoriteNature(userId, natureId) {
-        return await this.natureRecordModel.findOneAndUpdate({
+        let result = await this.natureRecordModel.findOneAndUpdate({
             userId: userId,
             natureId: natureId
         }, { $inc: { favorite: 1 } }, { upsert: true, new: true, setDefaultsOnInsert: true }).exec()
+        try {
+            await this.producer.send(JSON.stringify({
+                type: 'nature',
+                userId: userId,
+                natureId: natureId
+            }), ['favorite'])
+        } catch (e) {
+            // todo sentry
+            console.error(e)
+        }
+        return result
 
     }
 
     async startNature(userId, natureId) {
-        return await this.natureRecordModel.findOneAndUpdate({ userId: userId, natureId: natureId },
+        let result = await this.natureRecordModel.findOneAndUpdate({ userId: userId, natureId: natureId },
             { $inc: { startCount: 1 }, $set: { lastStartTime: moment().unix() } },
             { upsert: true, new: true, setDefaultsOnInsert: true }).exec()
+        try {
+            await this.producer.send(JSON.stringify({
+                type: 'nature',
+                userId: userId,
+                natureId: natureId
+            }), ['start'])
+        } catch (e) {
+            // todo sentry
+            console.error(e)
+        }
+        return result
     }
 
     async finishNature(userId, natureId, duration) {
@@ -142,19 +164,42 @@ export class NatureService {
         if (duration > currentRecord.longestDuration) {
             updateObj.$set['longestDuration'] = duration
         }
-        return await this.natureRecordModel.findOneAndUpdate({ userId: userId, natureId: natureId },
+        let result = await this.natureRecordModel.findOneAndUpdate({ userId: userId, natureId: natureId },
             updateObj,
             { upsert: true, new: true, setDefaultsOnInsert: true }).exec()
+        try {
+            await this.producer.send(JSON.stringify({
+                type: 'nature',
+                userId: userId,
+                natureId: natureId,
+                duration: duration
+            }), ['finish'])
+        } catch (e) {
+            // todo sentry
+            console.error(e)
+        }
+        return result
     }
 
     async buyNature(userId, natureId) {
         const oldNature = await this.natureRecordModel.findOne({ userId: userId, natureId: natureId }).exec();
         if (oldNature && oldNature.boughtTime !== 0)
             throw new RpcException({ code: 400, message: t('already bought') });
-        return await this.natureRecordModel.findOneAndUpdate(
+        let result = await this.natureRecordModel.findOneAndUpdate(
             { userId: userId, natureId: natureId },
             { $set: { boughtTime: moment().unix() } },
             { upsert: true, new: true, setDefaultsOnInsert: true }).exec()
+        try {
+            await this.producer.send(JSON.stringify({
+                type: 'nature',
+                userId: userId,
+                natureId: natureId
+            }), ['buy'])
+        } catch (e) {
+            // todo sentry
+            console.error(e)
+        }
+        return result
     }
 
     async searchNature(keyword, from, size) {

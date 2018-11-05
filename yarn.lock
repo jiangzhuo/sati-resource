@@ -2228,9 +2228,9 @@ negotiator@0.6.1:
   version "0.6.1"
   resolved "http://registry.npm.taobao.org/negotiator/download/negotiator-0.6.1.tgz#2b327184e8992101177b28563fb5e7102acd0ca9"
 
-nestjs-ali-ons@^1.0.9:
-  version "1.0.9"
-  resolved "http://registry.npm.taobao.org/nestjs-ali-ons/download/nestjs-ali-ons-1.0.9.tgz#368846d3edf8d824b3a9063c277809dbfd1a0f39"
+nestjs-ali-ons@^1.0.10:
+  version "1.0.10"
+  resolved "http://registry.npm.taobao.org/nestjs-ali-ons/download/nestjs-ali-ons-1.0.10.tgz#173964d9345650081d56285fb1433ce25f3cd113"
   dependencies:
     ali-ons "^3.2.1"
 

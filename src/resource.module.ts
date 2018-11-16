@@ -1,59 +1,62 @@
-import {DynamicModule, Inject, Module, OnModuleInit} from '@nestjs/common';
-import {APP_INTERCEPTOR} from '@nestjs/core';
-import {MongooseModule} from '@nestjs/mongoose';
-import {configure as i18nConfigure} from 'i18n';
+import { DynamicModule, Inject, Module, OnModuleInit, Logger } from '@nestjs/common';
+import { APP_INTERCEPTOR } from '@nestjs/core';
+import { MongooseModule } from '@nestjs/mongoose';
+import { configure as i18nConfigure } from 'i18n';
 
-import {NotaddGrpcClientFactory} from './grpc/grpc.client-factory';
+import { NotaddGrpcClientFactory } from './grpc/grpc.client-factory';
 
-import {MindfulnessGrpcController} from './controllers/mindfulness.grpc.controller';
-import {MindfulnessSchema} from './schemas/mindfulness.schema';
-import {MindfulnessService} from './services/mindfulness.service';
+import { MindfulnessGrpcController } from './controllers/mindfulness.grpc.controller';
+import { MindfulnessSchema } from './schemas/mindfulness.schema';
+import { MindfulnessService } from './services/mindfulness.service';
 
-import {NatureGrpcController} from './controllers/nature.grpc.controller';
-import {NatureSchema} from './schemas/nature.schema';
-import {NatureService} from './services/nature.service';
+import { NatureGrpcController } from './controllers/nature.grpc.controller';
+import { NatureSchema } from './schemas/nature.schema';
+import { NatureService } from './services/nature.service';
 
-import {WanderGrpcController} from './controllers/wander.grpc.controller';
-import {WanderSchema} from './schemas/wander.schema';
-import {WanderService} from './services/wander.service';
+import { WanderGrpcController } from './controllers/wander.grpc.controller';
+import { WanderSchema } from './schemas/wander.schema';
+import { WanderService } from './services/wander.service';
 
-import {WanderAlbumSchema} from './schemas/wanderAlbum.schema';
+import { WanderAlbumSchema } from './schemas/wanderAlbum.schema';
 
-import {SceneGrpcController} from './controllers/scene.grpc.controller';
-import {SceneSchema} from './schemas/scene.schema';
-import {SceneService} from './services/scene.service';
+import { SceneGrpcController } from './controllers/scene.grpc.controller';
+import { SceneSchema } from './schemas/scene.schema';
+import { SceneService } from './services/scene.service';
 
-import {MindfulnessRecordSchema} from './schemas/mindfulnessRecord.schema';
-import {NatureRecordSchema} from './schemas/natureRecord.schema';
-import {WanderRecordSchema} from './schemas/wanderRecord.schema';
-import {WanderAlbumRecordSchema} from './schemas/wanderAlbumRecord.schema';
+import { MindfulnessRecordSchema } from './schemas/mindfulnessRecord.schema';
+import { NatureRecordSchema } from './schemas/natureRecord.schema';
+import { WanderRecordSchema } from './schemas/wanderRecord.schema';
+import { WanderAlbumRecordSchema } from './schemas/wanderAlbumRecord.schema';
 
-import {UserSchema} from './schemas/user.schema';
-import {MindfulnessTransactionSchema} from "./schemas/mindfulnessTransaction.schema";
+import { UserSchema } from './schemas/user.schema';
+import { MindfulnessTransactionSchema } from "./schemas/mindfulnessTransaction.schema";
 
-import {HomeGrpcController} from "./controllers/home.grpc.controller";
-import {HomeSchema} from "./schemas/home.schema";
-import {HomeService} from "./services/home.service";
+import { HomeGrpcController } from "./controllers/home.grpc.controller";
+import { HomeSchema } from "./schemas/home.schema";
+import { HomeService } from "./services/home.service";
 
-import {ElasticsearchModule} from '@nestjs/elasticsearch';
+import { ElasticsearchModule } from '@nestjs/elasticsearch';
 // import { MessageQueueModule } from "./modules/messageQueue.module";
-import {OnsModule} from 'nestjs-ali-ons';
+import { OnsModule } from 'nestjs-ali-ons';
+import * as util from "util";
+import { MyLogger } from "./logger";
 
 const httpclient = require('urllib');
 // const Producer = require('ali-ons').Producer;
 // const Message = require('ali-ons').Message;
-const logger = {
-    info() {
-    },
-    warn() {
-    },
-    error(...args) {
-        console.error(...args);
-    },
-    debug() {
-    },
-};
+// const logger = {
+//     info() {
+//     },
+//     warn() {
+//     },
+//     error(...args) {
+//         console.error(...args);
+//     },
+//     debug() {
+//     },
+// };
 
+const onsLogger = new Logger('ons', true);
 
 @Module({
     imports: [
@@ -62,7 +65,21 @@ const logger = {
             accessKeyId: 'LTAIhIOInA2pDmga',
             accessKeySecret: '9FNpKB1WZpEwxWJbiWSMiCfuy3E3TL',
             producerGroup: 'PID_jiangzhuo_home',
-            // logger: logger
+            logger: {
+                info(...args) {
+                    onsLogger.log( util.format.apply(util, args));
+                },
+                warn(...args) {
+                    onsLogger.warn( util.format.apply(util, args));
+                },
+                error(...args) {
+                    onsLogger.error( util.format.apply(util, args));
+                },
+                debug(...args) {
+                    onsLogger.log( util.format.apply(util, args));
+                },
+            },
+            // logger: Object.assign(onsLogger, { info: onsLogger.log })
         }, [{ topic: 'sati_debug', tags: 'mindfulness', type: 'producer' },
             { topic: 'sati_debug', tags: 'nature', type: 'producer' },
             { topic: 'sati_debug', tags: 'wander', type: 'producer' },

@@ -1,11 +1,15 @@
+import './hackNestLogger';
 import { Transport } from '@nestjs/common/enums/transport.enum';
 import { NestFactory } from '@nestjs/core';
 import { join } from 'path';
 
 import { ResourceModule } from './resource.module';
 
+
+
 async function bootstrap() {
     const app = await NestFactory.createMicroservice(ResourceModule.forRoot({ i18n: 'zh-CN' }), {
+        // logger: new MyLogger(),
         transport: Transport.GRPC,
         options: {
             url: '0.0.0.0' + ':50052',
@@ -24,6 +28,8 @@ async function bootstrap() {
     });
 
     await app.listenAsync();
+
+    // const app = await NestFactory.createApplicationContext(ResourceModule);
 }
 
 bootstrap();

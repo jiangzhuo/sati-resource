@@ -39,7 +39,7 @@ import { ElasticsearchModule } from '@nestjs/elasticsearch';
 // import { MessageQueueModule } from "./modules/messageQueue.module";
 import { OnsModule } from 'nestjs-ali-ons';
 import * as util from "util";
-import { MyLogger } from "./logger";
+// import { MyLogger } from "./logger";
 
 const httpclient = require('urllib');
 // const Producer = require('ali-ons').Producer;

@@ -238,7 +238,10 @@ export class WanderService {
                 wanderAlbumId: { $in: wanderAlbumId }
             }).exec()
         } else if (typeof wanderAlbumId === 'string') {
-            return await this.wanderAlbumRecordModel.findOne({ userId: userId, wanderAlbumId: wanderAlbumId }).exec()
+
+            let res = await this.wanderAlbumRecordModel.findOne({ userId: userId, wanderAlbumId: wanderAlbumId }).exec()
+            console.log(res)
+            return res
         }
     }
 

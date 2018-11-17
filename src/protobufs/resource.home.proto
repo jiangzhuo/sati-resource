@@ -7,12 +7,17 @@ import "resource.hello.proto";
 service HomeService {
     rpc SayHello (SayHelloRequest) returns (SayHelloResponse);
     rpc GetHome (GetHomeRequest) returns (ManyHomeResponse);
+    rpc GetHomeById (GetHomeByIdRequest) returns (HomeResponse);
     rpc CreateHome (CreateHomeRequest) returns (HomeResponse);
     rpc UpdateHome (UpdateHomeRequest) returns (HomeResponse);
     rpc DeleteHome (DeleteHomeRequest) returns (HomeResponse);
 }
 
 message GetHomeRequest {
+}
+
+message GetHomeByIdRequest {
+    string id = 1;
 }
 
 message Home {

@@ -9,4 +9,4 @@ export const MindfulnessTransactionSchema = new mongoose.Schema({
     afterBalance: Number,
     lastModified: { type: Number, default: 0 },
     state: { type: String, default: 'initial' },
-});
+}, { autoIndex: true, toJSON: { virtuals: true } });

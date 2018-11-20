@@ -1,6 +1,6 @@
 import { Controller, Inject, UseInterceptors } from '@nestjs/common';
 import { GrpcMethod, RpcException } from '@nestjs/microservices';
-import { __ as t } from 'i18n';
+// import { __ as t } from 'i18n';
 
 import { WanderService } from '../services/wander.service';
 // import { LoggingInterceptor } from "../interceptors/logging.interceptor";
@@ -135,7 +135,6 @@ export class WanderGrpcController {
 
     @GrpcMethod('WanderService')
     async favoriteWanderAlbum(data) {
-        console.log(data)
         return { data: await this.wanderService.favoriteWanderAlbum(data.userId, data.wanderAlbumId) };
     }
 

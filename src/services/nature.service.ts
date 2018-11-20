@@ -6,10 +6,12 @@ import { InjectModel } from '@nestjs/mongoose';
 import * as moment from "moment";
 import { isEmpty, isNumber, isArray, isBoolean } from 'lodash';
 import { RpcException } from "@nestjs/microservices";
-import { __ as t } from "i18n";
+// import { __ as t } from "i18n";
 import { ElasticsearchService } from '@nestjs/elasticsearch';
 import { Producer } from 'ali-ons';
 import { InjectProducer } from 'nestjs-ali-ons';
+import { Errors } from "moleculer";
+import MoleculerError = Errors.MoleculerError;
 
 @Injectable()
 export class NatureService {
@@ -184,7 +186,8 @@ export class NatureService {
     async buyNature(userId, natureId) {
         const oldNature = await this.natureRecordModel.findOne({ userId: userId, natureId: natureId }).exec();
         if (oldNature && oldNature.boughtTime !== 0)
-            throw new RpcException({ code: 400, message: t('already bought') });
+            // throw new RpcException({ code: 400, message: t('already bought') });
+            throw new MoleculerError('already bought', 400);
         let result = await this.natureRecordModel.findOneAndUpdate(
             { userId: userId, natureId: natureId },
             { $set: { boughtTime: moment().unix() } },

@@ -2,26 +2,28 @@ import { Model } from 'mongoose';
 import { Mindfulness } from "../interfaces/mindfulness.interface";
 import { MindfulnessRecord } from "../interfaces/mindfulnessRecord.interface";
 import { MindfulnessTransaction } from "../interfaces/mindfulnessTransaction.interface";
-import { User } from "../interfaces/user.interface"
+// import { User } from "../interfaces/user.interface"
 import { Inject, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 
-import { NotaddGrpcClientFactory } from '../grpc/grpc.client-factory';
+// import { NotaddGrpcClientFactory } from '../grpc/grpc.client-factory';
 
-import { ObjectId } from 'mongodb';
+// import { ObjectId } from 'mongodb';
 import * as moment from 'moment';
 import { isEmpty, isNumber, isArray, isBoolean } from 'lodash';
-import { RpcException } from "@nestjs/microservices";
-import { __ as t } from "i18n";
+// import { RpcException } from "@nestjs/microservices";
+// import { __ as t } from "i18n";
 import { ElasticsearchService } from '@nestjs/elasticsearch';
 // import { MessageQueueService } from "../modules/messageQueue.service";
 import { Producer } from 'ali-ons';
 import {InjectProducer} from 'nestjs-ali-ons';
+import * as Moleculer from "moleculer";
+import MoleculerError = Moleculer.Errors.MoleculerError;
 
 @Injectable()
 export class MindfulnessService {
     onModuleInit() {
-        this.userServiceInterface = this.notaddGrpcClientFactory.userModuleClient.getService('UserService');
+        // this.userServiceInterface = this.notaddGrpcClientFactory.userModuleClient.getService('UserService');
     }
 
     constructor(
@@ -30,10 +32,10 @@ export class MindfulnessService {
         @InjectModel('Mindfulness') private readonly mindfulnessModel: Model<Mindfulness>,
         @InjectModel('MindfulnessRecord') private readonly mindfulnessRecordModel: Model<MindfulnessRecord>,
         @InjectModel('MindfulnessTransaction') private readonly mindfulnessTransactionModel: Model<MindfulnessTransaction>,
-        @Inject(NotaddGrpcClientFactory) private readonly notaddGrpcClientFactory: NotaddGrpcClientFactory
+        // @Inject(NotaddGrpcClientFactory) private readonly notaddGrpcClientFactory: NotaddGrpcClientFactory
     ) { }
 
-    private userServiceInterface;
+    // private userServiceInterface;
 
     async sayHello(name: string) {
         return { msg: `Mindfulness Hello ${name}!` };
@@ -127,7 +129,7 @@ export class MindfulnessService {
         if (!isEmpty(data.status)) {
             updateObject['status'] = data.status;
         }
-        console.log(updateObject)
+        // console.log(updateObject)
         return await this.mindfulnessModel.findOneAndUpdate({ _id: id }, updateObject).exec()
     }
 
@@ -271,10 +273,9 @@ export class MindfulnessService {
 
         // const res = await this.userModel.findOneAndUpdate({ _id: userId }, { $inc: { balance: 10000 } }).exec();
         // console.log(res);
-        console.log(111111111)
         const oldMindfulness = await this.mindfulnessRecordModel.findOne({ userId: userId, mindfulnessId: mindfulnessId }).exec();
         if (oldMindfulness && oldMindfulness.boughtTime !== 0)
-            throw new RpcException({ code: 400, message: t('already bought') });
+            throw new MoleculerError('already bought', 400);
         const mindfulness = await this.mindfulnessRecordModel.findOneAndUpdate(
             { userId: userId, mindfulnessId: mindfulnessId},
             { $set: { boughtTime: moment().unix() } },

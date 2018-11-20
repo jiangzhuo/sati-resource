@@ -13,4 +13,4 @@ export const MindfulnessRecordSchema = new mongoose.Schema({
     lastFinishTime: { type: Number, default: 0 }, // 上次结束时间
     boughtTime: { type: Number, default: 0 }, // 购买时间，没有购买的话为0
     // pendingTransactions: { type: [ObjectId], default: [] }
-});
+}, { autoIndex: true, toJSON: { virtuals: true } });

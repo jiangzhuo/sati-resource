@@ -1,6 +1,6 @@
 import { Controller, Inject, UseInterceptors } from '@nestjs/common';
 import { GrpcMethod, RpcException } from '@nestjs/microservices';
-import { __ as t } from 'i18n';
+// import { __ as t } from 'i18n';
 
 import { SceneService } from '../services/scene.service';
 // import { LoggingInterceptor } from "../interceptors/logging.interceptor";

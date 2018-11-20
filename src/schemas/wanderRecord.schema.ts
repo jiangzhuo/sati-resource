@@ -12,4 +12,4 @@ export const WanderRecordSchema = new mongoose.Schema({
     lastStartTime: { type: Number, default: 0 }, // 上次开始时间
     lastFinishTime: { type: Number, default: 0 }, // 上次结束时间
     boughtTime: { type: Number, default: 0 }, // 购买时间，没有购买的话为0
-});
+}, { autoIndex: true, toJSON: { virtuals: true } });

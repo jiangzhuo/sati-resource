@@ -13,4 +13,4 @@ export const WanderAlbumSchema = new mongoose.Schema({
     author: ObjectId,
     copy: String,
     status: { type: Int32, default: 0 },
-});
+}, { autoIndex: true, toJSON: { virtuals: true } });

@@ -14,4 +14,4 @@ export const MindfulnessSchema = new mongoose.Schema({
     audio: String,
     copy: String,
     status: { type: Int32, default: 0 },
-});
+}, { autoIndex: true, toJSON: { virtuals: true } });

@@ -8,10 +8,12 @@ import { InjectModel } from '@nestjs/mongoose';
 import * as moment from "moment";
 import { isEmpty, isNumber, isArray, isBoolean } from 'lodash';
 import { RpcException } from "@nestjs/microservices";
-import { __ as t } from "i18n";
+// import { __ as t } from "i18n";
 import { ElasticsearchService } from '@nestjs/elasticsearch';
 import { Producer } from 'ali-ons';
 import { InjectProducer } from 'nestjs-ali-ons';
+import * as Moleculer from "moleculer";
+import MoleculerError = Moleculer.Errors.MoleculerError;
 
 @Injectable()
 export class WanderService {
@@ -188,7 +190,8 @@ export class WanderService {
     async buyWander(userId, wanderId) {
         const oldWander = await this.wanderRecordModel.findOne({ userId: userId, wanderId: wanderId }).exec();
         if (oldWander && oldWander.boughtTime !== 0)
-            throw new RpcException({ code: 400, message: t('already bought') });
+        // throw new RpcException({ code: 400, message: t('already bought') });
+            throw new MoleculerError('already bought', 400);
         let result = await this.wanderRecordModel.findOneAndUpdate(
             { userId: userId, wanderId: wanderId },
             { $set: { boughtTime: moment().unix() } },
@@ -238,10 +241,7 @@ export class WanderService {
                 wanderAlbumId: { $in: wanderAlbumId }
             }).exec()
         } else if (typeof wanderAlbumId === 'string') {
-
-            let res = await this.wanderAlbumRecordModel.findOne({ userId: userId, wanderAlbumId: wanderAlbumId }).exec()
-            console.log(res)
-            return res
+            return await this.wanderAlbumRecordModel.findOne({ userId: userId, wanderAlbumId: wanderAlbumId }).exec()
         }
     }
 
@@ -371,7 +371,8 @@ export class WanderService {
     async buyWanderAlbum(userId, wanderAlbumId) {
         const oldWanderAlbum = await this.wanderAlbumRecordModel.findOne({ userId: userId, wanderAlbumId: wanderAlbumId }).exec();
         if (oldWanderAlbum && oldWanderAlbum.boughtTime !== 0)
-            throw new RpcException({ code: 400, message: t('already bought') });
+            // throw new RpcException({ code: 400, message: t('already bought') });
+            throw new MoleculerError('already bought', 400);
         let result = await this.wanderAlbumRecordModel.findOneAndUpdate(
             { userId: userId, wanderAlbumId: wanderAlbumId },
             { $set: { boughtTime: moment().unix() } },

@@ -12,4 +12,4 @@ export const UserSchema = new mongoose.Schema({
     updateTime: Number,
     balance: { type: Number, default: 0 },
     // pendingTransactions: { type: [ObjectId], default: [] }
-});
+}, { autoIndex: true, toJSON: { virtuals: true } });

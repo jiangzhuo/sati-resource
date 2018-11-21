@@ -67,7 +67,7 @@ const onsLogger = new Logger('ons', true);
 @Module({
     imports: [
         MoleculerModule.forRoot({
-            namespace: "sati-resource",
+            namespace: "sati",
             // logger: bindings => new Logger(),
             transporter: "TCP",
             hotReload: true,

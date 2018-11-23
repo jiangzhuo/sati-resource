@@ -84,7 +84,7 @@ const onsLogger = new Logger('ons', true);
             producerGroup: 'PID_jiangzhuo_home',
             logger: {
                 info(...args) {
-                    onsLogger.log( util.format.apply(util, args));
+                    // onsLogger.log( util.format.apply(util, args));
                 },
                 warn(...args) {
                     onsLogger.warn( util.format.apply(util, args));
@@ -93,7 +93,7 @@ const onsLogger = new Logger('ons', true);
                     onsLogger.error( util.format.apply(util, args));
                 },
                 debug(...args) {
-                    onsLogger.log( util.format.apply(util, args));
+                    // onsLogger.log( util.format.apply(util, args));
                 },
             },
             // logger: Object.assign(onsLogger, { info: onsLogger.log })

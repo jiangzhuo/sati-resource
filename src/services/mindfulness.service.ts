@@ -1,4 +1,4 @@
-import { Model } from 'mongoose';
+import { Model, Connection } from 'mongoose';
 import { Mindfulness } from "../interfaces/mindfulness.interface";
 import { MindfulnessRecord } from "../interfaces/mindfulnessRecord.interface";
 import { MindfulnessTransaction } from "../interfaces/mindfulnessTransaction.interface";
@@ -273,6 +273,34 @@ export class MindfulnessService {
 
         // const res = await this.userModel.findOneAndUpdate({ _id: userId }, { $inc: { balance: 10000 } }).exec();
         // console.log(res);
+        // const session = await this.resourceClient.startSession();
+        // session.startTransaction();
+        // try {
+        //     const opts = { session, returnOriginal: false };
+        //     const A = await db.collection('Account').findOneAndUpdate({ name: from }, { $inc: { balance: -amount } }, opts).
+        //     then(res => res.value);
+        //     if (A.balance < 0) {
+        //         // If A would have negative balance, fail and abort the transaction
+        //         // `session.abortTransaction()` will undo the above `findOneAndUpdate()`
+        //         throw new Error('Insufficient funds: ' + (A.balance + amount));
+        //     }
+        //
+        //     const B = await db.collection('Account').
+        //     findOneAndUpdate({ name: to }, { $inc: { balance: amount } }, opts).
+        //     then(res => res.value);
+        //
+        //     await session.commitTransaction();
+        //     session.endSession();
+        //     return { from: A, to: B };
+        // } catch (error) {
+        //     // If an error occurred, abort the whole transaction and
+        //     // undo any changes that might have happened
+        //     await session.abortTransaction();
+        //     session.endSession();
+        //     throw error; // Rethrow so calling function sees error
+        // }
+
+
         const oldMindfulness = await this.mindfulnessRecordModel.findOne({ userId: userId, mindfulnessId: mindfulnessId }).exec();
         if (oldMindfulness && oldMindfulness.boughtTime !== 0)
             throw new MoleculerError('already bought', 400);

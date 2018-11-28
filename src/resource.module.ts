@@ -30,6 +30,7 @@ import { WanderRecordSchema } from './schemas/wanderRecord.schema';
 import { WanderAlbumRecordSchema } from './schemas/wanderAlbumRecord.schema';
 
 import { UserSchema } from './schemas/user.schema';
+import { AccountSchema } from './schemas/account.schema';
 import { MindfulnessTransactionSchema } from "./schemas/mindfulnessTransaction.schema";
 
 import { HomeGrpcController } from "./controllers/home.grpc.controller";
@@ -106,8 +107,9 @@ const onsLogger = new Logger('ons', true);
             httpAuth: 'elastic:Its%queOress2',
             log: 'trace',
         }),
-        MongooseModule.forRoot('mongodb://sati:kjhguiyIUYkjh32kh@dds-2zee21d7f4fff2f41890-pub.mongodb.rds.aliyuncs.com:3717,dds-2zee21d7f4fff2f42351-pub.mongodb.rds.aliyuncs.com:3717/sati?replicaSet=mgset-9200157',
-            // MongooseModule.forRoot('mongodb://localhost:27017/module_resource',
+        // MongooseModule.forRoot('mongodb://sati:kjhguiyIUYkjh32kh@dds-2zee21d7f4fff2f41890-pub.mongodb.rds.aliyuncs.com:3717,dds-2zee21d7f4fff2f42351-pub.mongodb.rds.aliyuncs.com:3717/sati?replicaSet=mgset-9200157',
+        //     MongooseModule.forRoot('mongodb://localhost:27017/sati',
+            MongooseModule.forRoot('mongodb://root:kjhguiyIUYkjh32kh@dds-2ze5f8fcc72702b41188-pub.mongodb.rds.aliyuncs.com:3717,dds-2ze5f8fcc72702b42191-pub.mongodb.rds.aliyuncs.com:3717/sati?replicaSet=mgset-10924097&authDB=admin',
             { connectionName: 'sati', useNewUrlParser: true, useFindAndModify: false, useCreateIndex: true }),
         MongooseModule.forFeature([{ name: 'Mindfulness', schema: MindfulnessSchema, collection: 'mindfulness' },
             { name: 'Nature', schema: NatureSchema, collection: 'nature' },
@@ -124,7 +126,8 @@ const onsLogger = new Logger('ons', true);
             { name: 'WanderRecord', schema: WanderRecordSchema, collection: 'wanderRecord' },
             { name: 'WanderAlbumRecord', schema: WanderAlbumRecordSchema, collection: 'wanderAlbumRecord' },
             { name: 'Home', schema: HomeSchema, collection: 'home' },
-            { name: 'User', schema: UserSchema, collection: 'user' }
+            { name: 'User', schema: UserSchema, collection: 'user' },
+            { name: 'Account', schema: AccountSchema, collection: 'account' }
         ], 'sati'),
         // MongooseModule.forRoot('mongodb://sati:kjhguiyIUYkjh32kh@dds-2zee21d7f4fff2f41890-pub.mongodb.rds.aliyuncs.com:3717,dds-2zee21d7f4fff2f42351-pub.mongodb.rds.aliyuncs.com:3717/sati_user?replicaSet=mgset-9200157',
         //     // MongooseModule.forRoot('mongodb://localhost:27017/module_resource',

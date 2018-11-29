@@ -69,6 +69,9 @@ export class HomeService {
         if (isNumber(data.position)) {
             updateObject['position'] = data.position;
         }
+        if (isNumber(data.validTime)) {
+            updateObject['validTime'] = data.validTime;
+        }
         return await this.homeModel.findOneAndUpdate({ _id: id }, updateObject).exec()
     }
 

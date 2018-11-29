@@ -16,12 +16,21 @@ export class HomeService {
         return { msg: `Home Hello ${name}!` };
     }
 
-    async getHome(first = 20, after?: string) {
+    async getHome(first = 20, after?: number, position?: number) {
+        let query = {};
         if (after) {
-            return await this.homeModel.find({ _id: { $gte: after } }).limit(first).exec();
-        } else {
-            return await this.homeModel.find().limit(first).exec();
+            query['validTime'] = { $gt: after }
         }
+        if (isNumber(position)) {
+            query['position'] = position
+        }
+        let sortArg;
+        if (first > 0) {
+            sortArg = { validTime: 1 }
+        } else {
+            sortArg = { validTime: -1 }
+        }
+        return await this.homeModel.find(query).sort(sortArg).limit(first).exec();
     }
 
     async getHomeById(id) {

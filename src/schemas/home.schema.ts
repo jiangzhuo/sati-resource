@@ -12,4 +12,5 @@ export const HomeSchema = new mongoose.Schema({
     author: ObjectId,
     createTime: Number,
     updateTime: Number,
+    validTime: Number,
 }, { autoIndex: true, toJSON: { virtuals: true } });

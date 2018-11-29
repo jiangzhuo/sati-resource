@@ -11,4 +11,5 @@ export interface Home extends Document {
     readonly author: ObjectId;
     readonly createTime: number;
     readonly updateTime: number;
+    readonly validTime:number;
 }

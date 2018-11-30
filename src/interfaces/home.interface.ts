@@ -5,7 +5,7 @@ export interface Home extends Document {
     readonly position: number;
     readonly type: string;
     readonly resourceId: ObjectId;
-    readonly background: string;
+    readonly background: string[];
     readonly name: string;
     readonly description: string;
     readonly author: ObjectId;

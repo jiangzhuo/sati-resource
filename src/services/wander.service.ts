@@ -94,7 +94,7 @@ export class WanderService {
         if (isArray(data.scenes)) {
             updateObject['scenes'] = data.scenes;
         }
-        if (!isEmpty(data.background)) {
+        if (isArray(data.background)) {
             updateObject['background'] = data.background;
         }
         if (!isEmpty(data.name)) {
@@ -276,7 +276,7 @@ export class WanderService {
         if (!isEmpty(data.scenes)) {
             updateObject['scenes'] = data.scenes;
         }
-        if (!isEmpty(data.background)) {
+        if (isArray(data.background)) {
             updateObject['background'] = data.background;
         }
         if (!isEmpty(data.name)) {

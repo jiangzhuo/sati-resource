@@ -2,7 +2,7 @@ import { Document } from 'mongoose';
 import { ObjectId } from 'mongodb';
 
 export interface WanderAlbum extends Document {
-    readonly background: string;
+    readonly background: string[];
     readonly name: string;
     readonly description: string;
     readonly scenes: ObjectId[];

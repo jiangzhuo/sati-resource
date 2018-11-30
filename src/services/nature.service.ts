@@ -89,7 +89,7 @@ export class NatureService {
         if (isArray(data.scenes)) {
             updateObject['scenes'] = data.scenes;
         }
-        if (!isEmpty(data.background)) {
+        if (isArray(data.background)) {
             updateObject['background'] = data.background;
         }
         if (!isEmpty(data.name)) {

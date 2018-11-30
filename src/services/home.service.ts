@@ -54,7 +54,7 @@ export class HomeService {
         if (!isEmpty(data.resourceId)) {
             updateObject['resourceId'] = data.resourceId;
         }
-        if (!isEmpty(data.background)) {
+        if (isArray(data.background)) {
             updateObject['background'] = data.background;
         }
         if (!isEmpty(data.name)) {

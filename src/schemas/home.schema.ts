@@ -6,7 +6,7 @@ export const HomeSchema = new mongoose.Schema({
     position: Number,
     type: String,
     resourceId: ObjectId,
-    background: String,
+    background: [String],
     name: String,
     description: String,
     author: ObjectId,

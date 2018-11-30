@@ -3,7 +3,7 @@ import * as Int32 from "mongoose-int32";
 
 const ObjectId = mongoose.Schema.Types.ObjectId;
 export const WanderAlbumSchema = new mongoose.Schema({
-    background: String,
+    background: [String],
     name: String,
     description: String,
     scenes: [ObjectId],

@@ -113,6 +113,9 @@ export class NatureService {
         if (!isEmpty(data.status)) {
             updateObject['status'] = data.status;
         }
+        if (isNumber(data.validTime)) {
+            updateObject['validTime'] = data.validTime;
+        }
         return await this.natureModel.findOneAndUpdate({ _id: id }, updateObject).exec()
     }
 

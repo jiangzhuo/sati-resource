@@ -12,4 +12,5 @@ export interface WanderAlbum extends Document {
     readonly author: ObjectId;
     readonly copy: string;
     readonly status: number;
+    readonly validTime:number; // 生效时间
 }

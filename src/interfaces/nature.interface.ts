@@ -13,4 +13,5 @@ export interface Nature extends Document {
     readonly audio: string;
     readonly nature: string;
     readonly status: number;
+    readonly validTime:number; // 生效时间
 }

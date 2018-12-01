@@ -32,7 +32,7 @@ import { WanderAlbumRecordSchema } from './schemas/wanderAlbumRecord.schema';
 import { UserSchema } from './schemas/user.schema';
 import { MindfulnessTransactionSchema } from "./schemas/mindfulnessTransaction.schema";
 
-import { HomeGrpcController } from "./controllers/home.grpc.controller";
+// import { HomeGrpcController } from "./controllers/home.grpc.controller";
 import { HomeSchema } from "./schemas/home.schema";
 import { HomeService } from "./services/home.service";
 

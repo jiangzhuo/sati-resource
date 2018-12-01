@@ -118,6 +118,9 @@ export class WanderService {
         if (isArray(data.wanderAlbums)) {
             updateObject['wanderAlbums'] = data.wanderAlbums;
         }
+        if (isNumber(data.validTime)) {
+            updateObject['validTime'] = data.validTime;
+        }
         return await this.wanderModel.findOneAndUpdate({ _id: id }, updateObject).exec()
     }
 
@@ -296,6 +299,9 @@ export class WanderService {
         }
         if (!isEmpty(data.status)) {
             updateObject['status'] = data.status;
+        }
+        if (isNumber(data.validTime)) {
+            updateObject['validTime'] = data.validTime;
         }
         return await this.wanderAlbumModel.findOneAndUpdate({ _id: id }, updateObject).exec()
     }

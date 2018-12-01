@@ -14,4 +14,5 @@ export const NatureSchema = new mongoose.Schema({
     audio: String,
     copy: String,
     status: { type: Int32, default: 0 },
+    validTime: Number,
 }, { autoIndex: true, toJSON: { virtuals: true } });

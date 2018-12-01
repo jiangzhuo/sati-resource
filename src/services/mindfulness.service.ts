@@ -41,16 +41,27 @@ export class MindfulnessService {
         return { msg: `Mindfulness Hello ${name}!` };
     }
 
-    async getMindfulness(first = 20, after?: string) {
+    async getMindfulness(first = 20, after?: number, before?: number) {
+        const condition = {};
         if (after) {
-            return await this.mindfulnessModel.find(
-                { _id: { $lt: after } },
-                null,
-                { sort: '-_id' }
-            ).limit(first).exec();
-        } else {
-            return await this.mindfulnessModel.find({}, null, { sort: '-_id' }).limit(first).exec();
+            condition['validTime'] = { $gt: after }
         }
+        if (before) {
+            if (condition['validTime']) {
+                condition['validTime']['$lt'] = before
+            } else {
+                condition['validTime'] = { $lt: before }
+            }
+        }
+        let sort = { validTime: 1 };
+        if (first < 0) {
+            sort = { validTime: -1 }
+        }
+        return await this.mindfulnessModel.find(
+            condition,
+            null,
+            { sort: sort }
+        ).limit(Math.abs(first)).exec();
     }
 
     async getMindfulnessById(id) {

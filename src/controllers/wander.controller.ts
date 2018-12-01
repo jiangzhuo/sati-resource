@@ -99,7 +99,7 @@ export class WanderController extends Service {
     }
 
     async getWander(ctx: Context) {
-        return { data: await this.wanderService.getWander(ctx.params.first, ctx.params.after) };
+        return { data: await this.wanderService.getWander(ctx.params.first, ctx.params.after, ctx.params.before) };
     }
 
     async getWanderById(ctx: Context) {
@@ -163,7 +163,7 @@ export class WanderController extends Service {
     }
 
     async getWanderAlbum(ctx: Context) {
-        return { data: await this.wanderService.getWanderAlbum(ctx.params.first, ctx.params.after) };
+        return { data: await this.wanderService.getWanderAlbum(ctx.params.first, ctx.params.after, ctx.params.before) };
     }
 
     async getWanderAlbumById(ctx: Context) {

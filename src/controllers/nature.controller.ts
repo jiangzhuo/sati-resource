@@ -83,7 +83,7 @@ export class NatureController extends Service {
     }
 
     async getNature(ctx: Context) {
-        return { data: await this.natureService.getNature(ctx.params.first, ctx.params.after) };
+        return { data: await this.natureService.getNature(ctx.params.first, ctx.params.after, ctx.params.before) };
     }
 
     async getNatureById(ctx: Context) {

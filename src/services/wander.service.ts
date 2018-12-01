@@ -31,15 +31,27 @@ export class WanderService {
         return { msg: `Wander Hello ${name}!` };
     }
 
-    async getWander(first = 20, after?: string) {
+    async getWander(first = 20, after?: number, before?: number) {
+        const condition = {};
         if (after) {
-            return await this.wanderModel.find(
-                { _id: { $lt: after } },
-                null,
-                { sort: '-_id' }).limit(first).exec();
-        } else {
-            return await this.wanderModel.find({}, null, { sort: '-_id' }).limit(first).exec();
+            condition['validTime'] = { $gt: after }
         }
+        if (before) {
+            if (condition['validTime']) {
+                condition['validTime']['$lt'] = before
+            } else {
+                condition['validTime'] = { $lt: before }
+            }
+        }
+        let sort = { validTime: 1 };
+        if (first < 0) {
+            sort = { validTime: -1 }
+        }
+        return await this.wanderModel.find(
+            condition,
+            null,
+            { sort: sort }
+        ).limit(Math.abs(first)).exec();
     }
 
     async getWanderById(id) {
@@ -216,15 +228,27 @@ export class WanderService {
         return await this.wanderModel.find({ wanderAlbums: id }).exec();
     }
 
-    async getWanderAlbum(first = 20, after?: string) {
+    async getWanderAlbum(first = 20, after?: number, before?: number) {
+        const condition = {};
         if (after) {
-            return await this.wanderAlbumModel.find(
-                { _id: { $lt: after } },
-                null,
-                { sort: '-_id' }).limit(first).exec();
-        } else {
-            return await this.wanderAlbumModel.find({}, null, { sort: '-_id' }).limit(first).exec();
+            condition['validTime'] = { $gt: after }
         }
+        if (before) {
+            if (condition['validTime']) {
+                condition['validTime']['$lt'] = before
+            } else {
+                condition['validTime'] = { $lt: before }
+            }
+        }
+        let sort = { validTime: 1 };
+        if (first < 0) {
+            sort = { validTime: -1 }
+        }
+        return await this.wanderAlbumModel.find(
+            condition,
+            null,
+            { sort: sort }
+        ).limit(Math.abs(first)).exec();
     }
 
     async getWanderAlbumById(id) {

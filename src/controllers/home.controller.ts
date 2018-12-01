@@ -25,6 +25,7 @@ export class HomeController extends Service {
             },
             actions: {
                 sayHello: this.sayHello,
+                getNew: this.getNew,
                 getHome: this.getHome,
                 getHomeById: this.getHomeById,
                 createHome: this.createHome,
@@ -76,6 +77,10 @@ export class HomeController extends Service {
 
     async sayHello(ctx: Context) {
         return this.homeService.sayHello(ctx.params.name);
+    }
+
+    async getNew(ctx: Context) {
+        return { data: await this.homeService.getNew(ctx.params.first, ctx.params.after, ctx.params.before) };
     }
 
     async getHome(ctx: Context) {

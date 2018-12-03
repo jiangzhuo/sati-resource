@@ -71,7 +71,7 @@ export class MindfulnessController extends Service {
     }
 
     async getMindfulness(ctx: Context) {
-        const data = await this.mindfulnessService.getMindfulness(ctx.params.first, ctx.params.after, ctx.params.before)
+        const data = await this.mindfulnessService.getMindfulness(ctx.params.first, ctx.params.after, ctx.params.before, ctx.params.status)
         return { data };
     }
 

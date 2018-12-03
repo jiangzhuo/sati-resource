@@ -84,7 +84,7 @@ export class MindfulnessAlbumController extends Service {
     }
 
     async getMindfulnessAlbum(ctx: Context) {
-        return { data: await this.mindfulnessAlbumService.getMindfulnessAlbum(ctx.params.first, ctx.params.after, ctx.params.before) };
+        return { data: await this.mindfulnessAlbumService.getMindfulnessAlbum(ctx.params.first, ctx.params.after, ctx.params.before, ctx.params.status) };
     }
 
     async getMindfulnessAlbumById(ctx: Context) {

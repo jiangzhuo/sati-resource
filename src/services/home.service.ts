@@ -8,13 +8,17 @@ import { Mindfulness } from 'src/interfaces/mindfulness.interface';
 import { Nature } from 'src/interfaces/nature.interface';
 import { Wander } from 'src/interfaces/wander.interface';
 import { WanderAlbum } from "../interfaces/wanderAlbum.interface";
+import { NatureAlbum } from 'src/interfaces/natureAlbum.interface';
+import { MindfulnessAlbum } from "../interfaces/mindfulnessAlbum.interface";
 
 @Injectable()
 export class HomeService {
     constructor(
         @InjectModel('Home') private readonly homeModel: Model<Home>,
         @InjectModel('Mindfulness') private readonly mindfulnessModel: Model<Mindfulness>,
+        @InjectModel('MindfulnessAlbum') private readonly mindfulnessAlbumModel: Model<MindfulnessAlbum>,
         @InjectModel('Nature') private readonly natureModel: Model<Nature>,
+        @InjectModel('NatureAlbum') private readonly natureAlbumModel: Model<NatureAlbum>,
         @InjectModel('Wander') private readonly wanderModel: Model<Wander>,
         @InjectModel('WanderAlbum') private readonly wanderAlbumModel: Model<WanderAlbum>,
     ) {
@@ -24,7 +28,7 @@ export class HomeService {
         return { msg: `Home Hello ${ name }!` };
     }
 
-    async getNew(first = 20, after?: number, before?: number) {
+    async getNew(first = 20, after?: number, before?: number, status?: number) {
         let query = {};
         if (after) {
             query['validTime'] = { $gt: after }
@@ -36,6 +40,9 @@ export class HomeService {
                 query['validTime'] = { $lt: before }
             }
         }
+        if (status) {
+            query['status'] = { $bitsAllClear: status }
+        }
         let sortArg;
         if (first > 0) {
             sortArg = { validTime: 1 }
@@ -44,7 +51,9 @@ export class HomeService {
         }
         let result = [];
         const mindfulnessResult = await this.mindfulnessModel.find(query).sort(sortArg).limit(Math.abs(first)).exec();
+        const mindfulnessAlbumResult = await this.mindfulnessAlbumModel.find(query).sort(sortArg).limit(Math.abs(first)).exec();
         const natureResult = await this.natureModel.find(query).sort(sortArg).limit(Math.abs(first)).exec();
+        const natureAlbumResult = await this.natureAlbumModel.find(query).sort(sortArg).limit(Math.abs(first)).exec();
         const wanderResult = await this.wanderModel.find(query).sort(sortArg).limit(Math.abs(first)).exec();
         const wanderAlbumResult = await this.wanderAlbumModel.find(query).sort(sortArg).limit(Math.abs(first)).exec();
         mindfulnessResult.forEach((mindfulness) => {
@@ -58,7 +67,23 @@ export class HomeService {
                 author: mindfulness.author,
                 createTime: mindfulness.createTime,
                 updateTime: mindfulness.updateTime,
-                validTime: mindfulness.validTime
+                validTime: mindfulness.validTime,
+                status: mindfulness.status
+            })
+        });
+        mindfulnessAlbumResult.forEach((mindfulnessAlbum) => {
+            result.push({
+                type: 'mindfulnessAlbum',
+                resourceId: mindfulnessAlbum.id,
+                background: mindfulnessAlbum.background,
+                name: mindfulnessAlbum.name,
+                description: mindfulnessAlbum.description,
+                price: mindfulnessAlbum.price,
+                author: mindfulnessAlbum.author,
+                createTime: mindfulnessAlbum.createTime,
+                updateTime: mindfulnessAlbum.updateTime,
+                validTime: mindfulnessAlbum.validTime,
+                status: mindfulnessAlbum.status
             })
         });
         natureResult.forEach((nature) => {
@@ -72,7 +97,23 @@ export class HomeService {
                 author: nature.author,
                 createTime: nature.createTime,
                 updateTime: nature.updateTime,
-                validTime: nature.validTime
+                validTime: nature.validTime,
+                status: nature.status
+            })
+        });
+        natureAlbumResult.forEach((natureAlbum) => {
+            result.push({
+                type: 'natureAlbum',
+                resourceId: natureAlbum.id,
+                background: natureAlbum.background,
+                name: natureAlbum.name,
+                description: natureAlbum.description,
+                price: natureAlbum.price,
+                author: natureAlbum.author,
+                createTime: natureAlbum.createTime,
+                updateTime: natureAlbum.updateTime,
+                validTime: natureAlbum.validTime,
+                status: natureAlbum.status
             })
         });
         wanderResult.forEach((wander) => {
@@ -86,7 +127,8 @@ export class HomeService {
                 author: wander.author,
                 createTime: wander.createTime,
                 updateTime: wander.updateTime,
-                validTime: wander.validTime
+                validTime: wander.validTime,
+                status: wander.status
             })
         });
         wanderAlbumResult.forEach((wanderAlbum) => {
@@ -100,7 +142,8 @@ export class HomeService {
                 author: wanderAlbum.author,
                 createTime: wanderAlbum.createTime,
                 updateTime: wanderAlbum.updateTime,
-                validTime: wanderAlbum.validTime
+                validTime: wanderAlbum.validTime,
+                status: wanderAlbum.status
             })
         });
         if (first > 0) {

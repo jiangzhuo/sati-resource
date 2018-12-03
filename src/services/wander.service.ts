@@ -31,7 +31,7 @@ export class WanderService {
         return { msg: `Wander Hello ${name}!` };
     }
 
-    async getWander(first = 20, after?: number, before?: number) {
+    async getWander(first = 20, after?: number, before?: number, status?: number) {
         const condition = {};
         if (after) {
             condition['validTime'] = { $gt: after }
@@ -42,6 +42,9 @@ export class WanderService {
             } else {
                 condition['validTime'] = { $lt: before }
             }
+        }
+        if (status) {
+            condition['status'] = { $bitsAllClear: status }
         }
         let sort = { validTime: 1 };
         if (first < 0) {

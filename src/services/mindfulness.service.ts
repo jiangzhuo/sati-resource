@@ -41,7 +41,7 @@ export class MindfulnessService {
         return { msg: `Mindfulness Hello ${name}!` };
     }
 
-    async getMindfulness(first = 20, after?: number, before?: number) {
+    async getMindfulness(first = 20, after?: number, before?: number, status?: number) {
         const condition = {};
         if (after) {
             condition['validTime'] = { $gt: after }
@@ -52,6 +52,9 @@ export class MindfulnessService {
             } else {
                 condition['validTime'] = { $lt: before }
             }
+        }
+        if (status) {
+            condition['status'] = { $bitsAllClear: status }
         }
         let sort = { validTime: 1 };
         if (first < 0) {

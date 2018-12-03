@@ -84,7 +84,7 @@ export class WanderAlbumController extends Service {
     }
 
     async getWanderAlbum(ctx: Context) {
-        return { data: await this.wanderAlbumService.getWanderAlbum(ctx.params.first, ctx.params.after, ctx.params.before) };
+        return { data: await this.wanderAlbumService.getWanderAlbum(ctx.params.first, ctx.params.after, ctx.params.before, ctx.params.status) };
     }
 
     async getWanderAlbumById(ctx: Context) {

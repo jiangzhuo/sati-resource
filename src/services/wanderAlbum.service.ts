@@ -32,7 +32,7 @@ export class WanderAlbumService {
         return { msg: `Wander Hello ${ name }!` };
     }
 
-    async getWanderAlbum(first = 20, after?: number, before?: number) {
+    async getWanderAlbum(first = 20, after?: number, before?: number, status?: number) {
         const condition = {};
         if (after) {
             condition['validTime'] = { $gt: after }
@@ -43,6 +43,9 @@ export class WanderAlbumService {
             } else {
                 condition['validTime'] = { $lt: before }
             }
+        }
+        if (status) {
+            condition['status'] = { $bitsAllClear: status }
         }
         let sort = { validTime: 1 };
         if (first < 0) {

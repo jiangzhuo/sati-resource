@@ -86,7 +86,7 @@ export class WanderController extends Service {
     }
 
     async getWander(ctx: Context) {
-        return { data: await this.wanderService.getWander(ctx.params.first, ctx.params.after, ctx.params.before) };
+        return { data: await this.wanderService.getWander(ctx.params.first, ctx.params.after, ctx.params.before, ctx.params.status) };
     }
 
     async getWanderById(ctx: Context) {

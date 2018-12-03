@@ -79,7 +79,7 @@ export class NatureAlbumController extends Service {
     }
 
     async getNatureAlbum(ctx: Context) {
-        return { data: await this.natureAlbumService.getNatureAlbum(ctx.params.first, ctx.params.after, ctx.params.before) };
+        return { data: await this.natureAlbumService.getNatureAlbum(ctx.params.first, ctx.params.after, ctx.params.before, ctx.params.status) };
     }
 
     async getNatureAlbumById(ctx: Context) {

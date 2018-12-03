@@ -80,7 +80,7 @@ export class HomeController extends Service {
     }
 
     async getNew(ctx: Context) {
-        return { data: await this.homeService.getNew(ctx.params.first, ctx.params.after, ctx.params.before) };
+        return { data: await this.homeService.getNew(ctx.params.first, ctx.params.after, ctx.params.before, ctx.params.status) };
     }
 
     async getHome(ctx: Context) {

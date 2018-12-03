@@ -32,6 +32,7 @@ export class WanderController extends Service {
             },
             actions: {
                 sayHello:this.sayHello,
+
                 getWander:this.getWander,
                 getWanderById:this.getWanderById,
                 getWanderByIds:this.getWanderByIds,
@@ -41,28 +42,14 @@ export class WanderController extends Service {
                 revertDeletedWander:this.revertDeletedWander,
                 favoriteWander:this.favoriteWander,
                 startWander:this.startWander,
+                finishWander:this.finishWander,
                 buyWander:this.buyWander,
                 searchWander:this.searchWander,
-                finishWander:this.finishWander,
                 getWanderRecordByWanderId:this.getWanderRecordByWanderId,
                 getWanderRecordByWanderIds:this.getWanderRecordByWanderIds,
                 searchWanderRecord:this.searchWanderRecord,
+
                 getWanderByWanderAlbumId:this.getWanderByWanderAlbumId,
-                getWanderAlbum:this.getWanderAlbum,
-                getWanderAlbumById:this.getWanderAlbumById,
-                getWanderAlbumByIds:this.getWanderAlbumByIds,
-                createWanderAlbum:this.createWanderAlbum,
-                updateWanderAlbum:this.updateWanderAlbum,
-                deleteWanderAlbum:this.deleteWanderAlbum,
-                revertDeletedWanderAlbum:this.revertDeletedWanderAlbum,
-                favoriteWanderAlbum:this.favoriteWanderAlbum,
-                startWanderAlbum:this.startWanderAlbum,
-                buyWanderAlbum:this.buyWanderAlbum,
-                searchWanderAlbum:this.searchWanderAlbum,
-                finishWanderAlbum:this.finishWanderAlbum,
-                getWanderAlbumRecordByWanderAlbumId:this.getWanderAlbumRecordByWanderAlbumId,
-                getWanderAlbumRecordByWanderAlbumIds:this.getWanderAlbumRecordByWanderAlbumIds,
-                searchWanderAlbumRecord:this.searchWanderAlbumRecord,
                 // welcome: {
                 //     cache: {
                 //         keys: ["name"]
@@ -160,65 +147,5 @@ export class WanderController extends Service {
 
     async getWanderByWanderAlbumId(ctx: Context) {
         return { data: await this.wanderService.getWanderByWanderAlbumId(ctx.params.id) };
-    }
-
-    async getWanderAlbum(ctx: Context) {
-        return { data: await this.wanderService.getWanderAlbum(ctx.params.first, ctx.params.after, ctx.params.before) };
-    }
-
-    async getWanderAlbumById(ctx: Context) {
-        return { data: await this.wanderService.getWanderAlbumById(ctx.params.id) };
-    }
-
-    async getWanderAlbumByIds(ctx: Context) {
-        return { data: await this.wanderService.getWanderAlbumByIds(ctx.params.ids) };
-    }
-
-    async createWanderAlbum(ctx: Context) {
-        return { data: await this.wanderService.createWanderAlbum(ctx.params) };
-    }
-
-    async updateWanderAlbum(ctx: Context) {
-        return { data: await this.wanderService.updateWanderAlbum(ctx.params.id, ctx.params) };
-    }
-
-    async deleteWanderAlbum(ctx: Context) {
-        return { data: await this.wanderService.deleteWanderAlbum(ctx.params.id) };
-    }
-
-    async revertDeletedWanderAlbum(ctx: Context) {
-        return { data: await this.wanderService.revertDeletedWanderAlbum(ctx.params.id) };
-    }
-
-    async favoriteWanderAlbum(ctx: Context) {
-        return { data: await this.wanderService.favoriteWanderAlbum(ctx.params.userId, ctx.params.wanderAlbumId) };
-    }
-
-    async startWanderAlbum(ctx: Context) {
-        return { data: await this.wanderService.startWanderAlbum(ctx.params.userId, ctx.params.wanderAlbumId) };
-    }
-
-    async buyWanderAlbum(ctx: Context) {
-        return { data: await this.wanderService.buyWanderAlbum(ctx.params.userId, ctx.params.wanderAlbumId) };
-    }
-
-    async searchWanderAlbum(ctx: Context) {
-        return await this.wanderService.searchWanderAlbum(ctx.params.keyword, ctx.params.from, ctx.params.size);
-    }
-
-    async finishWanderAlbum(ctx: Context) {
-        return { data: await this.wanderService.finishWanderAlbum(ctx.params.userId, ctx.params.wanderAlbumId, ctx.params.duration) };
-    }
-
-    async getWanderAlbumRecordByWanderAlbumId(ctx: Context) {
-        return { data: await this.wanderService.getWanderAlbumRecord(ctx.params.userId, ctx.params.wanderAlbumId) };
-    }
-
-    async getWanderAlbumRecordByWanderAlbumIds(ctx: Context) {
-        return { data: await this.wanderService.getWanderAlbumRecord(ctx.params.userId, ctx.params.wanderAlbumIds) };
-    }
-
-    async searchWanderAlbumRecord(ctx: Context) {
-        return { data: await this.wanderService.searchWanderAlbumRecord(ctx.params.userId, ctx.params.page, ctx.params.limit, ctx.params.sort, ctx.params.favorite, ctx.params.boughtTime) };
     }
 }

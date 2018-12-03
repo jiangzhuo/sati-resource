@@ -13,6 +13,7 @@ export const MindfulnessSchema = new mongoose.Schema({
     author: ObjectId,
     audio: String,
     copy: String,
+    mindfulnessAlbums: { type: [ObjectId], default: [] },
     status: { type: Int32, default: 0 },
     validTime: Number,
 }, { autoIndex: true, toJSON: { virtuals: true } });

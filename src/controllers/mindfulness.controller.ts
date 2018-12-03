@@ -37,20 +37,13 @@ export class MindfulnessController extends Service {
                 favoriteMindfulness: this.favoriteMindfulness,
                 startMindfulness: this.startMindfulness,
                 finishMindfulness: this.finishMindfulness,
+                buyMindfulness: this.buyMindfulness,
+                searchMindfulness: this.searchMindfulness,
                 getMindfulnessRecordByMindfulnessId: this.getMindfulnessRecordByMindfulnessId,
                 getMindfulnessRecordByMindfulnessIds: this.getMindfulnessRecordByMindfulnessIds,
                 searchMindfulnessRecord: this.searchMindfulnessRecord,
-                buyMindfulness: this.buyMindfulness,
-                searchMindfulness: this.searchMindfulness,
-                // welcome: {
-                //     cache: {
-                //         keys: ["name"]
-                //     },
-                //     params: {
-                //         name: "string"
-                //     },
-                //     handler: this.welcome
-                // }
+
+                getMindfulnessByMindfulnessAlbumId:this.getMindfulnessByMindfulnessAlbumId,
             },
             // events: {
             //     "user.created": this.userCreated
@@ -136,5 +129,9 @@ export class MindfulnessController extends Service {
 
     async searchMindfulness(ctx: Context) {
         return await this.mindfulnessService.searchMindfulness(ctx.params.keyword, ctx.params.from, ctx.params.size);
+    }
+
+    async getMindfulnessByMindfulnessAlbumId(ctx: Context) {
+        return { data: await this.mindfulnessService.getMindfulnessByMindfulnessAlbumId(ctx.params.id) };
     }
 }

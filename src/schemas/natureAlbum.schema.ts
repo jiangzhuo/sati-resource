@@ -1,8 +1,8 @@
-import * as  mongoose from 'mongoose';
+import * as mongoose from 'mongoose';
 import * as Int32 from "mongoose-int32";
 
 const ObjectId = mongoose.Schema.Types.ObjectId;
-export const NatureSchema = new mongoose.Schema({
+export const NatureAlbumSchema = new mongoose.Schema({
     background: [String],
     name: String,
     description: String,
@@ -11,9 +11,7 @@ export const NatureSchema = new mongoose.Schema({
     createTime: Number,
     updateTime: Number,
     author: ObjectId,
-    audio: String,
     copy: String,
-    natureAlbums: { type: [ObjectId], default: [] },
     status: { type: Int32, default: 0 },
     validTime: Number,
 }, { autoIndex: true, toJSON: { virtuals: true } });

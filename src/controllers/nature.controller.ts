@@ -32,6 +32,7 @@ export class NatureController extends Service {
             },
             actions: {
                 sayHello: this.sayHello,
+
                 getNature: this.getNature,
                 getNatureById: this.getNatureById,
                 getNatureByIds: this.getNatureByIds,
@@ -47,6 +48,8 @@ export class NatureController extends Service {
                 searchNatureRecord: this.searchNatureRecord,
                 buyNature: this.buyNature,
                 searchNature: this.searchNature,
+
+                getNatureByNatureAlbumId:this.getNatureByNatureAlbumId,
                 // welcome: {
                 //     cache: {
                 //         keys: ["name"]
@@ -140,5 +143,9 @@ export class NatureController extends Service {
 
     async searchNature(ctx: Context) {
         return await this.natureService.searchNature(ctx.params.keyword, ctx.params.from, ctx.params.size);
+    }
+
+    async getNatureByNatureAlbumId(ctx: Context) {
+        return { data: await this.wanderService.getNatureByNatureAlbumId(ctx.params.id) };
     }
 }

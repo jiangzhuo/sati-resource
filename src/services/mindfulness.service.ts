@@ -1,7 +1,7 @@
 import { Model, Connection } from 'mongoose';
 import { Mindfulness } from "../interfaces/mindfulness.interface";
 import { MindfulnessRecord } from "../interfaces/mindfulnessRecord.interface";
-import { MindfulnessTransaction } from "../interfaces/mindfulnessTransaction.interface";
+// import { MindfulnessTransaction } from "../interfaces/mindfulnessTransaction.interface";
 // import { User } from "../interfaces/user.interface"
 import { Inject, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
@@ -31,7 +31,7 @@ export class MindfulnessService {
         @Inject(ElasticsearchService) private readonly elasticsearchService: ElasticsearchService,
         @InjectModel('Mindfulness') private readonly mindfulnessModel: Model<Mindfulness>,
         @InjectModel('MindfulnessRecord') private readonly mindfulnessRecordModel: Model<MindfulnessRecord>,
-        @InjectModel('MindfulnessTransaction') private readonly mindfulnessTransactionModel: Model<MindfulnessTransaction>,
+        // @InjectModel('MindfulnessTransaction') private readonly mindfulnessTransactionModel: Model<MindfulnessTransaction>,
         // @Inject(NotaddGrpcClientFactory) private readonly notaddGrpcClientFactory: NotaddGrpcClientFactory
     ) { }
 
@@ -139,6 +139,9 @@ export class MindfulnessService {
         }
         if (!isEmpty(data.status)) {
             updateObject['status'] = data.status;
+        }
+        if (isArray(data.mindfulnessAlbums)) {
+            updateObject['mindfulnessAlbums'] = data.mindfulnessAlbums;
         }
         if (isNumber(data.validTime)) {
             updateObject['validTime'] = data.validTime;
@@ -358,5 +361,9 @@ export class MindfulnessService {
 
         const ids = res[0].hits.hits.map(hit=>hit._id)
         return { total: res[0].hits.total, data: await this.getMindfulnessByIds(ids) }
+    }
+
+    async getMindfulnessByMindfulnessAlbumId(id) {
+        return await this.mindfulnessModel.find({ mindfulnessAlbums: id }).exec();
     }
 }

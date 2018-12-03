@@ -1,25 +1,18 @@
 import * as util from "util";
-import { DynamicModule, Inject, Module, OnModuleInit, Logger } from '@nestjs/common';
+import { DynamicModule, Inject, Logger, Module, OnModuleInit } from '@nestjs/common';
 // import { APP_INTERCEPTOR } from '@nestjs/core';
 import { MongooseModule } from '@nestjs/mongoose';
-// import { configure as i18nConfigure } from 'i18n';
-
-// import { NotaddGrpcClientFactory } from './grpc/grpc.client-factory';
-
 // import { MindfulnessGrpcController } from './controllers/mindfulness.grpc.controller';
 import { MindfulnessSchema } from './schemas/mindfulness.schema';
 import { MindfulnessService } from './services/mindfulness.service';
-
 // import { NatureGrpcController } from './controllers/nature.grpc.controller';
 import { NatureSchema } from './schemas/nature.schema';
 import { NatureService } from './services/nature.service';
-
 // import { WanderGrpcController } from './controllers/wander.grpc.controller';
 import { WanderSchema } from './schemas/wander.schema';
 import { WanderService } from './services/wander.service';
 
 import { WanderAlbumSchema } from './schemas/wanderAlbum.schema';
-
 // import { SceneGrpcController } from './controllers/scene.grpc.controller';
 import { SceneSchema } from './schemas/scene.schema';
 import { SceneService } from './services/scene.service';
@@ -30,8 +23,6 @@ import { WanderRecordSchema } from './schemas/wanderRecord.schema';
 import { WanderAlbumRecordSchema } from './schemas/wanderAlbumRecord.schema';
 
 import { UserSchema } from './schemas/user.schema';
-import { MindfulnessTransactionSchema } from "./schemas/mindfulnessTransaction.schema";
-
 // import { HomeGrpcController } from "./controllers/home.grpc.controller";
 import { HomeSchema } from "./schemas/home.schema";
 import { HomeService } from "./services/home.service";
@@ -45,7 +36,21 @@ import { HomeController } from "./controllers/home.controller";
 import { MindfulnessController } from "./controllers/mindfulness.controller";
 import { NatureController } from "./controllers/nature.controller";
 import { WanderController } from "./controllers/wander.controller";
+import { WanderAlbumController } from "./controllers/wanderAlbum.controller";
 import { SceneController } from "./controllers/scene.controller";
+import { NatureAlbumService } from "./services/natureAlbum.service";
+import { MindfulnessAlbumService } from "./services/mindfulnessAlbum.service";
+import { WanderAlbumService } from "./services/wanderAlbum.service";
+import { MindfulnessAlbumSchema } from "./schemas/mindfulnessAlbum.schema";
+import { NatureAlbumSchema } from "./schemas/natureAlbum.schema";
+import { MindfulnessAlbumRecordSchema } from "./schemas/mindfulnessAlbumRecord.schema";
+import { NatureAlbumRecordSchema } from "./schemas/natureAlbumRecord.schema";
+import { NatureAlbumController } from "./controllers/natureAlbum.controller";
+import { MindfulnessAlbumController } from "./controllers/mindfulnessAlbum.controller";
+// import { configure as i18nConfigure } from 'i18n';
+
+// import { NotaddGrpcClientFactory } from './grpc/grpc.client-factory';
+// import { MindfulnessTransactionSchema } from "./schemas/mindfulnessTransaction.schema";
 
 const httpclient = require('urllib');
 // const Producer = require('ali-ons').Producer;
@@ -98,7 +103,9 @@ const onsLogger = new Logger('ons', true);
             },
             // logger: Object.assign(onsLogger, { info: onsLogger.log })
         }, [{ topic: 'sati_debug', tags: 'mindfulness', type: 'producer' },
+            { topic: 'sati_debug', tags: 'mindfulness_album', type: 'producer' },
             { topic: 'sati_debug', tags: 'nature', type: 'producer' },
+            { topic: 'sati_debug', tags: 'nature_album', type: 'producer' },
             { topic: 'sati_debug', tags: 'wander', type: 'producer' },
             { topic: 'sati_debug', tags: 'wander_album', type: 'producer' }]),
         ElasticsearchModule.register({
@@ -109,18 +116,18 @@ const onsLogger = new Logger('ons', true);
         MongooseModule.forRoot('mongodb://sati:kjhguiyIUYkjh32kh@dds-2zee21d7f4fff2f41890-pub.mongodb.rds.aliyuncs.com:3717,dds-2zee21d7f4fff2f42351-pub.mongodb.rds.aliyuncs.com:3717/sati?replicaSet=mgset-9200157',
             // MongooseModule.forRoot('mongodb://localhost:27017/module_resource',
             { connectionName: 'sati', useNewUrlParser: true, useFindAndModify: false, useCreateIndex: true }),
-        MongooseModule.forFeature([{ name: 'Mindfulness', schema: MindfulnessSchema, collection: 'mindfulness' },
+        MongooseModule.forFeature([
+            { name: 'Mindfulness', schema: MindfulnessSchema, collection: 'mindfulness' },
+            { name: 'MindfulnessAlbum', schema: MindfulnessAlbumSchema, collection: 'mindfulnessAlbum' },
             { name: 'Nature', schema: NatureSchema, collection: 'nature' },
+            { name: 'NatureAlbum', schema: NatureAlbumSchema, collection: 'natureAlbum' },
             { name: 'Wander', schema: WanderSchema, collection: 'wander' },
             { name: 'WanderAlbum', schema: WanderAlbumSchema, collection: 'wanderAlbum' },
             { name: 'Scene', schema: SceneSchema, collection: 'scene' },
             { name: 'MindfulnessRecord', schema: MindfulnessRecordSchema, collection: 'mindfulnessRecord' },
-            {
-                name: 'MindfulnessTransaction',
-                schema: MindfulnessTransactionSchema,
-                collection: 'mindfulnessTransaction'
-            },
+            { name: 'MindfulnessAlbumRecord', schema: MindfulnessAlbumRecordSchema, collection: 'mindfulnessAlbumRecord' },
             { name: 'NatureRecord', schema: NatureRecordSchema, collection: 'natureRecord' },
+            { name: 'NatureAlbumRecord', schema: NatureAlbumRecordSchema, collection: 'natureAlbumRecord' },
             { name: 'WanderRecord', schema: WanderRecordSchema, collection: 'wanderRecord' },
             { name: 'WanderAlbumRecord', schema: WanderAlbumRecordSchema, collection: 'wanderAlbumRecord' },
             { name: 'Home', schema: HomeSchema, collection: 'home' },
@@ -138,15 +145,21 @@ const onsLogger = new Logger('ons', true);
         // SceneGrpcController,
         // HomeGrpcController,
         MindfulnessController,
+        MindfulnessAlbumController,
         NatureController,
+        NatureAlbumController,
         WanderController,
+        WanderAlbumController,
         SceneController,
         HomeController
     ],
     providers: [
         MindfulnessService,
+        MindfulnessAlbumService,
         NatureService,
+        NatureAlbumService,
         WanderService,
+        WanderAlbumService,
         SceneService,
         HomeService
     ],

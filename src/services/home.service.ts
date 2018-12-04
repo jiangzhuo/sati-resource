@@ -28,7 +28,7 @@ export class HomeService {
         return { msg: `Home Hello ${ name }!` };
     }
 
-    async getNew(first = 20, after?: number, before?: number, status?: number) {
+    async getNew(first = 20, after?: number, before?: number, status = 1) {
         let query = {};
         if (after) {
             query['validTime'] = { $gt: after }
@@ -40,7 +40,7 @@ export class HomeService {
                 query['validTime'] = { $lt: before }
             }
         }
-        if (status) {
+        if (status !== 0) {
             query['status'] = { $bitsAllClear: status }
         }
         let sortArg;

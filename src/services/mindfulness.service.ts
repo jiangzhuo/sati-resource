@@ -140,7 +140,7 @@ export class MindfulnessService {
         if (!isEmpty(data.copy)) {
             updateObject['copy'] = data.copy;
         }
-        if (!isEmpty(data.status)) {
+        if (isNumber(data.status)) {
             updateObject['status'] = data.status;
         }
         if (isArray(data.mindfulnessAlbums)) {
@@ -150,7 +150,7 @@ export class MindfulnessService {
             updateObject['validTime'] = data.validTime;
         }
         // console.log(updateObject)
-        return await this.mindfulnessModel.findOneAndUpdate({ _id: id }, updateObject).exec()
+        return await this.mindfulnessModel.findOneAndUpdate({ _id: id }, updateObject, { new: true }).exec()
     }
 
     async deleteMindfulness(id) {

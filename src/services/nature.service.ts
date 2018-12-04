@@ -125,7 +125,7 @@ export class NatureService {
         if (!isEmpty(data.copy)) {
             updateObject['copy'] = data.copy;
         }
-        if (!isEmpty(data.status)) {
+        if (isNumber(data.status)) {
             updateObject['status'] = data.status;
         }
         if (isArray(data.natureAlbums)) {
@@ -134,7 +134,7 @@ export class NatureService {
         if (isNumber(data.validTime)) {
             updateObject['validTime'] = data.validTime;
         }
-        return await this.natureModel.findOneAndUpdate({ _id: id }, updateObject).exec()
+        return await this.natureModel.findOneAndUpdate({ _id: id }, updateObject, { new: true }).exec()
     }
 
     async deleteNature(id) {
@@ -249,5 +249,9 @@ export class NatureService {
 
         const ids = res[0].hits.hits.map(hit=>hit._id);
         return { total: res[0].hits.total, data: await this.getNatureByIds(ids) }
+    }
+
+    async getNatureByNatureAlbumId(id) {
+        return await this.natureModel.find({ natureAlbums: id }).exec();
     }
 }

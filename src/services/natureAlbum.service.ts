@@ -128,13 +128,13 @@ export class NatureAlbumService {
         if (!isEmpty(data.copy)) {
             updateObject['copy'] = data.copy;
         }
-        if (!isEmpty(data.status)) {
+        if (isNumber(data.status)) {
             updateObject['status'] = data.status;
         }
         if (isNumber(data.validTime)) {
             updateObject['validTime'] = data.validTime;
         }
-        return await this.natureAlbumModel.findOneAndUpdate({ _id: id }, updateObject).exec()
+        return await this.natureAlbumModel.findOneAndUpdate({ _id: id }, updateObject, { new: true }).exec()
     }
 
     async deleteNatureAlbum(id) {

@@ -5,13 +5,13 @@ const ObjectId = mongoose.Schema.Types.ObjectId;
 export const NatureAlbumSchema = new mongoose.Schema({
     background: [String],
     name: String,
-    description: String,
+    description: { type: String, default: '' },
     scenes: [ObjectId],
     price: Number,
     createTime: Number,
     updateTime: Number,
     author: ObjectId,
-    copy: String,
+    copy: { type: String, default: '' },
     status: { type: Int32, default: 0 },
     validTime: Number,
 }, { autoIndex: true, toJSON: { virtuals: true } });

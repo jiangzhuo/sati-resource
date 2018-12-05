@@ -8,7 +8,7 @@ export const HomeSchema = new mongoose.Schema({
     resourceId: ObjectId,
     background: [String],
     name: String,
-    description: String,
+    description: { type: String, default: '' },
     author: ObjectId,
     createTime: Number,
     updateTime: Number,

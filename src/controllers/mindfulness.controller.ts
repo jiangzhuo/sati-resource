@@ -128,7 +128,7 @@ export class MindfulnessController extends Service {
     }
 
     async searchMindfulness(ctx: Context) {
-        return await this.mindfulnessService.searchMindfulness(ctx.params.keyword, ctx.params.from, ctx.params.size);
+        return await this.mindfulnessService.searchMindfulness(ctx.params.keyword, (ctx.params.page - 1) * ctx.params.limit, ctx.params.limit);
     }
 
     async getMindfulnessByMindfulnessAlbumId(ctx: Context) {

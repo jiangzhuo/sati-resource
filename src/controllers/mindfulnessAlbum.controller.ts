@@ -124,7 +124,7 @@ export class MindfulnessAlbumController extends Service {
     }
 
     async searchMindfulnessAlbum(ctx: Context) {
-        return await this.mindfulnessAlbumService.searchMindfulnessAlbum(ctx.params.keyword, ctx.params.from, ctx.params.size);
+        return await this.mindfulnessAlbumService.searchMindfulnessAlbum(ctx.params.keyword, (ctx.params.page - 1) * ctx.params.limit, ctx.params.limit);
     }
 
     async finishMindfulnessAlbum(ctx: Context) {

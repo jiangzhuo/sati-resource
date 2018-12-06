@@ -126,7 +126,7 @@ export class WanderController extends Service {
     }
 
     async searchWander(ctx: Context) {
-        return await this.wanderService.searchWander(ctx.params.keyword, ctx.params.from, ctx.params.size);
+        return await this.wanderService.searchWander(ctx.params.keyword, (ctx.params.page - 1) * ctx.params.limit, ctx.params.limit);
     }
 
     async finishWander(ctx: Context) {

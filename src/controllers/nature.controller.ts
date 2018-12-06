@@ -142,7 +142,7 @@ export class NatureController extends Service {
     }
 
     async searchNature(ctx: Context) {
-        return await this.natureService.searchNature(ctx.params.keyword, ctx.params.from, ctx.params.size);
+        return await this.natureService.searchNature(ctx.params.keyword, (ctx.params.page - 1) * ctx.params.limit, ctx.params.limit);
     }
 
     async getNatureByNatureAlbumId(ctx: Context) {

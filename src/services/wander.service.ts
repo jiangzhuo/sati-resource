@@ -237,9 +237,9 @@ export class WanderService {
                 query: {
                     bool: {
                         should: [
-                            { match: { name: keyword } },
-                            { match: { description: keyword } },
-                            { match: { copy: keyword } },]
+                            { wildcard: { name: keyword } },
+                            { wildcard: { description: keyword } },
+                            { wildcard: { copy: keyword } },]
                     }
                 },
                 // sort: {

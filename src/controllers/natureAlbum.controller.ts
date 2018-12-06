@@ -119,7 +119,7 @@ export class NatureAlbumController extends Service {
     }
 
     async searchNatureAlbum(ctx: Context) {
-        return await this.natureAlbumService.searchNatureAlbum(ctx.params.keyword, ctx.params.from, ctx.params.size);
+        return await this.natureAlbumService.searchNatureAlbum(ctx.params.keyword, (ctx.params.page - 1) * ctx.params.limit, ctx.params.limit);
     }
 
     async finishNatureAlbum(ctx: Context) {

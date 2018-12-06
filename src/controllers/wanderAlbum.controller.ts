@@ -124,7 +124,7 @@ export class WanderAlbumController extends Service {
     }
 
     async searchWanderAlbum(ctx: Context) {
-        return await this.wanderAlbumService.searchWanderAlbum(ctx.params.keyword, ctx.params.from, ctx.params.size);
+        return await this.wanderAlbumService.searchWanderAlbum(ctx.params.keyword, (ctx.params.page - 1) * ctx.params.limit, ctx.params.limit);
     }
 
     async finishWanderAlbum(ctx: Context) {

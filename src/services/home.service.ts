@@ -182,6 +182,22 @@ export class HomeService {
         return await this.homeModel.find(query).sort(sortArg).limit(Math.abs(first)).exec();
     }
 
+    async getHomeByFromAndSize(from?: number, size?: number, position?: number) {
+        let condition = {};
+        if (isNumber(position)) {
+            condition = { position: position }
+        }
+        return await this.homeModel.find(condition).sort({ validTime: -1 }).skip(from).limit(size).exec()
+    }
+
+    async countHome(position?: number) {
+        let condition = {}
+        if (isNumber(position)) {
+            condition = { position: position }
+        }
+        return await this.homeModel.count(condition).exec()
+    }
+
     async getHomeById(id) {
         return await this.homeModel.findOne({ _id: id }).exec()
     }

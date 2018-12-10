@@ -27,6 +27,7 @@ export class HomeController extends Service {
                 sayHello: this.sayHello,
                 getNew: this.getNew,
                 getHome: this.getHome,
+                countHome: this.countHome,
                 getHomeById: this.getHomeById,
                 createHome: this.createHome,
                 updateHome: this.updateHome,
@@ -84,7 +85,15 @@ export class HomeController extends Service {
     }
 
     async getHome(ctx: Context) {
-        return { data: await this.homeService.getHome(ctx.params.first, ctx.params.after, ctx.params.before, ctx.params.position) };
+        if (ctx.params.page) {
+            return { data: await this.homeService.getHomeByFromAndSize((ctx.params.page - 1) * ctx.params.limit, ctx.params.limit, ctx.params.position) }
+        } else {
+            return { data: await this.homeService.getHome(ctx.params.first, ctx.params.after, ctx.params.before, ctx.params.position) };
+        }
+    }
+
+    async countHome(ctx: Context){
+        return { data: await this.homeService.countHome(ctx.params.postion) }
     }
 
     async getHomeById(ctx: Context) {

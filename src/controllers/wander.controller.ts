@@ -20,9 +20,6 @@ export class WanderController extends Service {
         this.parseServiceSchema({
             name: "wander",
             //version: "v2",
-            meta: {
-                scalable: true
-            },
             // dependencies: [
             // 	"auth",
             // 	"users"

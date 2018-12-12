@@ -20,9 +20,6 @@ export class MindfulnessAlbumController extends Service {
         this.parseServiceSchema({
             name: "mindfulnessAlbum",
             //version: "v2",
-            meta: {
-                scalable: true
-            },
             // dependencies: [
             // 	"auth",
             // 	"users"

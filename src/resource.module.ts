@@ -68,7 +68,6 @@ const httpclient = require('urllib');
 // };
 
 const onsLogger = new Logger('ons', true);
-
 @Module({
     imports: [
         MoleculerModule.forRoot({
@@ -84,9 +83,9 @@ const onsLogger = new Logger('ons', true);
         // }]),
         OnsModule.register({
             httpclient,
-            accessKeyId: 'LTAIhIOInA2pDmga',
-            accessKeySecret: '9FNpKB1WZpEwxWJbiWSMiCfuy3E3TL',
-            producerGroup: 'PID_jiangzhuo_home',
+            accessKeyId: process.env.ONS_ACCESS_KEY_ID,
+            accessKeySecret: process.env.ONS_ACCESS_KEY_SECRET,
+            producerGroup: process.env.ONS_PRODUCER_GROUP,
             logger: {
                 info(...args) {
                     // onsLogger.log( util.format.apply(util, args));
@@ -109,11 +108,11 @@ const onsLogger = new Logger('ons', true);
             { topic: 'sati_debug', tags: 'wander', type: 'producer' },
             { topic: 'sati_debug', tags: 'wander_album', type: 'producer' }]),
         ElasticsearchModule.register({
-            host: 'http://es-cn-mp90uekur0001c8sa.public.elasticsearch.aliyuncs.com:9200',
-            httpAuth: 'elastic:Its%queOress2',
-            log: 'trace',
+            host: process.env.ELASTICSEARCH_HOST,
+            httpAuth: process.env.HTTP_AUTH,
+            log: process.env.LOG_LEVEL,
         }),
-        MongooseModule.forRoot('mongodb://sati:kjhguiyIUYkjh32kh@dds-2zee21d7f4fff2f41890-pub.mongodb.rds.aliyuncs.com:3717,dds-2zee21d7f4fff2f42351-pub.mongodb.rds.aliyuncs.com:3717/sati_jiangzhuo_home?replicaSet=mgset-9200157',
+        MongooseModule.forRoot(process.env.MONGODB_CONNECTION_STR,
             // MongooseModule.forRoot('mongodb://localhost:27017/module_resource',
             { connectionName: 'sati', useNewUrlParser: true, useFindAndModify: false, useCreateIndex: true }),
         MongooseModule.forFeature([

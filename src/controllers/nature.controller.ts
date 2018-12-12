@@ -20,9 +20,6 @@ export class NatureController extends Service {
         this.parseServiceSchema({
             name: "nature",
             //version: "v2",
-            meta: {
-                scalable: true
-            },
             // dependencies: [
             // 	"auth",
             // 	"users"

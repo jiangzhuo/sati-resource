@@ -15,9 +15,6 @@ export class MindfulnessController extends Service {
         this.parseServiceSchema({
             name: "mindfulness",
             //version: "v2",
-            meta: {
-                scalable: true
-            },
             // dependencies: [
             // 	"auth",
             // 	"users"

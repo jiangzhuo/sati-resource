@@ -20,9 +20,6 @@ export class SceneController extends Service {
         this.parseServiceSchema({
             name: "scene",
             //version: "v2",
-            meta: {
-                scalable: true
-            },
             // dependencies: [
             // 	"auth",
             // 	"users"

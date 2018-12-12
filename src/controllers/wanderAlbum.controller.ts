@@ -20,9 +20,6 @@ export class WanderAlbumController extends Service {
         this.parseServiceSchema({
             name: "wanderAlbum",
             //version: "v2",
-            meta: {
-                scalable: true
-            },
             // dependencies: [
             // 	"auth",
             // 	"users"

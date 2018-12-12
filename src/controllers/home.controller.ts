@@ -13,9 +13,6 @@ export class HomeController extends Service {
         this.parseServiceSchema({
             name: "home",
             //version: "v2",
-            meta: {
-                scalable: true
-            },
             // dependencies: [
             // 	"auth",
             // 	"users"

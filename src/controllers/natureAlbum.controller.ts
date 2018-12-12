@@ -15,9 +15,6 @@ export class NatureAlbumController extends Service {
         this.parseServiceSchema({
             name: "natureAlbum",
             //version: "v2",
-            meta: {
-                scalable: true
-            },
             // dependencies: [
             // 	"auth",
             // 	"users"

@@ -1,5 +1,5 @@
 {
-    "name": "sati-user",
+    "name": "sati-resource",
     "version": "0.0.1",
     "description": "The user module for sta application.",
     "scripts": {

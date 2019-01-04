@@ -109,7 +109,7 @@ const onsLogger = new Logger('ons', true);
             { topic: 'sati_debug', tags: 'wander_album', type: 'producer' }]),
         ElasticsearchModule.register({
             host: process.env.ELASTICSEARCH_HOST,
-            httpAuth: process.env.HTTP_AUTH,
+            httpAuth: process.env.ELASTICSEARCH_HTTP_AUTH,
             log: process.env.LOG_LEVEL,
         }),
         MongooseModule.forRoot(process.env.MONGODB_CONNECTION_STR,

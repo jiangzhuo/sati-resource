@@ -1,19 +1,14 @@
 import * as util from "util";
 import { DynamicModule, Inject, Logger, Module, OnModuleInit } from '@nestjs/common';
-// import { APP_INTERCEPTOR } from '@nestjs/core';
 import { MongooseModule } from '@nestjs/mongoose';
-// import { MindfulnessGrpcController } from './controllers/mindfulness.grpc.controller';
 import { MindfulnessSchema } from './schemas/mindfulness.schema';
 import { MindfulnessService } from './services/mindfulness.service';
-// import { NatureGrpcController } from './controllers/nature.grpc.controller';
 import { NatureSchema } from './schemas/nature.schema';
 import { NatureService } from './services/nature.service';
-// import { WanderGrpcController } from './controllers/wander.grpc.controller';
 import { WanderSchema } from './schemas/wander.schema';
 import { WanderService } from './services/wander.service';
 
 import { WanderAlbumSchema } from './schemas/wanderAlbum.schema';
-// import { SceneGrpcController } from './controllers/scene.grpc.controller';
 import { SceneSchema } from './schemas/scene.schema';
 import { SceneService } from './services/scene.service';
 
@@ -23,14 +18,10 @@ import { WanderRecordSchema } from './schemas/wanderRecord.schema';
 import { WanderAlbumRecordSchema } from './schemas/wanderAlbumRecord.schema';
 
 import { UserSchema } from './schemas/user.schema';
-// import { HomeGrpcController } from "./controllers/home.grpc.controller";
 import { HomeSchema } from "./schemas/home.schema";
 import { HomeService } from "./services/home.service";
 
 import { ElasticsearchModule } from '@nestjs/elasticsearch';
-// import { MessageQueueModule } from "./modules/messageQueue.module";
-import { OnsModule } from 'nestjs-ali-ons';
-// import { MyLogger } from "./logger";
 import { MoleculerModule } from 'nestjs-moleculer';
 import { HomeController } from "./controllers/home.controller";
 import { MindfulnessController } from "./controllers/mindfulness.controller";
@@ -47,27 +38,13 @@ import { MindfulnessAlbumRecordSchema } from "./schemas/mindfulnessAlbumRecord.s
 import { NatureAlbumRecordSchema } from "./schemas/natureAlbumRecord.schema";
 import { NatureAlbumController } from "./controllers/natureAlbum.controller";
 import { MindfulnessAlbumController } from "./controllers/mindfulnessAlbum.controller";
-// import { configure as i18nConfigure } from 'i18n';
+import { DiscountService } from "./services/discount.service";
+import { Discount } from "./interfaces/discount.interface";
+import { DiscountController } from "./controllers/discount.controller";
+import { DiscountSchema } from "./schemas/discount.schema";
 
-// import { NotaddGrpcClientFactory } from './grpc/grpc.client-factory';
-// import { MindfulnessTransactionSchema } from "./schemas/mindfulnessTransaction.schema";
+// const httpclient = require('urllib');
 
-const httpclient = require('urllib');
-// const Producer = require('ali-ons').Producer;
-// const Message = require('ali-ons').Message;
-// const logger = {
-//     info() {
-//     },
-//     warn() {
-//     },
-//     error(...args) {
-//         console.error(...args);
-//     },
-//     debug() {
-//     },
-// };
-
-const onsLogger = new Logger('ons', true);
 @Module({
     imports: [
         MoleculerModule.forRoot({
@@ -81,32 +58,6 @@ const onsLogger = new Logger('ons', true);
         //     schema: HomeController,
         //     // schemaMods: { name: "newGreeter", version: "v3" }
         // }]),
-        OnsModule.register({
-            httpclient,
-            accessKeyId: process.env.ONS_ACCESS_KEY_ID,
-            accessKeySecret: process.env.ONS_ACCESS_KEY_SECRET,
-            producerGroup: process.env.ONS_PRODUCER_GROUP,
-            logger: {
-                info(...args) {
-                    // onsLogger.log( util.format.apply(util, args));
-                },
-                warn(...args) {
-                    onsLogger.warn( util.format.apply(util, args));
-                },
-                error(...args) {
-                    onsLogger.error( util.format.apply(util, args));
-                },
-                debug(...args) {
-                    // onsLogger.log( util.format.apply(util, args));
-                },
-            },
-            // logger: Object.assign(onsLogger, { info: onsLogger.log })
-        }, [{ topic: 'sati_debug', tags: 'mindfulness', type: 'producer' },
-            { topic: 'sati_debug', tags: 'mindfulness_album', type: 'producer' },
-            { topic: 'sati_debug', tags: 'nature', type: 'producer' },
-            { topic: 'sati_debug', tags: 'nature_album', type: 'producer' },
-            { topic: 'sati_debug', tags: 'wander', type: 'producer' },
-            { topic: 'sati_debug', tags: 'wander_album', type: 'producer' }]),
         ElasticsearchModule.register({
             host: process.env.ELASTICSEARCH_HOST,
             httpAuth: process.env.ELASTICSEARCH_HTTP_AUTH,
@@ -130,7 +81,8 @@ const onsLogger = new Logger('ons', true);
             { name: 'WanderRecord', schema: WanderRecordSchema, collection: 'wanderRecord' },
             { name: 'WanderAlbumRecord', schema: WanderAlbumRecordSchema, collection: 'wanderAlbumRecord' },
             { name: 'Home', schema: HomeSchema, collection: 'home' },
-            { name: 'User', schema: UserSchema, collection: 'user' }
+            { name: 'User', schema: UserSchema, collection: 'user' },
+            { name: 'Discount', schema: DiscountSchema, collection: 'discount' }
         ], 'sati'),
         // MongooseModule.forRoot('mongodb://sati:kjhguiyIUYkjh32kh@dds-2zee21d7f4fff2f41890-pub.mongodb.rds.aliyuncs.com:3717,dds-2zee21d7f4fff2f42351-pub.mongodb.rds.aliyuncs.com:3717/sati_user?replicaSet=mgset-9200157',
         //     // MongooseModule.forRoot('mongodb://localhost:27017/module_resource',
@@ -150,7 +102,8 @@ const onsLogger = new Logger('ons', true);
         WanderController,
         WanderAlbumController,
         SceneController,
-        HomeController
+        HomeController,
+        DiscountController,
     ],
     providers: [
         MindfulnessService,
@@ -160,7 +113,8 @@ const onsLogger = new Logger('ons', true);
         WanderService,
         WanderAlbumService,
         SceneService,
-        HomeService
+        HomeService,
+        DiscountService
     ],
     exports: []
 })
@@ -170,6 +124,7 @@ export class ResourceModule implements OnModuleInit {
         @Inject(NatureService) private readonly natureService: NatureService,
         @Inject(WanderService) private readonly wanderService: WanderService,
         @Inject(SceneService) private readonly sceneService: SceneService,
+        @Inject(DiscountService) private readonly discountService: DiscountService,
         // @InjectRepository(User) private readonly userRepo: Repository<User>
     ) {
     }

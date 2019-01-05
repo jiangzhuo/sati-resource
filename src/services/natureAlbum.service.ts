@@ -10,16 +10,12 @@ import { isEmpty, isNumber, isArray, isBoolean } from 'lodash';
 // import { RpcException } from "@nestjs/microservices";
 // import { __ as t } from "i18n";
 import { ElasticsearchService } from '@nestjs/elasticsearch';
-import { Producer } from 'ali-ons';
-import { InjectProducer } from 'nestjs-ali-ons';
 import * as Moleculer from "moleculer";
 import MoleculerError = Moleculer.Errors.MoleculerError;
 
 @Injectable()
 export class NatureAlbumService {
     constructor(
-        @InjectProducer('sati_debug', 'nature') private readonly natureProducer: Producer,
-        @InjectProducer('sati_debug', 'nature_album') private readonly natureAlbumProducer: Producer,
         @Inject(ElasticsearchService) private readonly elasticsearchService: ElasticsearchService,
         @InjectModel('Nature') private readonly natureModel: Model<Nature>,
         @InjectModel('NatureAlbum') private readonly natureAlbumModel: Model<NatureAlbum>,
@@ -152,16 +148,6 @@ export class NatureAlbumService {
             userId: userId,
             natureAlbumId: natureAlbumId
         }, { $inc: { favorite: 1 } }, { upsert: true, new: true, setDefaultsOnInsert: true }).exec()
-        try {
-            await this.natureAlbumProducer.send(JSON.stringify({
-                type: 'natureAlbum',
-                userId: userId,
-                natureAlbumId: natureAlbumId
-            }), ['favorite'])
-        } catch (e) {
-            // todo sentry
-            console.error(e)
-        }
         return result
     }
 
@@ -172,16 +158,6 @@ export class NatureAlbumService {
             },
             { $inc: { startCount: 1 }, $set: { lastStartTime: moment().unix() } },
             { upsert: true, new: true, setDefaultsOnInsert: true }).exec()
-        try {
-            await this.natureAlbumProducer.send(JSON.stringify({
-                type: 'natureAlbum',
-                userId: userId,
-                natureAlbumId: natureAlbumId
-            }), ['start'])
-        } catch (e) {
-            // todo sentry
-            console.error(e)
-        }
         return result
     }
 
@@ -197,17 +173,6 @@ export class NatureAlbumService {
             },
             updateObj,
             { upsert: true, new: true, setDefaultsOnInsert: true }).exec()
-        try {
-            await this.natureAlbumProducer.send(JSON.stringify({
-                type: 'natureAlbum',
-                userId: userId,
-                natureAlbumId: natureAlbumId,
-                duration: duration
-            }), ['finish'])
-        } catch (e) {
-            // todo sentry
-            console.error(e)
-        }
         return result
     }
 
@@ -223,16 +188,6 @@ export class NatureAlbumService {
             { userId: userId, natureAlbumId: natureAlbumId },
             { $set: { boughtTime: moment().unix() } },
             { upsert: true, new: true, setDefaultsOnInsert: true }).exec()
-        try {
-            await this.natureAlbumProducer.send(JSON.stringify({
-                type: 'natureAlbum',
-                userId: userId,
-                natureAlbumId: natureAlbumId
-            }), ['buy'])
-        } catch (e) {
-            // todo sentry
-            console.error(e)
-        }
         return result
     }
 

@@ -8,15 +8,12 @@ import { isEmpty, isNumber, isArray, isBoolean } from 'lodash';
 import { RpcException } from "@nestjs/microservices";
 // import { __ as t } from "i18n";
 import { ElasticsearchService } from '@nestjs/elasticsearch';
-import { Producer } from 'ali-ons';
-import { InjectProducer } from 'nestjs-ali-ons';
 import { Errors } from "moleculer";
 import MoleculerError = Errors.MoleculerError;
 
 @Injectable()
 export class NatureService {
     constructor(
-        @InjectProducer('sati_debug', 'nature') private readonly producer: Producer,
         @Inject(ElasticsearchService) private readonly elasticsearchService: ElasticsearchService,
         @InjectModel('Nature') private readonly natureModel: Model<Nature>,
         @InjectModel('NatureRecord') private readonly natureRecordModel: Model<NatureRecord>
@@ -150,16 +147,6 @@ export class NatureService {
             userId: userId,
             natureId: natureId
         }, { $inc: { favorite: 1 } }, { upsert: true, new: true, setDefaultsOnInsert: true }).exec()
-        try {
-            await this.producer.send(JSON.stringify({
-                type: 'nature',
-                userId: userId,
-                natureId: natureId
-            }), ['favorite'])
-        } catch (e) {
-            // todo sentry
-            console.error(e)
-        }
         return result
 
     }
@@ -168,16 +155,6 @@ export class NatureService {
         let result = await this.natureRecordModel.findOneAndUpdate({ userId: userId, natureId: natureId },
             { $inc: { startCount: 1 }, $set: { lastStartTime: moment().unix() } },
             { upsert: true, new: true, setDefaultsOnInsert: true }).exec()
-        try {
-            await this.producer.send(JSON.stringify({
-                type: 'nature',
-                userId: userId,
-                natureId: natureId
-            }), ['start'])
-        } catch (e) {
-            // todo sentry
-            console.error(e)
-        }
         return result
     }
 
@@ -190,17 +167,6 @@ export class NatureService {
         let result = await this.natureRecordModel.findOneAndUpdate({ userId: userId, natureId: natureId },
             updateObj,
             { upsert: true, new: true, setDefaultsOnInsert: true }).exec()
-        try {
-            await this.producer.send(JSON.stringify({
-                type: 'nature',
-                userId: userId,
-                natureId: natureId,
-                duration: duration
-            }), ['finish'])
-        } catch (e) {
-            // todo sentry
-            console.error(e)
-        }
         return result
     }
 
@@ -213,16 +179,6 @@ export class NatureService {
             { userId: userId, natureId: natureId },
             { $set: { boughtTime: moment().unix() } },
             { upsert: true, new: true, setDefaultsOnInsert: true }).exec()
-        try {
-            await this.producer.send(JSON.stringify({
-                type: 'nature',
-                userId: userId,
-                natureId: natureId
-            }), ['buy'])
-        } catch (e) {
-            // todo sentry
-            console.error(e)
-        }
         return result
     }
 

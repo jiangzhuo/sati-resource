@@ -10,16 +10,12 @@ import { isEmpty, isNumber, isArray, isBoolean } from 'lodash';
 // import { RpcException } from "@nestjs/microservices";
 // import { __ as t } from "i18n";
 import { ElasticsearchService } from '@nestjs/elasticsearch';
-import { Producer } from 'ali-ons';
-import { InjectProducer } from 'nestjs-ali-ons';
 import * as Moleculer from "moleculer";
 import MoleculerError = Moleculer.Errors.MoleculerError;
 
 @Injectable()
 export class WanderAlbumService {
     constructor(
-        @InjectProducer('sati_debug', 'wander') private readonly wanderProducer: Producer,
-        @InjectProducer('sati_debug', 'wander_album') private readonly wanderAlbumProducer: Producer,
         @Inject(ElasticsearchService) private readonly elasticsearchService: ElasticsearchService,
         @InjectModel('Wander') private readonly wanderModel: Model<Wander>,
         @InjectModel('WanderAlbum') private readonly wanderAlbumModel: Model<WanderAlbum>,
@@ -152,16 +148,6 @@ export class WanderAlbumService {
             userId: userId,
             wanderAlbumId: wanderAlbumId
         }, { $inc: { favorite: 1 } }, { upsert: true, new: true, setDefaultsOnInsert: true }).exec()
-        try {
-            await this.wanderAlbumProducer.send(JSON.stringify({
-                type: 'wanderAlbum',
-                userId: userId,
-                wanderAlbumId: wanderAlbumId
-            }), ['favorite'])
-        } catch (e) {
-            // todo sentry
-            console.error(e)
-        }
         return result
     }
 
@@ -172,16 +158,6 @@ export class WanderAlbumService {
             },
             { $inc: { startCount: 1 }, $set: { lastStartTime: moment().unix() } },
             { upsert: true, new: true, setDefaultsOnInsert: true }).exec()
-        try {
-            await this.wanderAlbumProducer.send(JSON.stringify({
-                type: 'wanderAlbum',
-                userId: userId,
-                wanderAlbumId: wanderAlbumId
-            }), ['start'])
-        } catch (e) {
-            // todo sentry
-            console.error(e)
-        }
         return result
     }
 
@@ -197,17 +173,6 @@ export class WanderAlbumService {
             },
             updateObj,
             { upsert: true, new: true, setDefaultsOnInsert: true }).exec()
-        try {
-            await this.wanderAlbumProducer.send(JSON.stringify({
-                type: 'wanderAlbum',
-                userId: userId,
-                wanderAlbumId: wanderAlbumId,
-                duration: duration
-            }), ['finish'])
-        } catch (e) {
-            // todo sentry
-            console.error(e)
-        }
         return result
     }
 
@@ -223,16 +188,6 @@ export class WanderAlbumService {
             { userId: userId, wanderAlbumId: wanderAlbumId },
             { $set: { boughtTime: moment().unix() } },
             { upsert: true, new: true, setDefaultsOnInsert: true }).exec()
-        try {
-            await this.wanderAlbumProducer.send(JSON.stringify({
-                type: 'wanderAlbum',
-                userId: userId,
-                wanderAlbumId: wanderAlbumId
-            }), ['buy'])
-        } catch (e) {
-            // todo sentry
-            console.error(e)
-        }
         return result
     }
 

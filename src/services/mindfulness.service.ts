@@ -15,8 +15,8 @@ import { isEmpty, isNumber, isArray, isBoolean } from 'lodash';
 // import { __ as t } from "i18n";
 import { ElasticsearchService } from '@nestjs/elasticsearch';
 // import { MessageQueueService } from "../modules/messageQueue.service";
-import { Producer } from 'ali-ons';
-import {InjectProducer} from 'nestjs-ali-ons';
+// import { Producer } from 'ali-ons';
+// import {InjectProducer} from 'nestjs-ali-ons';
 import * as Moleculer from "moleculer";
 import MoleculerError = Moleculer.Errors.MoleculerError;
 
@@ -27,7 +27,7 @@ export class MindfulnessService {
     }
 
     constructor(
-        @InjectProducer('sati_debug', 'mindfulness') private readonly producer: Producer,
+        // @InjectProducer('sati_debug', 'mindfulness') private readonly producer: Producer,
         @Inject(ElasticsearchService) private readonly elasticsearchService: ElasticsearchService,
         @InjectModel('Mindfulness') private readonly mindfulnessModel: Model<Mindfulness>,
         @InjectModel('MindfulnessRecord') private readonly mindfulnessRecordModel: Model<MindfulnessRecord>,
@@ -166,35 +166,13 @@ export class MindfulnessService {
             userId: userId,
             mindfulnessId: mindfulnessId
         }, { $inc: { favorite: 1 } }, { upsert: true, new: true, setDefaultsOnInsert: true }).exec()
-        if ((result.favorite & 1)) {
-            try {
-                await this.producer.send(JSON.stringify({
-                    type: 'mindfulness',
-                    userId: userId,
-                    mindfulnessId: mindfulnessId
-                }),['favorite'])
-            } catch (e) {
-                // todo sentry
-                console.error(e)
-            }
-        }
         return result
     }
 
     async startMindfulness(userId, mindfulnessId) {
         let result = await this.mindfulnessRecordModel.findOneAndUpdate({ userId: userId, mindfulnessId: mindfulnessId },
             { $inc: { startCount: 1 }, $set: { lastStartTime: moment().unix() } },
-            { upsert: true, new: true, setDefaultsOnInsert: true }).exec()
-        try {
-            await this.producer.send(JSON.stringify({
-                type: 'mindfulness',
-                userId: userId,
-                mindfulnessId: mindfulnessId
-            }), ['start'])
-        } catch (e) {
-            // todo sentry
-            console.error(e)
-        }
+            { upsert: true, new: true, setDefaultsOnInsert: true }).exec();
         return result
     }
 
@@ -207,17 +185,6 @@ export class MindfulnessService {
         let result = await this.mindfulnessRecordModel.findOneAndUpdate({ userId: userId, mindfulnessId: mindfulnessId },
             updateObj,
             { upsert: true, new: true, setDefaultsOnInsert: true }).exec()
-        try {
-            await this.producer.send(JSON.stringify({
-                type: 'mindfulness',
-                userId: userId,
-                mindfulnessId: mindfulnessId,
-                duration: duration
-            }), ['finish'])
-        } catch (e) {
-            // todo sentry
-            console.error(e)
-        }
         return result
     }
 
@@ -328,16 +295,6 @@ export class MindfulnessService {
             { userId: userId, mindfulnessId: mindfulnessId},
             { $set: { boughtTime: moment().unix() } },
             { upsert: true, new: true, setDefaultsOnInsert: true }).exec();
-        try {
-            await this.producer.send(JSON.stringify({
-                type: 'mindfulness',
-                userId: userId,
-                mindfulnessId: mindfulnessId
-            }), ['buy'])
-        } catch (e) {
-            // todo sentry
-            console.error(e)
-        }
         return mindfulness;
     }
 

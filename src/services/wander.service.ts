@@ -10,16 +10,12 @@ import { isEmpty, isNumber, isArray, isBoolean } from 'lodash';
 import { RpcException } from "@nestjs/microservices";
 // import { __ as t } from "i18n";
 import { ElasticsearchService } from '@nestjs/elasticsearch';
-import { Producer } from 'ali-ons';
-import { InjectProducer } from 'nestjs-ali-ons';
 import * as Moleculer from "moleculer";
 import MoleculerError = Moleculer.Errors.MoleculerError;
 
 @Injectable()
 export class WanderService {
     constructor(
-        @InjectProducer('sati_debug', 'wander') private readonly wanderProducer: Producer,
-        @InjectProducer('sati_debug', 'wander_album') private readonly wanderAlbumProducer: Producer,
         @Inject(ElasticsearchService) private readonly elasticsearchService: ElasticsearchService,
         @InjectModel('Wander') private readonly wanderModel: Model<Wander>,
         @InjectModel('WanderAlbum') private readonly wanderAlbumModel: Model<WanderAlbum>,
@@ -152,16 +148,6 @@ export class WanderService {
             userId: userId,
             wanderId: wanderId
         }, { $inc: { favorite: 1 } }, { upsert: true, new: true, setDefaultsOnInsert: true }).exec()
-        try {
-            await this.wanderProducer.send(JSON.stringify({
-                type: 'wander',
-                userId: userId,
-                wanderId: wanderId
-            }), ['favorite'])
-        } catch (e) {
-            // todo sentry
-            console.error(e)
-        }
         return result
     }
 
@@ -169,16 +155,6 @@ export class WanderService {
         let result = await this.wanderRecordModel.findOneAndUpdate({ userId: userId, wanderId: wanderId },
             { $inc: { startCount: 1 }, $set: { lastStartTime: moment().unix() } },
             { upsert: true, new: true, setDefaultsOnInsert: true }).exec()
-        try {
-            await this.wanderProducer.send(JSON.stringify({
-                type: 'wander',
-                userId: userId,
-                wanderId: wanderId
-            }), ['start'])
-        } catch (e) {
-            // todo sentry
-            console.error(e)
-        }
         return result
     }
 
@@ -191,17 +167,6 @@ export class WanderService {
         let result = await this.wanderRecordModel.findOneAndUpdate({ userId: userId, wanderId: wanderId },
             updateObj,
             { upsert: true, new: true, setDefaultsOnInsert: true }).exec()
-        try {
-            await this.wanderProducer.send(JSON.stringify({
-                type: 'wander',
-                userId: userId,
-                wanderId: wanderId,
-                duration: duration
-            }), ['finish'])
-        } catch (e) {
-            // todo sentry
-            console.error(e)
-        }
         return result
     }
 
@@ -214,16 +179,6 @@ export class WanderService {
             { userId: userId, wanderId: wanderId },
             { $set: { boughtTime: moment().unix() } },
             { upsert: true, new: true, setDefaultsOnInsert: true }).exec()
-        try {
-            await this.wanderProducer.send(JSON.stringify({
-                type: 'wander',
-                userId: userId,
-                wanderId: wanderId
-            }), ['buy'])
-        } catch (e) {
-            // todo sentry
-            console.error(e)
-        }
         return result
     }
 

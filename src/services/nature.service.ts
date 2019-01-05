@@ -1,8 +1,8 @@
-import { Model } from 'mongoose';
+import { Connection, Model } from 'mongoose';
 import { Nature } from "../interfaces/nature.interface";
 import { NatureRecord } from "../interfaces/natureRecord.interface";
 import { Inject, Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
+import { InjectModel, InjectConnection } from '@nestjs/mongoose';
 import * as moment from "moment";
 import { isEmpty, isNumber, isArray, isBoolean } from 'lodash';
 import { RpcException } from "@nestjs/microservices";
@@ -10,11 +10,17 @@ import { RpcException } from "@nestjs/microservices";
 import { ElasticsearchService } from '@nestjs/elasticsearch';
 import { Errors } from "moleculer";
 import MoleculerError = Errors.MoleculerError;
+import * as Sentry from "@sentry/node";
+import { User } from "../interfaces/user.interface";
+import { Account } from "../interfaces/account.interface";
 
 @Injectable()
 export class NatureService {
     constructor(
         @Inject(ElasticsearchService) private readonly elasticsearchService: ElasticsearchService,
+        @InjectConnection('sati') private readonly resourceClient: Connection,
+        @InjectModel('User') private readonly userModel: Model<User>,
+        @InjectModel('Account') private readonly accountModel: Model<Account>,
         @InjectModel('Nature') private readonly natureModel: Model<Nature>,
         @InjectModel('NatureRecord') private readonly natureRecordModel: Model<NatureRecord>
     ) { }
@@ -171,15 +177,83 @@ export class NatureService {
     }
 
     async buyNature(userId, natureId) {
-        const oldNature = await this.natureRecordModel.findOne({ userId: userId, natureId: natureId }).exec();
+        // const oldNature = await this.natureRecordModel.findOne({ userId: userId, natureId: natureId }).exec();
+        // if (oldNature && oldNature.boughtTime !== 0)
+        //     // throw new RpcException({ code: 400, message: t('already bought') });
+        //     throw new MoleculerError('already bought', 400);
+        // let result = await this.natureRecordModel.findOneAndUpdate(
+        //     { userId: userId, natureId: natureId },
+        //     { $set: { boughtTime: moment().unix() } },
+        //     { upsert: true, new: true, setDefaultsOnInsert: true }).exec()
+        // try {
+        //     await this.producer.send(JSON.stringify({
+        //         type: 'nature',
+        //         userId: userId,
+        //         natureId: natureId
+        //     }), ['buy'])
+        // } catch (e) {
+        //     // todo sentry
+        //     console.error(e)
+        // }
+        // return result
+
+
+        // 检查有没有这个nature
+        const nature = await this.getNatureById(natureId);
+        if (!nature) throw new MoleculerError('not have this nature', 404);
+        // 检查是不是买过
+        const oldNature = await this.natureRecordModel.findOne({
+            userId: userId,
+            natureId: natureId
+        }).exec();
         if (oldNature && oldNature.boughtTime !== 0)
-            // throw new RpcException({ code: 400, message: t('already bought') });
             throw new MoleculerError('already bought', 400);
         let result = await this.natureRecordModel.findOneAndUpdate(
             { userId: userId, natureId: natureId },
             { $set: { boughtTime: moment().unix() } },
             { upsert: true, new: true, setDefaultsOnInsert: true }).exec()
         return result
+
+        const session = await this.resourceClient.startSession();
+        session.startTransaction();
+        try {
+            const user = await this.userModel.findOneAndUpdate({
+                _id: userId,
+                balance: { $gte: nature.price }
+            }, { $inc: { balance: -1 * nature.price } }, { new: true }).session(session).exec();
+            if (!user) throw new MoleculerError('not enough balance', 402);
+            await this.accountModel.create([{
+                userId: userId,
+                value: -1 * nature.price,
+                afterBalance: user.balance,
+                type: 'nature',
+                createTime: moment().unix(),
+                extraInfo: JSON.stringify(nature),
+            }], { session: session });
+            const natureRecord = await this.natureRecordModel.findOneAndUpdate(
+                { userId: userId, natureId: natureId },
+                { $set: { boughtTime: moment().unix() } },
+                { upsert: true, new: true, setDefaultsOnInsert: true }).session(session).exec();
+            await session.commitTransaction();
+            session.endSession();
+
+            try {
+                await this.producer.send(JSON.stringify({
+                    type: 'nature',
+                    userId: userId,
+                    natureId: natureId
+                }), ['buy'])
+            } catch (e) {
+                Sentry.captureException(e)
+            }
+            return natureRecord
+        } catch (error) {
+            // If an error occurred, abort the whole transaction and
+            // undo any changes that might have happened
+            await session.abortTransaction();
+            session.endSession();
+            throw error; // Rethrow so calling function sees error
+        }
     }
 
     async searchNature(keyword, from, size) {

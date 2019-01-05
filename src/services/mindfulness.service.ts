@@ -1,10 +1,13 @@
+import * as Sentry from '@sentry/node';
 import { Model, Connection } from 'mongoose';
 import { Mindfulness } from "../interfaces/mindfulness.interface";
+import { User } from "../interfaces/user.interface";
+import { Account } from "../interfaces/account.interface";
 import { MindfulnessRecord } from "../interfaces/mindfulnessRecord.interface";
 // import { MindfulnessTransaction } from "../interfaces/mindfulnessTransaction.interface";
 // import { User } from "../interfaces/user.interface"
 import { Inject, Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
+import { InjectModel, InjectConnection } from '@nestjs/mongoose';
 
 // import { NotaddGrpcClientFactory } from '../grpc/grpc.client-factory';
 
@@ -29,16 +32,20 @@ export class MindfulnessService {
     constructor(
         // @InjectProducer('sati_debug', 'mindfulness') private readonly producer: Producer,
         @Inject(ElasticsearchService) private readonly elasticsearchService: ElasticsearchService,
+        @InjectConnection('sati') private readonly resourceClient: Connection,
+        @InjectModel('User') private readonly userModel: Model<User>,
+        @InjectModel('Account') private readonly accountModel: Model<Account>,
         @InjectModel('Mindfulness') private readonly mindfulnessModel: Model<Mindfulness>,
         @InjectModel('MindfulnessRecord') private readonly mindfulnessRecordModel: Model<MindfulnessRecord>,
         // @InjectModel('MindfulnessTransaction') private readonly mindfulnessTransactionModel: Model<MindfulnessTransaction>,
         // @Inject(NotaddGrpcClientFactory) private readonly notaddGrpcClientFactory: NotaddGrpcClientFactory
-    ) { }
+    ) {
+    }
 
     // private userServiceInterface;
 
     async sayHello(name: string) {
-        return { msg: `Mindfulness Hello ${name}!` };
+        return { msg: `Mindfulness Hello ${ name }!` };
     }
 
     async getMindfulness(first = 20, after?: number, before?: number, status = 1) {
@@ -258,44 +265,77 @@ export class MindfulnessService {
         // const res = await this.userServiceInterface.changeBalance({id:userId,changeValue:1000}).toPromise();
         // console.log(res);
 
-        // const res = await this.userModel.findOneAndUpdate({ _id: userId }, { $inc: { balance: 10000 } }).exec();
-        // console.log(res);
-        // const session = await this.resourceClient.startSession();
-        // session.startTransaction();
-        // try {
-        //     const opts = { session, returnOriginal: false };
-        //     const A = await db.collection('Account').findOneAndUpdate({ name: from }, { $inc: { balance: -amount } }, opts).
-        //     then(res => res.value);
-        //     if (A.balance < 0) {
-        //         // If A would have negative balance, fail and abort the transaction
-        //         // `session.abortTransaction()` will undo the above `findOneAndUpdate()`
-        //         throw new Error('Insufficient funds: ' + (A.balance + amount));
-        //     }
-        //
-        //     const B = await db.collection('Account').
-        //     findOneAndUpdate({ name: to }, { $inc: { balance: amount } }, opts).
-        //     then(res => res.value);
-        //
-        //     await session.commitTransaction();
-        //     session.endSession();
-        //     return { from: A, to: B };
-        // } catch (error) {
-        //     // If an error occurred, abort the whole transaction and
-        //     // undo any changes that might have happened
-        //     await session.abortTransaction();
-        //     session.endSession();
-        //     throw error; // Rethrow so calling function sees error
-        // }
-
-
-        const oldMindfulness = await this.mindfulnessRecordModel.findOne({ userId: userId, mindfulnessId: mindfulnessId }).exec();
+        // 检查有没有这个mindfulness
+        const mindfulness = await this.getMindfulnessById(mindfulnessId);
+        if (!mindfulness) throw new MoleculerError('not have this mindfulness', 404);
+        // 检查是不是买过
+        const oldMindfulness = await this.mindfulnessRecordModel.findOne({
+            userId: userId,
+            mindfulnessId: mindfulnessId
+        }).exec();
         if (oldMindfulness && oldMindfulness.boughtTime !== 0)
             throw new MoleculerError('already bought', 400);
-        const mindfulness = await this.mindfulnessRecordModel.findOneAndUpdate(
-            { userId: userId, mindfulnessId: mindfulnessId},
-            { $set: { boughtTime: moment().unix() } },
-            { upsert: true, new: true, setDefaultsOnInsert: true }).exec();
-        return mindfulness;
+
+        const session = await this.resourceClient.startSession();
+        session.startTransaction();
+        try {
+            const user = await this.userModel.findOneAndUpdate({
+                _id: userId,
+                balance: { $gte: mindfulness.price }
+            }, { $inc: { balance: -1 * mindfulness.price } }, { new: true }).session(session).exec();
+            if (!user) throw new MoleculerError('not enough balance', 402);
+            await this.accountModel.create([{
+                userId: userId,
+                value: -1 * mindfulness.price,
+                afterBalance: user.balance,
+                type: 'mindfulness',
+                createTime: moment().unix(),
+                extraInfo: JSON.stringify(mindfulness),
+            }], { session: session });
+            const mindfulnessRecord = await this.mindfulnessRecordModel.findOneAndUpdate(
+                { userId: userId, mindfulnessId: mindfulnessId },
+                { $set: { boughtTime: moment().unix() } },
+                { upsert: true, new: true, setDefaultsOnInsert: true }).session(session).exec();
+            await session.commitTransaction();
+            session.endSession();
+
+            try {
+                await this.producer.send(JSON.stringify({
+                    type: 'mindfulness',
+                    userId: userId,
+                    mindfulnessId: mindfulnessId
+                }), ['buy'])
+            } catch (e) {
+                Sentry.captureException(e)
+            }
+            return mindfulnessRecord
+        } catch (error) {
+            // If an error occurred, abort the whole transaction and
+            // undo any changes that might have happened
+            await session.abortTransaction();
+            session.endSession();
+            throw error; // Rethrow so calling function sees error
+        }
+
+
+        // const oldMindfulness = await this.mindfulnessRecordModel.findOne({ userId: userId, mindfulnessId: mindfulnessId }).exec();
+        // if (oldMindfulness && oldMindfulness.boughtTime !== 0)
+        //     throw new MoleculerError('already bought', 400);
+        // const mindfulness = await this.mindfulnessRecordModel.findOneAndUpdate(
+        //     { userId: userId, mindfulnessId: mindfulnessId},
+        //     { $set: { boughtTime: moment().unix() } },
+        //     { upsert: true, new: true, setDefaultsOnInsert: true }).exec();
+        // try {
+        //     await this.producer.send(JSON.stringify({
+        //         type: 'mindfulness',
+        //         userId: userId,
+        //         mindfulnessId: mindfulnessId
+        //     }), ['buy'])
+        // } catch (e) {
+        //     // todo sentry
+        //     console.error(e)
+        // }
+        // return mindfulness;
     }
 
     async searchMindfulness(keyword, from, size) {

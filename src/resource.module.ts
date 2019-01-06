@@ -42,6 +42,7 @@ import { DiscountService } from "./services/discount.service";
 import { Discount } from "./interfaces/discount.interface";
 import { DiscountController } from "./controllers/discount.controller";
 import { DiscountSchema } from "./schemas/discount.schema";
+import { AccountSchema } from "./schemas/account.schema";
 
 // const httpclient = require('urllib');
 
@@ -82,6 +83,7 @@ import { DiscountSchema } from "./schemas/discount.schema";
             { name: 'WanderAlbumRecord', schema: WanderAlbumRecordSchema, collection: 'wanderAlbumRecord' },
             { name: 'Home', schema: HomeSchema, collection: 'home' },
             { name: 'User', schema: UserSchema, collection: 'user' },
+            { name: 'Account', schema: AccountSchema, collection: 'account' },
             { name: 'Discount', schema: DiscountSchema, collection: 'discount' }
         ], 'sati'),
         // MongooseModule.forRoot('mongodb://sati:kjhguiyIUYkjh32kh@dds-2zee21d7f4fff2f41890-pub.mongodb.rds.aliyuncs.com:3717,dds-2zee21d7f4fff2f42351-pub.mongodb.rds.aliyuncs.com:3717/sati_user?replicaSet=mgset-9200157',

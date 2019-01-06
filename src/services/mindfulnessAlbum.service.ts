@@ -1,6 +1,6 @@
-import { Model } from 'mongoose';
+import { Connection, Model } from 'mongoose';
 import { Inject, Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
+import { InjectModel, InjectConnection } from '@nestjs/mongoose';
 import * as moment from "moment";
 import { isArray, isBoolean, isEmpty, isNumber } from 'lodash';
 import { ElasticsearchService } from '@nestjs/elasticsearch';
@@ -8,11 +8,16 @@ import * as Moleculer from "moleculer";
 import { MindfulnessAlbum } from "../interfaces/mindfulnessAlbum.interface";
 import { MindfulnessAlbumRecord } from 'src/interfaces/mindfulnessAlbumRecord.interface';
 import MoleculerError = Moleculer.Errors.MoleculerError;
+import { User } from "../interfaces/user.interface";
+import { Account } from "../interfaces/account.interface";
 
 @Injectable()
 export class MindfulnessAlbumService {
     constructor(
         @Inject(ElasticsearchService) private readonly elasticsearchService: ElasticsearchService,
+        @InjectConnection('sati') private readonly resourceClient: Connection,
+        @InjectModel('User') private readonly userModel: Model<User>,
+        @InjectModel('Account') private readonly accountModel: Model<Account>,
         @InjectModel('MindfulnessAlbum') private readonly mindfulnessAlbumModel: Model<MindfulnessAlbum>,
         @InjectModel('MindfulnessAlbumRecord') private readonly mindfulnessAlbumRecordModel: Model<MindfulnessAlbumRecord>
     ) {
@@ -177,18 +182,48 @@ export class MindfulnessAlbumService {
     }
 
     async buyMindfulnessAlbum(userId, mindfulnessAlbumId) {
+        // 检查有没有这个mindfulness
+        const mindfulnessAlbum = await this.getMindfulnessAlbumById(mindfulnessAlbumId);
+        if (!mindfulnessAlbum) throw new MoleculerError('not have this mindfulnessAlbum', 404);
+        // 检查是不是买过
         const oldMindfulnessAlbum = await this.mindfulnessAlbumRecordModel.findOne({
             userId: userId,
             mindfulnessAlbumId: mindfulnessAlbumId
         }).exec();
         if (oldMindfulnessAlbum && oldMindfulnessAlbum.boughtTime !== 0)
-        // throw new RpcException({ code: 400, message: t('already bought') });
             throw new MoleculerError('already bought', 400);
-        let result = await this.mindfulnessAlbumRecordModel.findOneAndUpdate(
-            { userId: userId, mindfulnessAlbumId: mindfulnessAlbumId },
-            { $set: { boughtTime: moment().unix() } },
-            { upsert: true, new: true, setDefaultsOnInsert: true }).exec();
-        return result
+
+        const session = await this.resourceClient.startSession();
+        session.startTransaction();
+        try {
+            const user = await this.userModel.findOneAndUpdate({
+                _id: userId,
+                balance: { $gte: mindfulnessAlbum.price }
+            }, { $inc: { balance: -1 * mindfulnessAlbum.price } }, { new: true }).session(session).exec();
+            if (!user) throw new MoleculerError('not enough balance', 402);
+            await this.accountModel.create([{
+                userId: userId,
+                value: -1 * mindfulnessAlbum.price,
+                afterBalance: user.balance,
+                type: 'mindfulnessAlbum',
+                createTime: moment().unix(),
+                extraInfo: JSON.stringify(mindfulnessAlbum),
+            }], { session: session });
+            const mindfulnessAlbumRecord = await this.mindfulnessAlbumRecordModel.findOneAndUpdate(
+                { userId: userId, mindfulnessAlbumId: mindfulnessAlbumId },
+                { $set: { boughtTime: moment().unix() } },
+                { upsert: true, new: true, setDefaultsOnInsert: true }).session(session).exec();
+            await session.commitTransaction();
+            session.endSession();
+
+            return mindfulnessAlbumRecord
+        } catch (error) {
+            // If an error occurred, abort the whole transaction and
+            // undo any changes that might have happened
+            await session.abortTransaction();
+            session.endSession();
+            throw error; // Rethrow so calling function sees error
+        }
     }
 
     async searchMindfulnessAlbum(keyword, from, size) {

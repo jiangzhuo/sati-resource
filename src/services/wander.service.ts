@@ -177,26 +177,6 @@ export class WanderService {
     }
 
     async buyWander(userId, wanderId) {
-        // const oldWander = await this.wanderRecordModel.findOne({ userId: userId, wanderId: wanderId }).exec();
-        // if (oldWander && oldWander.boughtTime !== 0)
-        // // throw new RpcException({ code: 400, message: t('already bought') });
-        //     throw new MoleculerError('already bought', 400);
-        // let result = await this.wanderRecordModel.findOneAndUpdate(
-        //     { userId: userId, wanderId: wanderId },
-        //     { $set: { boughtTime: moment().unix() } },
-        //     { upsert: true, new: true, setDefaultsOnInsert: true }).exec()
-        // try {
-        //     await this.wanderProducer.send(JSON.stringify({
-        //         type: 'wander',
-        //         userId: userId,
-        //         wanderId: wanderId
-        //     }), ['buy'])
-        // } catch (e) {
-        //     // todo sentry
-        //     console.error(e)
-        // }
-        // return result
-
         // 检查有没有这个wander
         const wander = await this.getWanderById(wanderId);
         if (!wander) throw new MoleculerError('not have this wander', 404);
@@ -231,15 +211,6 @@ export class WanderService {
             await session.commitTransaction();
             session.endSession();
 
-            try {
-                await this.wanderProducer.send(JSON.stringify({
-                    type: 'wander',
-                    userId: userId,
-                    wanderId: wanderId
-                }), ['buy'])
-            } catch (e) {
-                Sentry.captureException(e)
-            }
             return wanderRecord
         } catch (error) {
             // If an error occurred, abort the whole transaction and
@@ -248,10 +219,6 @@ export class WanderService {
             session.endSession();
             throw error; // Rethrow so calling function sees error
         }
-    }
-
-    async getWanderByWanderAlbumId(id) {
-        return await this.wanderModel.find({ wanderAlbums: id }).exec();
     }
 
     async getWanderAlbum(first = 20, after?: string) {
@@ -356,16 +323,6 @@ export class WanderService {
             userId: userId,
             wanderAlbumId: wanderAlbumId
         }, { $inc: { favorite: 1 } }, { upsert: true, new: true, setDefaultsOnInsert: true }).exec()
-        try {
-            await this.wanderAlbumProducer.send(JSON.stringify({
-                type: 'wanderAlbum',
-                userId: userId,
-                wanderAlbumId: wanderAlbumId
-            }), ['favorite'])
-        } catch (e) {
-            // todo sentry
-            console.error(e)
-        }
         return result
     }
 
@@ -373,16 +330,6 @@ export class WanderService {
         let result = await this.wanderAlbumRecordModel.findOneAndUpdate({ userId: userId, wanderAlbumId: wanderAlbumId },
             { $inc: { startCount: 1 }, $set: { lastStartTime: moment().unix() } },
             { upsert: true, new: true, setDefaultsOnInsert: true }).exec()
-        try {
-            await this.wanderAlbumProducer.send(JSON.stringify({
-                type: 'wanderAlbum',
-                userId: userId,
-                wanderAlbumId: wanderAlbumId
-            }), ['start'])
-        } catch (e) {
-            // todo sentry
-            console.error(e)
-        }
         return result
     }
 
@@ -395,17 +342,6 @@ export class WanderService {
         let result = await this.wanderAlbumRecordModel.findOneAndUpdate({ userId: userId, wanderAlbumId: wanderAlbumId },
             updateObj,
             { upsert: true, new: true, setDefaultsOnInsert: true }).exec()
-        try {
-            await this.wanderAlbumProducer.send(JSON.stringify({
-                type: 'wanderAlbum',
-                userId: userId,
-                wanderAlbumId: wanderAlbumId,
-                duration: duration
-            }), ['finish'])
-        } catch (e) {
-            // todo sentry
-            console.error(e)
-        }
         return result
     }
 
@@ -444,15 +380,6 @@ export class WanderService {
             await session.commitTransaction();
             session.endSession();
 
-            try {
-                await this.wanderAlbumProducer.send(JSON.stringify({
-                    type: 'wanderAlbum',
-                    userId: userId,
-                    wanderAlbumId: wanderAlbumId
-                }), ['buy'])
-            } catch (e) {
-                Sentry.captureException(e)
-            }
             return wanderAlbumRecord
         } catch (error) {
             // If an error occurred, abort the whole transaction and

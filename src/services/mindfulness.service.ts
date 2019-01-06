@@ -30,15 +30,12 @@ export class MindfulnessService {
     }
 
     constructor(
-        // @InjectProducer('sati_debug', 'mindfulness') private readonly producer: Producer,
         @Inject(ElasticsearchService) private readonly elasticsearchService: ElasticsearchService,
         @InjectConnection('sati') private readonly resourceClient: Connection,
         @InjectModel('User') private readonly userModel: Model<User>,
         @InjectModel('Account') private readonly accountModel: Model<Account>,
         @InjectModel('Mindfulness') private readonly mindfulnessModel: Model<Mindfulness>,
-        @InjectModel('MindfulnessRecord') private readonly mindfulnessRecordModel: Model<MindfulnessRecord>,
-        // @InjectModel('MindfulnessTransaction') private readonly mindfulnessTransactionModel: Model<MindfulnessTransaction>,
-        // @Inject(NotaddGrpcClientFactory) private readonly notaddGrpcClientFactory: NotaddGrpcClientFactory
+        @InjectModel('MindfulnessRecord') private readonly mindfulnessRecordModel: Model<MindfulnessRecord>
     ) {
     }
 
@@ -196,75 +193,6 @@ export class MindfulnessService {
     }
 
     async buyMindfulness(userId, mindfulnessId) {
-        // let mindfulness = await this.mindfulnessModel.findOne({ _id: mindfulnessId });
-        // // https://juejin.im/post/5ace2f935188255566700f19
-        // // 创建新的transaction
-        // const transaction = await this.mindfulnessTransactionModel.create({
-        //     userId: userId,
-        //     mindfulnessId: mindfulnessId,
-        //     price: mindfulness.price,
-        //     lastModified: moment().unix(),
-        //     state: 'initial',
-        // });
-        // // // 找到transaction
-        // // const transaction = await this.mindfulnessTransactionModel.findOne({
-        // //     userId: userId,
-        // //     mindfulnessId: mindfulnessId,
-        // //     state: "initial"
-        // // }).exec();
-        // try {
-        //     // 更新transaction state 为pending
-        //     await this.mindfulnessTransactionModel.findOneAndUpdate(
-        //         { _id: transaction._id, state: "initial" },
-        //         { $set: { state: "pending", lastModified: moment().unix() } }).exec();
-        //     // todo 检查changePendingResult 是不是更新了一个
-        //     // 更新account和更新record
-        //     await this.userModel.findOneAndUpdate(
-        //         {
-        //             _id: transaction.userId,
-        //             balance: { $gte: transaction.price },
-        //             pendingTransactions: { $ne: transaction._id }
-        //         },
-        //         { $inc: { balance: -transaction.price }, $push: { pendingTransactions: transaction._id } }).exec();
-        //     await this.mindfulnessRecordModel.findOneAndUpdate({
-        //             userId: transaction.userId,
-        //             mindfulnessId: transaction.mindfulnessId
-        //         },
-        //         { $set: { boughtTime: moment().unix() }, $push: { pendingTransactions: transaction._id } },
-        //         { upsert: true, new: true, setDefaultsOnInsert: true }).exec();
-        //     // 更新transaction的state
-        //     await this.mindfulnessTransactionModel.findOneAndUpdate(
-        //         { _id: transaction._id, state: 'pending' },
-        //         { $set: { state: "applied", lastModified: moment().unix() } }).exec();
-        //     // 更新两个pending transactions的account
-        //     await this.userModel.findOneAndUpdate(
-        //         { _id: transaction.userId, pendingTransactions: transaction._id },
-        //         { $pull: { pendingTransactions: transaction._id } }).exec();
-        //     const finalResult = await this.mindfulnessRecordModel.findOneAndUpdate(
-        //         { userId: transaction.userId, mindfulnessId: transaction.mindfulnessId },
-        //         { $pull: { pendingTransactions: transaction._id } },
-        //         { upsert: true, new: true, setDefaultsOnInsert: true }).exec();
-        //     //更新transaction的state为done
-        //     await this.mindfulnessTransactionModel.findOneAndUpdate(
-        //         { _id: transaction._id, state: "applied" },
-        //         { $set: { state: "done", lastModified: moment().unix() } }).exec();
-        //
-        //     return finalResult;
-        // } catch (e) {
-        //     // todo 让错误处理守护程序去处理
-        // }
-
-        // todo 以上是二段提交实现，太复杂了，等等mongodb有生之年支持ACID事务
-        // 下面是简单的没保证的实现
-        // 1.增加一条消费记录
-        // 2.检查用户的钱扣钱
-        // 3.修改消费记录
-        // 4.标记为买了
-        // 5.修改消费记录
-
-        // const res = await this.userServiceInterface.changeBalance({id:userId,changeValue:1000}).toPromise();
-        // console.log(res);
-
         // 检查有没有这个mindfulness
         const mindfulness = await this.getMindfulnessById(mindfulnessId);
         if (!mindfulness) throw new MoleculerError('not have this mindfulness', 404);
@@ -299,15 +227,6 @@ export class MindfulnessService {
             await session.commitTransaction();
             session.endSession();
 
-            try {
-                await this.producer.send(JSON.stringify({
-                    type: 'mindfulness',
-                    userId: userId,
-                    mindfulnessId: mindfulnessId
-                }), ['buy'])
-            } catch (e) {
-                Sentry.captureException(e)
-            }
             return mindfulnessRecord
         } catch (error) {
             // If an error occurred, abort the whole transaction and
@@ -316,26 +235,6 @@ export class MindfulnessService {
             session.endSession();
             throw error; // Rethrow so calling function sees error
         }
-
-
-        // const oldMindfulness = await this.mindfulnessRecordModel.findOne({ userId: userId, mindfulnessId: mindfulnessId }).exec();
-        // if (oldMindfulness && oldMindfulness.boughtTime !== 0)
-        //     throw new MoleculerError('already bought', 400);
-        // const mindfulness = await this.mindfulnessRecordModel.findOneAndUpdate(
-        //     { userId: userId, mindfulnessId: mindfulnessId},
-        //     { $set: { boughtTime: moment().unix() } },
-        //     { upsert: true, new: true, setDefaultsOnInsert: true }).exec();
-        // try {
-        //     await this.producer.send(JSON.stringify({
-        //         type: 'mindfulness',
-        //         userId: userId,
-        //         mindfulnessId: mindfulnessId
-        //     }), ['buy'])
-        // } catch (e) {
-        //     // todo sentry
-        //     console.error(e)
-        // }
-        // return mindfulness;
     }
 
     async searchMindfulness(keyword, from, size) {

@@ -1,10 +1,10 @@
-import { Model } from 'mongoose';
+import { Connection, Model } from 'mongoose';
 import { Wander } from "../interfaces/wander.interface";
 import { WanderAlbum } from "../interfaces/wanderAlbum.interface";
 import { WanderRecord } from "../interfaces/wanderRecord.interface";
 import { WanderAlbumRecord } from "../interfaces/wanderAlbumRecord.interface";
 import { Inject, Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
+import { InjectModel, InjectConnection } from '@nestjs/mongoose';
 import * as moment from "moment";
 import { isEmpty, isNumber, isArray, isBoolean } from 'lodash';
 // import { RpcException } from "@nestjs/microservices";
@@ -12,11 +12,16 @@ import { isEmpty, isNumber, isArray, isBoolean } from 'lodash';
 import { ElasticsearchService } from '@nestjs/elasticsearch';
 import * as Moleculer from "moleculer";
 import MoleculerError = Moleculer.Errors.MoleculerError;
+import { User } from "../interfaces/user.interface";
+import { Account } from "../interfaces/account.interface";
 
 @Injectable()
 export class WanderAlbumService {
     constructor(
         @Inject(ElasticsearchService) private readonly elasticsearchService: ElasticsearchService,
+        @InjectConnection('sati') private readonly resourceClient: Connection,
+        @InjectModel('User') private readonly userModel: Model<User>,
+        @InjectModel('Account') private readonly accountModel: Model<Account>,
         @InjectModel('Wander') private readonly wanderModel: Model<Wander>,
         @InjectModel('WanderAlbum') private readonly wanderAlbumModel: Model<WanderAlbum>,
         @InjectModel('WanderRecord') private readonly wanderRecordModel: Model<WanderRecord>,
@@ -177,18 +182,48 @@ export class WanderAlbumService {
     }
 
     async buyWanderAlbum(userId, wanderAlbumId) {
+        // 检查有没有这个wander
+        const wanderAlbum = await this.getWanderAlbumById(wanderAlbumId);
+        if (!wanderAlbum) throw new MoleculerError('not have this wanderAlbum', 404);
+        // 检查是不是买过
         const oldWanderAlbum = await this.wanderAlbumRecordModel.findOne({
             userId: userId,
             wanderAlbumId: wanderAlbumId
         }).exec();
         if (oldWanderAlbum && oldWanderAlbum.boughtTime !== 0)
-        // throw new RpcException({ code: 400, message: t('already bought') });
             throw new MoleculerError('already bought', 400);
-        let result = await this.wanderAlbumRecordModel.findOneAndUpdate(
-            { userId: userId, wanderAlbumId: wanderAlbumId },
-            { $set: { boughtTime: moment().unix() } },
-            { upsert: true, new: true, setDefaultsOnInsert: true }).exec()
-        return result
+
+        const session = await this.resourceClient.startSession();
+        session.startTransaction();
+        try {
+            const user = await this.userModel.findOneAndUpdate({
+                _id: userId,
+                balance: { $gte: wanderAlbum.price }
+            }, { $inc: { balance: -1 * wanderAlbum.price } }, { new: true }).session(session).exec();
+            if (!user) throw new MoleculerError('not enough balance', 402);
+            await this.accountModel.create([{
+                userId: userId,
+                value: -1 * wanderAlbum.price,
+                afterBalance: user.balance,
+                type: 'wanderAlbum',
+                createTime: moment().unix(),
+                extraInfo: JSON.stringify(wanderAlbum),
+            }], { session: session });
+            const wanderAlbumRecord = await this.wanderAlbumRecordModel.findOneAndUpdate(
+                { userId: userId, wanderAlbumId: wanderAlbumId },
+                { $set: { boughtTime: moment().unix() } },
+                { upsert: true, new: true, setDefaultsOnInsert: true }).session(session).exec();
+            await session.commitTransaction();
+            session.endSession();
+
+            return wanderAlbumRecord
+        } catch (error) {
+            // If an error occurred, abort the whole transaction and
+            // undo any changes that might have happened
+            await session.abortTransaction();
+            session.endSession();
+            throw error; // Rethrow so calling function sees error
+        }
     }
 
     async searchWanderAlbum(keyword, from, size) {

@@ -1,10 +1,10 @@
-import { Model } from 'mongoose';
+import { Model, Connection } from 'mongoose';
 import { Nature } from "../interfaces/nature.interface";
 import { NatureAlbum } from "../interfaces/natureAlbum.interface";
 import { NatureRecord } from "../interfaces/natureRecord.interface";
 import { NatureAlbumRecord } from "../interfaces/natureAlbumRecord.interface";
 import { Inject, Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
+import { InjectModel, InjectConnection } from '@nestjs/mongoose';
 import * as moment from "moment";
 import { isEmpty, isNumber, isArray, isBoolean } from 'lodash';
 // import { RpcException } from "@nestjs/microservices";
@@ -12,14 +12,18 @@ import { isEmpty, isNumber, isArray, isBoolean } from 'lodash';
 import { ElasticsearchService } from '@nestjs/elasticsearch';
 import * as Moleculer from "moleculer";
 import MoleculerError = Moleculer.Errors.MoleculerError;
+import { User } from 'src/interfaces/user.interface';
+import { Account } from "../interfaces/account.interface";
 
 @Injectable()
 export class NatureAlbumService {
     constructor(
         @Inject(ElasticsearchService) private readonly elasticsearchService: ElasticsearchService,
+        @InjectConnection('sati') private readonly resourceClient: Connection,
+        @InjectModel('User') private readonly userModel: Model<User>,
+        @InjectModel('Account') private readonly accountModel: Model<Account>,
         @InjectModel('Nature') private readonly natureModel: Model<Nature>,
         @InjectModel('NatureAlbum') private readonly natureAlbumModel: Model<NatureAlbum>,
-        @InjectModel('NatureRecord') private readonly natureRecordModel: Model<NatureRecord>,
         @InjectModel('NatureAlbumRecord') private readonly natureAlbumRecordModel: Model<NatureAlbumRecord>
     ) {
     }
@@ -177,18 +181,48 @@ export class NatureAlbumService {
     }
 
     async buyNatureAlbum(userId, natureAlbumId) {
+        // 检查有没有这个nature
+        const natureAlbum = await this.getNatureAlbumById(natureAlbumId);
+        if (!natureAlbum) throw new MoleculerError('not have this natureAlbum', 404);
+        // 检查是不是买过
         const oldNatureAlbum = await this.natureAlbumRecordModel.findOne({
             userId: userId,
             natureAlbumId: natureAlbumId
         }).exec();
         if (oldNatureAlbum && oldNatureAlbum.boughtTime !== 0)
-        // throw new RpcException({ code: 400, message: t('already bought') });
             throw new MoleculerError('already bought', 400);
-        let result = await this.natureAlbumRecordModel.findOneAndUpdate(
-            { userId: userId, natureAlbumId: natureAlbumId },
-            { $set: { boughtTime: moment().unix() } },
-            { upsert: true, new: true, setDefaultsOnInsert: true }).exec()
-        return result
+
+        const session = await this.resourceClient.startSession();
+        session.startTransaction();
+        try {
+            const user = await this.userModel.findOneAndUpdate({
+                _id: userId,
+                balance: { $gte: natureAlbum.price }
+            }, { $inc: { balance: -1 * natureAlbum.price } }, { new: true }).session(session).exec();
+            if (!user) throw new MoleculerError('not enough balance', 402);
+            await this.accountModel.create([{
+                userId: userId,
+                value: -1 * natureAlbum.price,
+                afterBalance: user.balance,
+                type: 'natureAlbum',
+                createTime: moment().unix(),
+                extraInfo: JSON.stringify(natureAlbum),
+            }], { session: session });
+            const natureAlbumRecord = await this.natureAlbumRecordModel.findOneAndUpdate(
+                { userId: userId, natureAlbumId: natureAlbumId },
+                { $set: { boughtTime: moment().unix() } },
+                { upsert: true, new: true, setDefaultsOnInsert: true }).session(session).exec();
+            await session.commitTransaction();
+            session.endSession();
+
+            return natureAlbumRecord
+        } catch (error) {
+            // If an error occurred, abort the whole transaction and
+            // undo any changes that might have happened
+            await session.abortTransaction();
+            session.endSession();
+            throw error; // Rethrow so calling function sees error
+        }
     }
 
     async searchNatureAlbum(keyword, from, size) {

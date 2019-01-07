@@ -117,7 +117,8 @@ export class WanderAlbumController extends Service {
     }
 
     async buyWanderAlbum(ctx: Context) {
-        return { data: await this.wanderAlbumService.buyWanderAlbum(ctx.params.userId, ctx.params.wanderAlbumId) };
+        const discount = await ctx.call('discount.getDiscountByResourceId', { resourceId: ctx.params.mindfulnessId });
+        return { data: await this.wanderAlbumService.buyWanderAlbum(ctx.params.userId, ctx.params.wanderAlbumId, discount) };
     }
 
     async searchWanderAlbum(ctx: Context) {

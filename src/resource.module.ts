@@ -43,6 +43,8 @@ import { Discount } from "./interfaces/discount.interface";
 import { DiscountController } from "./controllers/discount.controller";
 import { DiscountSchema } from "./schemas/discount.schema";
 import { AccountSchema } from "./schemas/account.schema";
+import { JaegerController } from "./controllers/jaeger.controller";
+import * as jaeger from 'moleculer-jaeger';
 
 // const httpclient = require('urllib');
 
@@ -51,14 +53,15 @@ import { AccountSchema } from "./schemas/account.schema";
         MoleculerModule.forRoot({
             namespace: "sati",
             // logger: bindings => new Logger(),
+            metrics: true,
             transporter: "TCP",
             hotReload: true,
+            logLevel: process.env.LOG_LEVEL
         }),
-        // MoleculerModule.forFeature([{
-        //     name: 'customServiceName',
-        //     schema: HomeController,
-        //     // schemaMods: { name: "newGreeter", version: "v3" }
-        // }]),
+        MoleculerModule.forFeature([{
+            name: 'jaeger',
+            schema: jaeger,
+        }]),
         ElasticsearchModule.register({
             host: process.env.ELASTICSEARCH_HOST,
             httpAuth: process.env.ELASTICSEARCH_HTTP_AUTH,
@@ -106,6 +109,7 @@ import { AccountSchema } from "./schemas/account.schema";
         SceneController,
         HomeController,
         DiscountController,
+        // JaegerController
     ],
     providers: [
         MindfulnessService,

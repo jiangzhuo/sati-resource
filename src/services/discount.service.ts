@@ -52,8 +52,20 @@ export class DiscountService {
         return await this.discountModel.count(condition).exec()
     }
 
+    async getDiscountById(id) {
+            return await this.discountModel.find({ _id: id }).exec();
+    }
+
     async getDiscountByIds(ids) {
         return await this.discountModel.find({ _id: { $in: ids } }).exec()
+    }
+
+    async getDiscountByResourceId(id, time = moment().unix()) {
+        return await this.discountModel.find({ resourceId: id, beginTime: { $lte: time }, endTime: { $gte: time } }).exec();
+    }
+
+    async getDiscountByResourceIds(ids) {
+        return await this.discountModel.find({ resourceId: { $in: ids } }).exec()
     }
 
     async createDiscount(data) {

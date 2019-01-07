@@ -176,7 +176,11 @@ export class NatureService {
         return result
     }
 
-    async buyNature(userId, natureId) {
+    async buyNature(userId, natureId, discount) {
+        let discountVal = 100;
+        if (discount) {
+            discountVal = discount.discount
+        }
         // 检查有没有这个nature
         const nature = await this.getNatureById(natureId);
         if (!nature) throw new MoleculerError('not have this nature', 404);
@@ -188,21 +192,23 @@ export class NatureService {
         if (oldNature && oldNature.boughtTime !== 0)
             throw new MoleculerError('already bought', 400);
 
+        let finalPrice = Math.floor(nature.price * discountVal / 100);
+
         const session = await this.resourceClient.startSession();
         session.startTransaction();
         try {
             const user = await this.userModel.findOneAndUpdate({
                 _id: userId,
-                balance: { $gte: nature.price }
-            }, { $inc: { balance: -1 * nature.price } }, { new: true }).session(session).exec();
+                balance: { $gte: finalPrice }
+            }, { $inc: { balance: -1 * finalPrice } }, { new: true }).session(session).exec();
             if (!user) throw new MoleculerError('not enough balance', 402);
             await this.accountModel.create([{
                 userId: userId,
-                value: -1 * nature.price,
+                value: -1 * finalPrice,
                 afterBalance: user.balance,
                 type: 'nature',
                 createTime: moment().unix(),
-                extraInfo: JSON.stringify(nature),
+                extraInfo: JSON.stringify({ resource: nature, discount: discount }),
             }], { session: session });
             const natureRecord = await this.natureRecordModel.findOneAndUpdate(
                 { userId: userId, natureId: natureId },

@@ -162,7 +162,7 @@ export class WanderAlbumService {
                 wanderAlbumId: wanderAlbumId
             },
             { $inc: { startCount: 1 }, $set: { lastStartTime: moment().unix() } },
-            { upsert: true, new: true, setDefaultsOnInsert: true }).exec()
+            { upsert: true, new: true, setDefaultsOnInsert: true }).exec();
         return result
     }
 
@@ -177,11 +177,15 @@ export class WanderAlbumService {
                 wanderAlbumId: wanderAlbumId
             },
             updateObj,
-            { upsert: true, new: true, setDefaultsOnInsert: true }).exec()
+            { upsert: true, new: true, setDefaultsOnInsert: true }).exec();
         return result
     }
 
-    async buyWanderAlbum(userId, wanderAlbumId) {
+    async buyWanderAlbum(userId, wanderAlbumId, discount) {
+        let discountVal = 100;
+        if (discount) {
+            discountVal = discount.discount
+        }
         // 检查有没有这个wander
         const wanderAlbum = await this.getWanderAlbumById(wanderAlbumId);
         if (!wanderAlbum) throw new MoleculerError('not have this wanderAlbum', 404);
@@ -193,21 +197,23 @@ export class WanderAlbumService {
         if (oldWanderAlbum && oldWanderAlbum.boughtTime !== 0)
             throw new MoleculerError('already bought', 400);
 
+        let finalPrice = Math.floor(wanderAlbum.price * discountVal / 100);
+
         const session = await this.resourceClient.startSession();
         session.startTransaction();
         try {
             const user = await this.userModel.findOneAndUpdate({
                 _id: userId,
-                balance: { $gte: wanderAlbum.price }
-            }, { $inc: { balance: -1 * wanderAlbum.price } }, { new: true }).session(session).exec();
+                balance: { $gte: finalPrice }
+            }, { $inc: { balance: -1 * finalPrice } }, { new: true }).session(session).exec();
             if (!user) throw new MoleculerError('not enough balance', 402);
             await this.accountModel.create([{
                 userId: userId,
-                value: -1 * wanderAlbum.price,
+                value: -1 * finalPrice,
                 afterBalance: user.balance,
                 type: 'wanderAlbum',
                 createTime: moment().unix(),
-                extraInfo: JSON.stringify(wanderAlbum),
+                extraInfo: JSON.stringify({ resource: wanderAlbum, discount: discount }),
             }], { session: session });
             const wanderAlbumRecord = await this.wanderAlbumRecordModel.findOneAndUpdate(
                 { userId: userId, wanderAlbumId: wanderAlbumId },

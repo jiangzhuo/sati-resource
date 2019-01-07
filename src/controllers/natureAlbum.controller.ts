@@ -112,7 +112,8 @@ export class NatureAlbumController extends Service {
     }
 
     async buyNatureAlbum(ctx: Context) {
-        return { data: await this.natureAlbumService.buyNatureAlbum(ctx.params.userId, ctx.params.natureAlbumId) };
+        const discount = await ctx.call('discount.getDiscountByResourceId', { resourceId: ctx.params.mindfulnessId });
+        return { data: await this.natureAlbumService.buyNatureAlbum(ctx.params.userId, ctx.params.natureAlbumId, discount) };
     }
 
     async searchNatureAlbum(ctx: Context) {

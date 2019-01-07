@@ -181,7 +181,11 @@ export class MindfulnessAlbumService {
         return result
     }
 
-    async buyMindfulnessAlbum(userId, mindfulnessAlbumId) {
+    async buyMindfulnessAlbum(userId, mindfulnessAlbumId, discount) {
+        let discountVal = 100;
+        if (discount) {
+            discountVal = discount.discount
+        }
         // 检查有没有这个mindfulness
         const mindfulnessAlbum = await this.getMindfulnessAlbumById(mindfulnessAlbumId);
         if (!mindfulnessAlbum) throw new MoleculerError('not have this mindfulnessAlbum', 404);
@@ -193,21 +197,23 @@ export class MindfulnessAlbumService {
         if (oldMindfulnessAlbum && oldMindfulnessAlbum.boughtTime !== 0)
             throw new MoleculerError('already bought', 400);
 
+        let finalPrice = Math.floor(mindfulnessAlbum.price * discountVal / 100);
+
         const session = await this.resourceClient.startSession();
         session.startTransaction();
         try {
             const user = await this.userModel.findOneAndUpdate({
                 _id: userId,
-                balance: { $gte: mindfulnessAlbum.price }
-            }, { $inc: { balance: -1 * mindfulnessAlbum.price } }, { new: true }).session(session).exec();
+                balance: { $gte: finalPrice }
+            }, { $inc: { balance: -1 * finalPrice } }, { new: true }).session(session).exec();
             if (!user) throw new MoleculerError('not enough balance', 402);
             await this.accountModel.create([{
                 userId: userId,
-                value: -1 * mindfulnessAlbum.price,
+                value: -1 * finalPrice,
                 afterBalance: user.balance,
                 type: 'mindfulnessAlbum',
                 createTime: moment().unix(),
-                extraInfo: JSON.stringify(mindfulnessAlbum),
+                extraInfo: JSON.stringify({ resource: mindfulnessAlbum, discount: discount }),
             }], { session: session });
             const mindfulnessAlbumRecord = await this.mindfulnessAlbumRecordModel.findOneAndUpdate(
                 { userId: userId, mindfulnessAlbumId: mindfulnessAlbumId },

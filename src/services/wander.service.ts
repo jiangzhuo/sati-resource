@@ -176,7 +176,11 @@ export class WanderService {
         return result
     }
 
-    async buyWander(userId, wanderId) {
+    async buyWander(userId, wanderId, discount) {
+        let discountVal = 100;
+        if (discount) {
+            discountVal = discount.discount
+        }
         // 检查有没有这个wander
         const wander = await this.getWanderById(wanderId);
         if (!wander) throw new MoleculerError('not have this wander', 404);
@@ -188,21 +192,23 @@ export class WanderService {
         if (oldWander && oldWander.boughtTime !== 0)
             throw new MoleculerError('already bought', 400);
 
+        let finalPrice = Math.floor(wander.price * discountVal / 100);
+
         const session = await this.resourceClient.startSession();
         session.startTransaction();
         try {
             const user = await this.userModel.findOneAndUpdate({
                 _id: userId,
-                balance: { $gte: wander.price }
-            }, { $inc: { balance: -1 * wander.price } }, { new: true }).session(session).exec();
+                balance: { $gte: finalPrice }
+            }, { $inc: { balance: -1 * finalPrice } }, { new: true }).session(session).exec();
             if (!user) throw new MoleculerError('not enough balance', 402);
             await this.accountModel.create([{
                 userId: userId,
-                value: -1 * wander.price,
+                value: -1 * finalPrice,
                 afterBalance: user.balance,
                 type: 'wander',
                 createTime: moment().unix(),
-                extraInfo: JSON.stringify(wander),
+                extraInfo: JSON.stringify({ resource: wander, discount: discount }),
             }], { session: session });
             const wanderRecord = await this.wanderRecordModel.findOneAndUpdate(
                 { userId: userId, wanderId: wanderId },

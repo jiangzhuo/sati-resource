@@ -121,7 +121,8 @@ export class MindfulnessController extends Service {
     }
 
     async buyMindfulness(ctx: Context) {
-        return { data: await this.mindfulnessService.buyMindfulness(ctx.params.userId, ctx.params.mindfulnessId) };
+        const discount = await ctx.call('discount.getDiscountByResourceId', { resourceId: ctx.params.mindfulnessId });
+        return { data: await this.mindfulnessService.buyMindfulness(ctx.params.userId, ctx.params.mindfulnessId, discount) };
     }
 
     async searchMindfulness(ctx: Context) {

@@ -19,7 +19,9 @@ export class DiscountController extends Service {
                 sayHello: this.sayHello,
                 getDiscount: this.getDiscount,
                 countDiscount: this.countDiscount,
+                getDiscountById: this.getDiscountById,
                 getDiscountByIds: this.getDiscountByIds,
+                getDiscountByResourceId: this.getDiscountByResourceId,
                 createDiscount: this.createDiscount,
                 updateDiscount: this.updateDiscount,
                 deleteDiscount: this.deleteDiscount,
@@ -58,8 +60,24 @@ export class DiscountController extends Service {
         return { data: await this.discountService.countDiscount() }
     }
 
+    async getDiscountById(ctx: Context) {
+        return await this.discountService.getDiscountById(ctx.params.id);
+    }
+
     async getDiscountByIds(ctx: Context) {
         return { data: await this.discountService.getDiscountByIds(ctx.params.ids) };
+    }
+
+    async getDiscountByResourceId(ctx: Context) {
+        const discounts = await this.discountService.getDiscountByResourceId(ctx.params.resourceId, ctx.params.time);
+        let discountValue = 100;
+        let finalDiscount = null;
+        discounts.forEach((discount) => {
+            if (discount.discount <= discountValue) {
+                finalDiscount = discount;
+            }
+        });
+        return finalDiscount;
     }
 
     async createDiscount(ctx: Context) {

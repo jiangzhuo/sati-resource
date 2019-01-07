@@ -119,7 +119,8 @@ export class WanderController extends Service {
     }
 
     async buyWander(ctx: Context) {
-        return { data: await this.wanderService.buyWander(ctx.params.userId, ctx.params.wanderId) };
+        const discount = await ctx.call('discount.getDiscountByResourceId', { resourceId: ctx.params.mindfulnessId });
+        return { data: await this.wanderService.buyWander(ctx.params.userId, ctx.params.wanderId, discount) };
     }
 
     async searchWander(ctx: Context) {

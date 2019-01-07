@@ -135,7 +135,8 @@ export class NatureController extends Service {
     }
 
     async buyNature(ctx: Context) {
-        return { data: await this.natureService.buyNature(ctx.params.userId, ctx.params.natureId) };
+        const discount = await ctx.call('discount.getDiscountByResourceId', { resourceId: ctx.params.mindfulnessId });
+        return { data: await this.natureService.buyNature(ctx.params.userId, ctx.params.natureId, discount) };
     }
 
     async searchNature(ctx: Context) {

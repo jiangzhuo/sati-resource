@@ -180,7 +180,11 @@ export class NatureAlbumService {
         return result
     }
 
-    async buyNatureAlbum(userId, natureAlbumId) {
+    async buyNatureAlbum(userId, natureAlbumId, discount) {
+        let discountVal = 100;
+        if (discount) {
+            discountVal = discount.discount
+        }
         // 检查有没有这个nature
         const natureAlbum = await this.getNatureAlbumById(natureAlbumId);
         if (!natureAlbum) throw new MoleculerError('not have this natureAlbum', 404);
@@ -192,21 +196,23 @@ export class NatureAlbumService {
         if (oldNatureAlbum && oldNatureAlbum.boughtTime !== 0)
             throw new MoleculerError('already bought', 400);
 
+        let finalPrice = Math.floor(natureAlbum.price * discountVal / 100);
+
         const session = await this.resourceClient.startSession();
         session.startTransaction();
         try {
             const user = await this.userModel.findOneAndUpdate({
                 _id: userId,
-                balance: { $gte: natureAlbum.price }
-            }, { $inc: { balance: -1 * natureAlbum.price } }, { new: true }).session(session).exec();
+                balance: { $gte: finalPrice }
+            }, { $inc: { balance: -1 * finalPrice } }, { new: true }).session(session).exec();
             if (!user) throw new MoleculerError('not enough balance', 402);
             await this.accountModel.create([{
                 userId: userId,
-                value: -1 * natureAlbum.price,
+                value: -1 * finalPrice,
                 afterBalance: user.balance,
                 type: 'natureAlbum',
                 createTime: moment().unix(),
-                extraInfo: JSON.stringify(natureAlbum),
+                extraInfo: JSON.stringify({ resource: natureAlbum, discount: discount }),
             }], { session: session });
             const natureAlbumRecord = await this.natureAlbumRecordModel.findOneAndUpdate(
                 { userId: userId, natureAlbumId: natureAlbumId },

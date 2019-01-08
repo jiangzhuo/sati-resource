@@ -1,6 +1,6 @@
 import { hostname } from "os";
 import * as Sentry from '@sentry/node';
-import './hackNestLogger';
+import './hackLogger';
 // import { Transport } from '@nestjs/common/enums/transport.enum';
 import { NestFactory } from '@nestjs/core';
 // import { join } from 'path';
@@ -76,8 +76,13 @@ async function bootstrap() {
 
     Sentry.init({ dsn: process.env.SENTRY_DSN, serverName: hostname() });
 
-    let { ResourceModule } = require("./resource.module");
-    const app = await NestFactory.createApplicationContext(ResourceModule.forRoot());
+    try {
+        const { ResourceModule } = require("./resource.module");
+        const app = await NestFactory.createApplicationContext(ResourceModule.forRoot());
+    } catch (e) {
+        logger.error(e);
+        throw e;
+    }
 }
 
 bootstrap();

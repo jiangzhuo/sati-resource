@@ -56,7 +56,8 @@ async function bootstrap() {
         { dataId: 'ELASTICSEARCH_HOST', group: 'sati' },
         { dataId: 'ELASTICSEARCH_HTTP_AUTH', group: 'sati' },
         { dataId: 'LOG_LEVEL', group: 'sati' },
-        { dataId: 'MONGODB_CONNECTION_STR', group: 'sati' }
+        { dataId: 'MONGODB_CONNECTION_STR', group: 'sati' },
+        { dataId: 'TRANSPORTER', group: 'sati' }
     ];
     const getAllConfigPromise = [];
     allConfigs.forEach((config) => {

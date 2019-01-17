@@ -15,4 +15,5 @@ export interface Mindfulness extends Document {
     readonly mindfulnessAlbums: ObjectId[];
     readonly status: number;
     readonly validTime: number; // 生效时间
+    readonly natureId: ObjectId;
 }

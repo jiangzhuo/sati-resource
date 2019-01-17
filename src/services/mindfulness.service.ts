@@ -13,7 +13,7 @@ import { InjectModel, InjectConnection } from '@nestjs/mongoose';
 
 // import { ObjectId } from 'mongodb';
 import * as moment from 'moment';
-import { isEmpty, isNumber, isArray, isBoolean } from 'lodash';
+import { isEmpty, isNumber, isArray, isBoolean, isString } from 'lodash';
 // import { RpcException } from "@nestjs/microservices";
 // import { __ as t } from "i18n";
 import { ElasticsearchService } from '@nestjs/elasticsearch';
@@ -152,6 +152,9 @@ export class MindfulnessService {
         }
         if (isNumber(data.validTime)) {
             updateObject['validTime'] = data.validTime;
+        }
+        if (!isEmpty(data.natureId)) {
+            updateObject['natureId'] = data.natureId;
         }
         // console.log(updateObject)
         return await this.mindfulnessModel.findOneAndUpdate({ _id: id }, updateObject, { new: true }).exec()

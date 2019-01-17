@@ -16,4 +16,5 @@ export const MindfulnessSchema = new mongoose.Schema({
     mindfulnessAlbums: { type: [ObjectId], default: [] },
     status: { type: Int32, default: 0 },
     validTime: Number,
+    natureId: { type: ObjectId, default: new mongoose.Types.ObjectId("000000000000000000000000") }
 }, { autoIndex: true, toJSON: { virtuals: true } });

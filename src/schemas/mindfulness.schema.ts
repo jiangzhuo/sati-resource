@@ -1,5 +1,6 @@
 import * as mongoose from 'mongoose';
 import * as Int32 from "mongoose-int32";
+import * as nodejieba from 'nodejieba';
 
 const ObjectId = mongoose.Schema.Types.ObjectId;
 export const MindfulnessSchema = new mongoose.Schema({
@@ -16,5 +17,6 @@ export const MindfulnessSchema = new mongoose.Schema({
     mindfulnessAlbums: { type: [ObjectId], default: [] },
     status: { type: Int32, default: 0 },
     validTime: Number,
-    natureId: { type: ObjectId, default: new mongoose.Types.ObjectId("000000000000000000000000") }
+    natureId: { type: ObjectId, default: new mongoose.Types.ObjectId("000000000000000000000000") },
+    __tag: { type: [String] },
 }, { autoIndex: true, toJSON: { virtuals: true } });

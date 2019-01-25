@@ -53,8 +53,6 @@ async function bootstrap() {
         { dataId: 'ONS_ACCESS_KEY_ID', group: 'sati' },
         { dataId: 'ONS_ACCESS_KEY_SECRET', group: 'sati' },
         { dataId: 'ONS_PRODUCER_GROUP', group: 'sati' },
-        { dataId: 'ELASTICSEARCH_HOST', group: 'sati' },
-        { dataId: 'ELASTICSEARCH_HTTP_AUTH', group: 'sati' },
         { dataId: 'LOG_LEVEL', group: 'sati' },
         { dataId: 'MONGODB_CONNECTION_STR', group: 'sati' },
         { dataId: 'TRANSPORTER', group: 'sati' }

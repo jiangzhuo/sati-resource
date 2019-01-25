@@ -17,4 +17,5 @@ export const WanderSchema = new mongoose.Schema({
     wanderAlbums: [ObjectId],
     status: { type: Int32, default: 0 },
     validTime: Number,
+    __tag: { type: [String] },
 }, { autoIndex: true, toJSON: { virtuals: true } });

@@ -21,7 +21,6 @@ import { UserSchema } from './schemas/user.schema';
 import { HomeSchema } from "./schemas/home.schema";
 import { HomeService } from "./services/home.service";
 
-import { ElasticsearchModule } from '@nestjs/elasticsearch';
 import { MoleculerModule } from 'nestjs-moleculer';
 import { HomeController } from "./controllers/home.controller";
 import { MindfulnessController } from "./controllers/mindfulness.controller";
@@ -62,11 +61,6 @@ import * as jaeger from 'moleculer-jaeger';
             name: 'jaeger',
             schema: jaeger,
         }]),
-        ElasticsearchModule.register({
-            host: process.env.ELASTICSEARCH_HOST,
-            httpAuth: process.env.ELASTICSEARCH_HTTP_AUTH,
-            log: process.env.LOG_LEVEL,
-        }),
         MongooseModule.forRoot(process.env.MONGODB_CONNECTION_STR,
             // MongooseModule.forRoot('mongodb://localhost:27017/module_resource',
             { connectionName: 'sati', useNewUrlParser: true, useFindAndModify: false, useCreateIndex: true }),

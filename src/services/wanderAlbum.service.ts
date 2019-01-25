@@ -9,16 +9,15 @@ import * as moment from "moment";
 import { isEmpty, isNumber, isArray, isBoolean } from 'lodash';
 // import { RpcException } from "@nestjs/microservices";
 // import { __ as t } from "i18n";
-import { ElasticsearchService } from '@nestjs/elasticsearch';
 import * as Moleculer from "moleculer";
 import MoleculerError = Moleculer.Errors.MoleculerError;
 import { User } from "../interfaces/user.interface";
 import { Account } from "../interfaces/account.interface";
+import * as nodejieba from "nodejieba";
 
 @Injectable()
 export class WanderAlbumService {
     constructor(
-        @Inject(ElasticsearchService) private readonly elasticsearchService: ElasticsearchService,
         @InjectConnection('sati') private readonly resourceClient: Connection,
         @InjectModel('User') private readonly userModel: Model<User>,
         @InjectModel('Account') private readonly accountModel: Model<Account>,
@@ -103,7 +102,17 @@ export class WanderAlbumService {
     async createWanderAlbum(data) {
         data.createTime = moment().unix();
         data.updateTime = moment().unix();
-        return await this.wanderAlbumModel.create(data)
+        const result = await this.wanderAlbumModel.create(data);
+        await this.updateTag(result._id);
+        return result;
+    }
+
+    async updateTag(id) {
+        const doc = await this.wanderAlbumModel.findOne({ _id: id }).exec();
+        const nameCut = nodejieba.cut(doc.name);
+        const descriptionCut = nodejieba.cut(doc.description);
+        const copyCut = nodejieba.cut(doc.copy);
+        await this.wanderAlbumModel.updateOne({ _id: id }, { __tag: ['*'].concat(nameCut).concat(descriptionCut).concat(copyCut) }).exec();
     }
 
     async updateWanderAlbum(id, data) {
@@ -135,7 +144,9 @@ export class WanderAlbumService {
         if (isNumber(data.validTime)) {
             updateObject['validTime'] = data.validTime;
         }
-        return await this.wanderAlbumModel.findOneAndUpdate({ _id: id }, updateObject, { new: true }).exec()
+        const result = await this.wanderAlbumModel.findOneAndUpdate({ _id: id }, updateObject, { new: true }).exec();
+        await this.updateTag(result._id);
+        return result;
     }
 
     async deleteWanderAlbum(id) {
@@ -233,27 +244,13 @@ export class WanderAlbumService {
     }
 
     async searchWanderAlbum(keyword, from, size) {
-        let res = await this.elasticsearchService.search({
-            index: 'wander_album',
-            type: 'wander_album',
-            body: {
-                from: from,
-                size: size,
-                query: {
-                    bool: {
-                        should: [
-                            { wildcard: { name: keyword } },
-                            { wildcard: { description: keyword } },
-                            { wildcard: { copy: keyword } },]
-                    }
-                },
-                // sort: {
-                //     createTime: { order: "desc" }
-                // }
-            }
-        }).toPromise();
-
-        const ids = res[0].hits.hits.map(hit => hit._id);
-        return { total: res[0].hits.total, data: await this.getWanderAlbumByIds(ids) };
+        const cutKeyword = nodejieba.cut(keyword);
+        let query = {};
+        if (cutKeyword.length !== 0) {
+            query = { __tag: { $in: cutKeyword } };
+        }
+        let total = await this.wanderAlbumModel.countDocuments(query);
+        let data = await this.wanderAlbumModel.find(query).skip(from).limit(size).exec();
+        return { total, data };
     }
 }

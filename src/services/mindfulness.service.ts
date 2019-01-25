@@ -1,4 +1,5 @@
 import * as Sentry from '@sentry/node';
+import * as nodejieba from 'nodejieba';
 import { Model, Connection } from 'mongoose';
 import { Mindfulness } from "../interfaces/mindfulness.interface";
 import { User } from "../interfaces/user.interface";
@@ -16,12 +17,12 @@ import * as moment from 'moment';
 import { isEmpty, isNumber, isArray, isBoolean, isString } from 'lodash';
 // import { RpcException } from "@nestjs/microservices";
 // import { __ as t } from "i18n";
-import { ElasticsearchService } from '@nestjs/elasticsearch';
 // import { MessageQueueService } from "../modules/messageQueue.service";
 // import { Producer } from 'ali-ons';
 // import {InjectProducer} from 'nestjs-ali-ons';
 import * as Moleculer from "moleculer";
 import MoleculerError = Moleculer.Errors.MoleculerError;
+import { toArray } from "rxjs/operators";
 
 @Injectable()
 export class MindfulnessService {
@@ -30,7 +31,6 @@ export class MindfulnessService {
     }
 
     constructor(
-        @Inject(ElasticsearchService) private readonly elasticsearchService: ElasticsearchService,
         @InjectConnection('sati') private readonly resourceClient: Connection,
         @InjectModel('User') private readonly userModel: Model<User>,
         @InjectModel('Account') private readonly accountModel: Model<Account>,
@@ -93,7 +93,7 @@ export class MindfulnessService {
     }
 
     async searchMindfulnessRecord(userId: string, page: number, limit: number, sort: string, favorite?: boolean, boughtTime?: number[]) {
-        let conditions = {}
+        let conditions = {};
         if (isBoolean(favorite)) {
             // 偶数是没有收藏 奇数是收藏，所以true搜索奇数，false搜索偶数
             if (favorite) {
@@ -115,7 +115,17 @@ export class MindfulnessService {
     async createMindfulness(data) {
         data.createTime = moment().unix();
         data.updateTime = moment().unix();
-        return await this.mindfulnessModel.create(data)
+        let result = await this.mindfulnessModel.create(data);
+        await this.updateTag(result._id);
+        return result;
+    }
+
+    async updateTag(id) {
+        const doc = await this.mindfulnessModel.findOne({ _id: id }).exec();
+        const nameCut = nodejieba.cut(doc.name);
+        const descriptionCut = nodejieba.cut(doc.description);
+        const copyCut = nodejieba.cut(doc.copy);
+        await this.mindfulnessModel.updateOne({ _id: id }, { __tag: ['*'].concat(nameCut).concat(descriptionCut).concat(copyCut) }).exec();
     }
 
     async updateMindfulness(id, data) {
@@ -157,7 +167,9 @@ export class MindfulnessService {
             updateObject['natureId'] = data.natureId;
         }
         // console.log(updateObject)
-        return await this.mindfulnessModel.findOneAndUpdate({ _id: id }, updateObject, { new: true }).exec()
+        let result = await this.mindfulnessModel.findOneAndUpdate({ _id: id }, updateObject, { new: true }).exec();
+        await this.updateTag(result.id);
+        return result
     }
 
     async deleteMindfulness(id) {
@@ -177,7 +189,10 @@ export class MindfulnessService {
     }
 
     async startMindfulness(userId, mindfulnessId) {
-        let result = await this.mindfulnessRecordModel.findOneAndUpdate({ userId: userId, mindfulnessId: mindfulnessId },
+        let result = await this.mindfulnessRecordModel.findOneAndUpdate({
+                userId: userId,
+                mindfulnessId: mindfulnessId
+            },
             { $inc: { startCount: 1 }, $set: { lastStartTime: moment().unix() } },
             { upsert: true, new: true, setDefaultsOnInsert: true }).exec();
         return result
@@ -189,7 +204,10 @@ export class MindfulnessService {
         if (duration > currentRecord.longestDuration) {
             updateObj.$set['longestDuration'] = duration
         }
-        let result = await this.mindfulnessRecordModel.findOneAndUpdate({ userId: userId, mindfulnessId: mindfulnessId },
+        let result = await this.mindfulnessRecordModel.findOneAndUpdate({
+                userId: userId,
+                mindfulnessId: mindfulnessId
+            },
             updateObj,
             { upsert: true, new: true, setDefaultsOnInsert: true }).exec();
         return result
@@ -247,28 +265,14 @@ export class MindfulnessService {
     }
 
     async searchMindfulness(keyword, from, size) {
-        let res = await this.elasticsearchService.search({
-            index: 'mindfulness',
-            type: 'mindfulness',
-            body: {
-                from: from,
-                size: size,
-                query: {
-                    bool: {
-                        should: [
-                            { wildcard: { name: keyword } },
-                            { wildcard: { description: keyword } },
-                            { wildcard: { copy: keyword } },]
-                    }
-                },
-                // sort: {
-                //     createTime: { order: "desc" }
-                // }
-            }
-        }).toPromise()
-
-        const ids = res[0].hits.hits.map(hit=>hit._id)
-        return { total: res[0].hits.total, data: await this.getMindfulnessByIds(ids) }
+        const cutKeyword = nodejieba.cut(keyword);
+        let query = {};
+        if (cutKeyword.length !== 0) {
+            query = { __tag: { $in: cutKeyword } };
+        }
+        let total = await this.mindfulnessModel.countDocuments(query);
+        let data = await this.mindfulnessModel.find(query).skip(from).limit(size).exec();
+        return { total, data };
     }
 
     async getMindfulnessByMindfulnessAlbumId(id) {

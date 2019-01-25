@@ -3,18 +3,17 @@ import { Inject, Injectable } from '@nestjs/common';
 import { InjectModel, InjectConnection } from '@nestjs/mongoose';
 import * as moment from "moment";
 import { isArray, isBoolean, isEmpty, isNumber } from 'lodash';
-import { ElasticsearchService } from '@nestjs/elasticsearch';
 import * as Moleculer from "moleculer";
 import { MindfulnessAlbum } from "../interfaces/mindfulnessAlbum.interface";
 import { MindfulnessAlbumRecord } from 'src/interfaces/mindfulnessAlbumRecord.interface';
 import MoleculerError = Moleculer.Errors.MoleculerError;
 import { User } from "../interfaces/user.interface";
 import { Account } from "../interfaces/account.interface";
+import * as nodejieba from "nodejieba";
 
 @Injectable()
 export class MindfulnessAlbumService {
     constructor(
-        @Inject(ElasticsearchService) private readonly elasticsearchService: ElasticsearchService,
         @InjectConnection('sati') private readonly resourceClient: Connection,
         @InjectModel('User') private readonly userModel: Model<User>,
         @InjectModel('Account') private readonly accountModel: Model<Account>,
@@ -100,7 +99,17 @@ export class MindfulnessAlbumService {
     async createMindfulnessAlbum(data) {
         data.createTime = moment().unix();
         data.updateTime = moment().unix();
-        return await this.mindfulnessAlbumModel.create(data)
+        let result = await this.mindfulnessAlbumModel.create(data);
+        await this.updateTag(result._id);
+        return result;
+    }
+
+    async updateTag(id) {
+        const doc = await this.mindfulnessAlbumModel.findOne({ _id: id }).exec();
+        const nameCut = nodejieba.cut(doc.name);
+        const descriptionCut = nodejieba.cut(doc.description);
+        const copyCut = nodejieba.cut(doc.copy);
+        await this.mindfulnessAlbumModel.updateOne({ _id: id }, { __tag: ['*'].concat(nameCut).concat(descriptionCut).concat(copyCut) }).exec();
     }
 
     async updateMindfulnessAlbum(id, data) {
@@ -132,7 +141,9 @@ export class MindfulnessAlbumService {
         if (isNumber(data.validTime)) {
             updateObject['validTime'] = data.validTime;
         }
-        return await this.mindfulnessAlbumModel.findOneAndUpdate({ _id: id }, updateObject, { new: true }).exec()
+        const result = await this.mindfulnessAlbumModel.findOneAndUpdate({ _id: id }, updateObject, { new: true }).exec()
+        await this.updateTag(result._id);
+        return result;
     }
 
     async deleteMindfulnessAlbum(id) {
@@ -233,27 +244,13 @@ export class MindfulnessAlbumService {
     }
 
     async searchMindfulnessAlbum(keyword, from, size) {
-        let res = await this.elasticsearchService.search({
-            index: 'mindfulness_album',
-            type: 'mindfulness_album',
-            body: {
-                from: from,
-                size: size,
-                query: {
-                    bool: {
-                        should: [
-                            { wildcard: { name: keyword } },
-                            { wildcard: { description: keyword } },
-                            { wildcard: { copy: keyword } },]
-                    }
-                },
-                // sort: {
-                //     createTime: { order: "desc" }
-                // }
-            }
-        }).toPromise();
-
-        const ids = res[0].hits.hits.map(hit => hit._id);
-        return { total: res[0].hits.total, data: await this.getMindfulnessAlbumByIds(ids) };
+        const cutKeyword = nodejieba.cut(keyword);
+        let query = {};
+        if (cutKeyword.length !== 0) {
+            query = { __tag: { $in: cutKeyword } };
+        }
+        let total = await this.mindfulnessAlbumModel.countDocuments(query);
+        let data = await this.mindfulnessAlbumModel.find(query).skip(from).limit(size).exec();
+        return { total, data };
     }
 }

@@ -36,7 +36,7 @@ async function bootstrap() {
     // 初始化ACM或者配置
     const acm = new NacosConfigClient({
     // const acm = new ACMClient({
-        endpoint: 'acm.aliyun.com', // acm 控制台查看
+        endpoint: process.env.ACM_ENDPOINT || 'acm.aliyun.com', // acm 控制台查看
         namespace: process.env.ACM_NAMESPACE || '7d2026a8-72a8-4e56-893f-91dfa8ffc207', // acm 控制台查看
         accessKey: process.env.ACM_ACCESS_KEY_ID || 'LTAIhIOInA2pDmga', // acm 控制台查看
         secretKey: process.env.ACM_ACCESS_KEY_SECRET || '9FNpKB1WZpEwxWJbiWSMiCfuy3E3TL', // acm 控制台查看
